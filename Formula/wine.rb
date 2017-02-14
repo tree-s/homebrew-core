@@ -59,6 +59,7 @@ class Wine < Formula
 
   # Patch to fix screen-flickering issues. Still relevant on 2.0.
   # https://bugs.winehq.org/show_bug.cgi?id=34166
+  # OpenGL bug filed upstream with Apple: rdar://30449915
   patch do
     url "https://bugs.winehq.org/attachment.cgi?id=55968"
     sha256 "1b5086798ce6dc959b3cbb8f343ee236ae06c7910e4bbae7d9fde3f162f03a79"
