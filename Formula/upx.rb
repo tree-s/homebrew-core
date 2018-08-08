@@ -8,11 +8,10 @@ class Upx < Formula
     url "https://github.com/upx/upx/releases/download/v3.94/upx-3.94-src.tar.xz"
     sha256 "81ef72cdac7d8ccda66c2c1ab14f4cd54225e9e7b10cd40dd54be348dbf25621"
 
-    # Fixes decompressing Mach binaries:
-    # https://github.com/upx/upx/issues/161
+    # Fixes decompressing Mach binaries: https://github.com/upx/upx/issues/161
     # Fixed upstream; this adjusts the patch to work on 3.94.
     patch do
-      url "https://github.com/Homebrew/formula-patches/raw/3bc430ea01c30e226e10c83d68d3c56521f25fe8/upx/fix_decompression.patch"
+      url "https://raw.githubusercontent.com/Homebrew/formula-patches/9e37f000/upx/fix_decompression.patch"
       sha256 "a63d6da220c99b7507f1b6c0fd51008cdfd33fb66e22f374fc8f377a3f1a51d8"
     end
   end
