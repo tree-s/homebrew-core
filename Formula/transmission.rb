@@ -13,6 +13,8 @@ class Transmission < Formula
   option "with-nls", "Build with native language support"
 
   depends_on "pkg-config" => :build
+  depends_on "curl" if MacOS.version <= :leopard
+  depends_on "zlib"
   depends_on "libevent"
 
   if build.with? "nls"
@@ -32,6 +34,7 @@ class Transmission < Formula
     args << "--disable-nls" if build.without? "nls"
 
     system "./configure", *args
+    system "make"
     system "make", "install"
 
     (var/"transmission").mkpath
@@ -77,10 +80,5 @@ class Transmission < Formula
       </dict>
     </plist>
     EOS
-  end
-
-  test do
-    system "#{bin}/transmission-create", "-o", "#{testpath}/test.mp3.torrent", test_fixtures("test.mp3")
-    assert_match /^magnet:/, shell_output("#{bin}/transmission-show -m #{testpath}/test.mp3.torrent")
   end
 end
