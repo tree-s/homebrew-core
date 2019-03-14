@@ -1,33 +1,43 @@
 class Pygobject3 < Formula
   desc "GNOME Python bindings (based on GObject Introspection)"
-  homepage "https://live.gnome.org/PyGObject"
-  url "https://download.gnome.org/sources/pygobject/3.26/pygobject-3.26.1.tar.xz"
-  sha256 "f5577b9b9c70cabb9a60d81b855d488b767c66f867432e7fb64aa7269b04d1a9"
+  homepage "https://wiki.gnome.org/Projects/PyGObject"
+  url "https://download.gnome.org/sources/pygobject/3.30/pygobject-3.30.4.tar.xz"
+  sha256 "2dc1a1a444b82955e65b81c2a2511ecf8032404beba4ef1d48144168f2f64c43"
 
   bottle do
     cellar :any
-    sha256 "aaab032fa3438d70898ed4347e709d2f6999f3a2f1c23e7c329f40fc529da6d7" => :high_sierra
-    sha256 "9c36308ce64a1ded65bc34340c0997f4980aff8765ee4e0ef97f50189439ef1f" => :sierra
-    sha256 "4c637d654502521ef19d7679a159ec353115df01d1afd3934ea43799d3b79b39" => :el_capitan
+    rebuild 1
+    sha256 "b2e5a251c6d41ad8b039ea1637c39aabbfa3e055366124c7461f65711e210b68" => :mojave
+    sha256 "4ac894ae8761c85bceade1626bd4c7afd1850ad8fceb32cbe2a6a852121a2661" => :high_sierra
+    sha256 "b5494a628c4b090acc17a6f7510672ed8e1c9487261bffd386368d1c93f23012" => :sierra
   end
 
-  option "without-python", "Build without python2 support"
-
+  depends_on "meson" => :build
+  depends_on "ninja" => :build
   depends_on "pkg-config" => :build
-  depends_on "libffi" => :optional
-  depends_on "glib"
-  depends_on "python3" => :optional
-  depends_on "py2cairo" if build.with? "python"
-  depends_on "py3cairo" if build.with? "python3"
   depends_on "gobject-introspection"
+  depends_on "py2cairo"
+  depends_on "py3cairo"
+  depends_on "python"
+  depends_on "python@2"
 
   def install
-    Language::Python.each_python(build) do |python, _version|
-      system "./configure", "--disable-dependency-tracking",
-                            "--prefix=#{prefix}",
-                            "PYTHON=#{python}"
-      system "make", "install"
-      system "make", "clean"
+    mkdir "buildpy2" do
+      system "meson", "--prefix=#{prefix}",
+                      "-Dpycairo=true",
+                      "-Dpython=python2.7",
+                      ".."
+      system "ninja", "-v"
+      system "ninja", "install"
+    end
+
+    mkdir "buildpy3" do
+      system "meson", "--prefix=#{prefix}",
+                      "-Dpycairo=true",
+                      "-Dpython=python3",
+                      ".."
+      system "ninja", "-v"
+      system "ninja", "install"
     end
   end
 

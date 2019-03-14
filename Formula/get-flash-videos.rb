@@ -1,14 +1,15 @@
 class GetFlashVideos < Formula
   desc "Download or play videos from various Flash-based websites"
   homepage "https://github.com/monsieurvideo/get-flash-videos"
-  url "https://github.com/monsieurvideo/get-flash-videos/archive/1.25.97.tar.gz"
-  sha256 "1b25f0863e91a3d4435c255975c7d4f222fb94aabec288310ecc9f71fe4cbd5a"
+  url "https://github.com/monsieurvideo/get-flash-videos/archive/1.25.99.03.tar.gz"
+  sha256 "37267b41c7b0c240d99ed1f5e7ba04d00f98a8daff82ac9edd2b12c3bca83d73"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "4102c72a9c56d9d3a3e4a8d2b956076882179e7fd21d8c30009799d3b9d7adce" => :high_sierra
-    sha256 "3723a25f3565722b8fe96e42a33a10323aae5c8a25729556330c3f7ae0ab9507" => :sierra
-    sha256 "f2af279e5bc044c04e841cdfd8d2b8ec05161d5c11948c7194d644140fbd6cdd" => :el_capitan
+    sha256 "ce0853c6ed07dfec3abce3ae4ca0cf073f5a8a38d530a227ffd966e7f1d946c4" => :mojave
+    sha256 "10e25788bbd00ffd0f0a5281c9c4c493c2957947ba4690cf92460c98aa72dc1b" => :high_sierra
+    sha256 "6c6e60aff2308881f4ef896b5a5c2dd1b05db9146d224be024793f042534dc6d" => :sierra
+    sha256 "0b7edca9b6518af848a6cb5f84bb34014cd017391279398ea9d796dc89ea7a57" => :el_capitan
   end
 
   depends_on "rtmpdump"
@@ -19,8 +20,8 @@ class GetFlashVideos < Formula
   end
 
   resource "LWP::Protocol" do
-    url "https://cpan.metacpan.org/authors/id/E/ET/ETHER/libwww-perl-6.31.tar.gz"
-    sha256 "525d5386d39d1c1d7da8a0e9dd0cbab95cba2a4bfcfd9b83b257f49be4eecae3"
+    url "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-6.33.tar.gz"
+    sha256 "97417386f11f007ae129fe155b82fd8969473ce396a971a664c8ae6850c69b99"
   end
 
   resource "Tie::IxHash" do
@@ -29,8 +30,8 @@ class GetFlashVideos < Formula
   end
 
   resource "WWW::Mechanize" do
-    url "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/WWW-Mechanize-1.86.tar.gz"
-    sha256 "0e5468b89afeff096fb6d9b91a9a58418746c89445fb01adb5caa25ecf32d469"
+    url "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/WWW-Mechanize-1.88.tar.gz"
+    sha256 "36d97e778ab911ab5a762d551541686cbf3463c571f474322f7b5da77f50a879"
   end
 
   resource "Term::ProgressBar" do

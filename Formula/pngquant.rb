@@ -1,15 +1,15 @@
 class Pngquant < Formula
   desc "PNG image optimizing utility"
   homepage "https://pngquant.org/"
-  url "https://pngquant.org/pngquant-2.11.7-src.tar.gz"
-  sha256 "d70b46c3335c7abf21944aced2d9d2b54819ab84ed1a140b354d5e8cc9f0fb0a"
-  head "https://github.com/pornel/pngquant.git"
+  url "https://pngquant.org/pngquant-2.12.2-src.tar.gz"
+  sha256 "bb031c48039ee73ea0e60709bb9ab80c55bfa3a5920b798ea37a03f2757b099c"
+  head "https://github.com/kornelski/pngquant.git"
 
   bottle do
     cellar :any
-    sha256 "15fab42baf4df4cf6fb56554024eed3ec28fd94ebcedd7075acfb5fcc5ee5291" => :high_sierra
-    sha256 "d5c88987657ada8f05f0632701d691fa518815ba5b084f9e31c77722700d4da7" => :sierra
-    sha256 "5ee791b257c7ca2a3cd08f87adc5f674b24ab08a3384f7f8745f72f166e3fea3" => :el_capitan
+    sha256 "71656950218e1bc4382a43615f41b02b12539db9b7352e2e423212bec6d7a07e" => :mojave
+    sha256 "a71a5b271f72aafce935ebf665afc158b5a1e8d3b62fa916773363dfd43d4ce6" => :high_sierra
+    sha256 "898ad660558ca14a04cb465ccf374e24439c6067f428cb665f99486ddb41dcea" => :sierra
   end
 
   depends_on "pkg-config" => :build
@@ -18,8 +18,7 @@ class Pngquant < Formula
   depends_on "little-cms2"
 
   def install
-    system "cargo", "build", "--release"
-    bin.install "target/release/pngquant"
+    system "cargo", "install", "--root", prefix, "--path", "."
     man1.install "pngquant.1"
   end
 

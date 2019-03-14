@@ -1,32 +1,31 @@
 class Z3 < Formula
   desc "High-performance theorem prover"
   homepage "https://github.com/Z3Prover/z3"
-  url "https://github.com/Z3Prover/z3/archive/z3-4.6.0.tar.gz"
-  sha256 "511da31d1f985cf0c79b2de05bda4e057371ba519769d1546ff71e1304fe53c9"
+  url "https://github.com/Z3Prover/z3/archive/z3-4.8.4.tar.gz"
+  sha256 "5a18fe616c2a30b56e5b2f5b9f03f405cdf2435711517ff70b076a01396ef601"
+  revision 2
   head "https://github.com/Z3Prover/z3.git"
 
   bottle do
     cellar :any
-    sha256 "b8e7d05e007f45e7ac1d1962279db7f32043306441a984715842957e242683db" => :high_sierra
-    sha256 "a0fcd87fa76072a7f8a6fb663c5d2589e8e1395e8c11acfb26150a7867aa6076" => :sierra
-    sha256 "bc1f47e9c9c1bff59983a17e00b00ab6724de6c182147cbecd6115fea377fda8" => :el_capitan
+    sha256 "af966034f75cc9216e051b87471c7e3201bf7498bc0922efe56bf50aec83344e" => :mojave
+    sha256 "ff491bde03d10b1d517c8fec2814354fe34e47f8165a827b2942706586c24b1f" => :high_sierra
+    sha256 "dcf3613255d1f4bb7c5f1a24a7786043eeb4801ba936f60c03a428e8254f3417" => :sierra
   end
 
-  option "without-python", "Build without python 2 support"
-  depends_on "python" => :recommended if MacOS.version <= :snow_leopard
-  depends_on "python3" => :optional
+  depends_on "python"
 
   def install
-    if build.without?("python3") && build.without?("python")
-      odie "z3: --with-python3 must be specified when using --without-python"
-    end
+    xy = Language::Python.major_minor_version "python3"
+    system "python3", "scripts/mk_make.py",
+                      "--prefix=#{prefix}",
+                      "--python",
+                      "--pypkgdir=#{lib}/python#{xy}/site-packages",
+                      "--staticlib"
 
-    Language::Python.each_python(build) do |python, version|
-      system python, "scripts/mk_make.py", "--prefix=#{prefix}", "--python", "--pypkgdir=#{lib}/python#{version}/site-packages", "--staticlib"
-      cd "build" do
-        system "make"
-        system "make", "install"
-      end
+    cd "build" do
+      system "make"
+      system "make", "install"
     end
 
     # qprofdiff is not yet part of the source release (it will be as soon as a

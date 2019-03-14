@@ -3,23 +3,29 @@ class ArcadeLearningEnvironment < Formula
   homepage "https://github.com/mgbellemare/Arcade-Learning-Environment"
   url "https://github.com/mgbellemare/Arcade-Learning-Environment/archive/v0.6.0.tar.gz"
   sha256 "da4597edf8ebef99961394daca44fa30148c778adff59ee5aec073ea94dcc175"
+  revision 4
   head "https://github.com/mgbellemare/Arcade-Learning-Environment.git"
 
   bottle do
     cellar :any
-    sha256 "209f649196b2f933ef85969199c772861cdc014789a5b38254d64f5f8901d7e8" => :high_sierra
-    sha256 "945cf13cda0c218beb42c67647caa94b8e538b8e5a64f62f3c70ff4dcb91f316" => :sierra
-    sha256 "fae373f7210a248e3819175902e7e5038bcfbc436f0a49e9bc715c83dbe3818c" => :el_capitan
+    sha256 "c1df5b72ac9f1048c11b51133b3c703cab7ff5f184e5a3ac80df559ea7332f66" => :mojave
+    sha256 "4347e69ed56c1798240b6c160d7ddaedf5ecc2fb56b8d235c644ef44103f3dc9" => :high_sierra
+    sha256 "327944c55b6c2b917bfdc04c8cdfaffe59ecea5851f326369901949c0657a5ed" => :sierra
   end
 
   depends_on "cmake" => :build
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "numpy"
+  depends_on "python"
   depends_on "sdl"
 
   def install
-    system "cmake", ".", *std_cmake_args
+    args = std_cmake_args + %W[
+      -DCMAKE_INSTALL_NAME_DIR=#{opt_lib}
+      -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON
+    ]
+    system "cmake", ".", *args
     system "make", "install"
-    system "python", *Language::Python.setup_install_args(prefix)
+    system "python3", *Language::Python.setup_install_args(prefix)
   end
 
   test do
@@ -29,6 +35,6 @@ class ArcadeLearningEnvironment < Formula
       from ale_python_interface import ALEInterface;
       ale = ALEInterface();
     EOS
-    assert_match "ale.cfg", shell_output("python test.py 2>&1")
+    assert_match "ale.cfg", shell_output("python3 test.py 2>&1")
   end
 end

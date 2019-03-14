@@ -1,44 +1,27 @@
 class Collectd < Formula
   desc "Statistics collection and monitoring daemon"
   homepage "https://collectd.org/"
-  url "https://collectd.org/files/collectd-5.8.0.tar.bz2"
-  sha256 "b06ff476bbf05533cb97ae6749262cc3c76c9969f032bd8496690084ddeb15c9"
+  url "https://collectd.org/files/collectd-5.8.1.tar.bz2"
+  sha256 "e796fda27ce06377f491ad91aa286962a68c2b54076aa77a29673d53204453da"
 
   bottle do
-    sha256 "c228054cab6171395cf7fc0aae7baa020743514a41dd374e668d4d9440675e7f" => :high_sierra
-    sha256 "e49db6c81c43d172e13ced53c61175afb5bcd3f14121e501c4a111267ad014ae" => :sierra
-    sha256 "5bad0992c7a9022f3b083a8d127d6cd7aa9f024b4aec6f5edc21a8dac3115324" => :el_capitan
+    sha256 "ffa5b1bd3d607e47410ba26ef11b3d7132f42049a035c9b87ddadad385c3546f" => :mojave
+    sha256 "61e26ab9d8127ddf942dcd163c6c78f50890b05f309ed7e329c7b8f859205c96" => :high_sierra
+    sha256 "486dbe8acc823c12263308eddadf22e56c862161e190c7b2f1b57e6feeb99384" => :sierra
   end
 
   head do
     url "https://github.com/collectd/collectd.git"
 
-    depends_on "automake" => :build
     depends_on "autoconf" => :build
+    depends_on "automake" => :build
   end
-
-  option "with-java", "Enable Java support"
-  option "with-python", "Enable Python support"
-  option "with-riemann-client", "Enable write_riemann support"
-  option "with-debug", "Enable debug support"
-
-  deprecated_option "java" => "with-java"
-  deprecated_option "debug" => "with-debug"
 
   depends_on "pkg-config" => :build
-  depends_on "libtool" => :run
-  depends_on "riemann-client" => :optional
-  depends_on :java => :optional
-  depends_on "python" => :optional
+  depends_on "libgcrypt"
+  depends_on "libtool"
   depends_on "net-snmp"
-
-  fails_with :clang do
-    build 318
-    cause <<~EOS
-      Clang interacts poorly with the collectd-bundled libltdl,
-      causing configure to fail.
-    EOS
-  end
+  depends_on "riemann-client"
 
   def install
     args = %W[
@@ -46,12 +29,9 @@ class Collectd < Formula
       --disable-dependency-tracking
       --prefix=#{prefix}
       --localstatedir=#{var}
+      --disable-java
+      --enable-write_riemann
     ]
-
-    args << "--disable-java" if build.without? "java"
-    args << "--enable-python" if build.with? "python"
-    args << "--enable-write_riemann" if build.with? "riemann-client"
-    args << "--enable-debug" if build.with? "debug"
 
     system "./build.sh" if build.head?
     system "./configure", *args
@@ -84,7 +64,7 @@ class Collectd < Formula
         <string>#{var}/log/collectd.log</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

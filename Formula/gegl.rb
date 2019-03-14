@@ -1,21 +1,21 @@
 class Gegl < Formula
   desc "Graph based image processing framework"
   homepage "http://www.gegl.org/"
-  url "https://download.gimp.org/pub/gegl/0.3/gegl-0.3.28.tar.bz2"
-  sha256 "152f87604a5a191775329dfb63764efa1d5c32403d1438da68e242f96b7d23ff"
+  url "https://download.gimp.org/pub/gegl/0.4/gegl-0.4.12.tar.bz2"
+  sha256 "e967293eabe89257e1d511bf68435fbfd44e6e0f9ef51b86cc50781f09eb5852"
 
   bottle do
-    sha256 "7580d3d2bbe103eaf350960b8a22ce5f63c8c029bab9dd861ca0fbf89376dd6d" => :high_sierra
-    sha256 "135f49765e4f34b06f8dbac9a84a7d35f53846fe009a8389564f0b33ce0d5d4e" => :sierra
-    sha256 "9e5f682bba155c4e95dd04cf42af1a4d7d59081e05007e4fc58ae465bdbab4ee" => :el_capitan
+    sha256 "ec5804c7cb55ed5f6a09eb4b9c45a1d24385d2e11c486025ee7dcf1ae2b459c0" => :mojave
+    sha256 "9da4062b2ae54e23f751e66c06b0405f84927091eef886996f895b1740b0b84e" => :high_sierra
+    sha256 "9f658fe35cff351f64fd2970628bbf5aa3e0a2a682301562bc0c3b91b1b7d520" => :sierra
   end
 
   head do
     # Use the Github mirror because official git unreliable.
     url "https://github.com/GNOME/gegl.git"
 
-    depends_on "automake" => :build
     depends_on "autoconf" => :build
+    depends_on "automake" => :build
     depends_on "libtool" => :build
   end
 
@@ -24,14 +24,9 @@ class Gegl < Formula
   depends_on "babl"
   depends_on "gettext"
   depends_on "glib"
+  depends_on "jpeg"
   depends_on "json-glib"
   depends_on "libpng"
-  depends_on "jpeg"
-  depends_on "cairo" => :optional
-  depends_on "librsvg" => :optional
-  depends_on "lua" => :optional
-  depends_on "pango" => :optional
-  depends_on "sdl" => :optional
 
   conflicts_with "coreutils", :because => "both install `gcut` binaries"
 
@@ -40,7 +35,10 @@ class Gegl < Formula
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
-                          "--disable-docs"
+                          "--disable-docs",
+                          "--without-cairo",
+                          "--without-jasper",
+                          "--without-umfpack"
     system "make", "install"
   end
 
@@ -54,7 +52,7 @@ class Gegl < Formula
         return 0;
       }
     EOS
-    system ENV.cc, "-I#{include}/gegl-0.3", "-L#{lib}", "-lgegl-0.3",
+    system ENV.cc, "-I#{include}/gegl-0.4", "-L#{lib}", "-lgegl-0.4",
            "-I#{Formula["babl"].opt_include}/babl-0.1",
            "-I#{Formula["glib"].opt_include}/glib-2.0",
            "-I#{Formula["glib"].opt_lib}/glib-2.0/include",

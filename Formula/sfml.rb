@@ -10,6 +10,7 @@ class Sfml < Formula
   bottle do
     cellar :any
     rebuild 1
+    sha256 "1c5fc7fdb1a59664f2128d309c3a198fffd60cb9f930fbe8ed7f8eb52753250b" => :mojave
     sha256 "ed02627dfaff55b60f9271379256d99adfb010df3f4842b0e33fd366eb62df6e" => :high_sierra
     sha256 "76c3949dad4b907b87d219f10eb2dae44d43cb76963a083f70935f138832d13c" => :sierra
     sha256 "976560145b126bd482696148767f333ceda470d847064a5682abcd5c329937bd" => :el_capitan
@@ -17,16 +18,14 @@ class Sfml < Formula
   end
 
   depends_on "cmake" => :build
-  depends_on "doxygen" => :optional
+  depends_on "doxygen" => :build
   depends_on "flac"
   depends_on "freetype"
   depends_on "jpeg"
   depends_on "libogg"
   depends_on "libvorbis"
-  depends_on "openal-soft" => :optional
 
   # https://github.com/Homebrew/homebrew/issues/40301
-  depends_on :macos => :lion
 
   def install
     # Install pkg-config files, adding the CMake flag below isn't enough, as
@@ -37,15 +36,14 @@ class Sfml < Formula
               "if(SFML_OS_LINUX OR SFML_OS_FREEBSD)",
               "if(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OS_MACOSX)"
 
-    args = std_cmake_args << "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE"
-    args << "-DSFML_BUILD_DOC=TRUE" if build.with? "doxygen"
-
     # Always remove the "extlibs" to avoid install_name_tool failure
     # (https://github.com/Homebrew/homebrew/pull/35279) but leave the
     # headers that were moved there in https://github.com/SFML/SFML/pull/795
     rm_rf Dir["extlibs/*"] - ["extlibs/headers"]
 
-    system "cmake", ".", *args
+    system "cmake", ".", *std_cmake_args,
+                         "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE",
+                         "-DSFML_BUILD_DOC=TRUE"
     system "make", "install"
   end
 

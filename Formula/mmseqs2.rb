@@ -1,15 +1,15 @@
 class Mmseqs2 < Formula
   desc "Software suite for very fast protein sequence search and clustering"
   homepage "https://mmseqs.org/"
-  url "https://github.com/soedinglab/MMseqs2/archive/1-c7a89.tar.gz"
-  version "1-c7a89"
-  sha256 "e756a0e5cb3aa8e1e5a5b834a58ae955d9594be1806f0f32800427c55f3a45d5"
+  url "https://github.com/soedinglab/MMseqs2/archive/7-4e23d.tar.gz"
+  version "7-4e23d"
+  sha256 "39b04ea60741ca209c37be129b852b5024fed1691817e6eb1e80e382f7261724"
 
   bottle do
     cellar :any
-    sha256 "f1e551d41c5508ddb96b2b603d2b7df320e8d304a927d5591bc7ecd02211fd58" => :high_sierra
-    sha256 "d324056b3fd47e0aa73ba4d8293b2a7248b4dcbe8daf0ff906201019d4c2efb7" => :sierra
-    sha256 "c338bc8cc6c622a5c3cbf95a6df6e472b45a92f2bca267b841f747b4ba45abcf" => :el_capitan
+    sha256 "e90c697974e8bfac9ab2cba1c25521de6d8967f42c4191f5f53fb97809fce4e3" => :mojave
+    sha256 "3d65ac201907466812a84eba4e5cbd65e9921844b20d611b89ee4dadcd748529" => :high_sierra
+    sha256 "e27970a0d1e68e4385dd0aa29a0d91a62d297b4879a12ea5a512ac2356b333a7" => :sierra
   end
 
   depends_on "cmake" => :build
@@ -21,17 +21,13 @@ class Mmseqs2 < Formula
 
   resource "documentation" do
     url "https://github.com/soedinglab/MMseqs2.wiki.git",
-        :revision => "6dbd3666edb64fc71173ee714014e88c1ebe2dfc"
+        :revision => "d3607c7913e67c7bb553a8dff0cc66eeb3387506"
   end
 
   def install
-    # version information is read from git by default
-    # next MMseqs2 version will include a cmake flag so we do not need this hack
-    inreplace "src/version/Version.cpp", /.+/m, "const char *version = \"#{version}\";"
-
     args = *std_cmake_args << "-DHAVE_TESTS=0" << "-DHAVE_MPI=0"
-
-    args << "-DHAVE_SSE4_1=1" if build.bottle?
+    args << "-DVERSION_OVERRIDE=#{version}"
+    args << "-DHAVE_SSE4_1=1"
 
     system "cmake", ".", *args
     system "make", "install"
@@ -43,12 +39,16 @@ class Mmseqs2 < Formula
 
   def caveats
     unless Hardware::CPU.sse4?
-      "MMseqs2 requires at least SSE4.1 CPU instruction support. The binary will not work correctly."
+      "MMseqs2 requires at least SSE4.1 CPU instruction support."
     end
   end
 
   test do
     system "#{bin}/mmseqs", "createdb", "#{pkgshare}/examples/QUERY.fasta", "q"
-    system "#{bin}/mmseqs", "cluster", "q", "res", "tmp", "-s", "1", "--cascaded"
+    system "#{bin}/mmseqs", "cluster", "q", "res", "tmp", "-s", "1"
+    assert_predicate testpath/"res", :exist?
+    assert_predicate (testpath/"res").size, :positive?
+    assert_predicate testpath/"res.index", :exist?
+    assert_predicate (testpath/"res.index").size, :positive?
   end
 end

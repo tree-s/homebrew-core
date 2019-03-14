@@ -1,16 +1,16 @@
 class MupdfTools < Formula
   desc "Lightweight PDF and XPS viewer"
   homepage "https://mupdf.com/"
-  url "https://mupdf.com/downloads/mupdf-1.12.0-source.tar.gz"
-  sha256 "5c6353a82f1512f4f5280cf69a3725d1adac9c8b22377ec2a447c4fc45528755"
+  url "https://mupdf.com/downloads/archive/mupdf-1.14.0-source.tar.gz"
+  sha256 "c443483a678c3fc258fa4adc124146225d0bb443c522619faadebf6b363d7724"
+  revision 1
   head "https://git.ghostscript.com/mupdf.git"
 
   bottle do
     cellar :any_skip_relocation
-    rebuild 1
-    sha256 "02061e5a4e373b4d8283a23728ecef4d6a04d4562fce187d3354fdec65a595f4" => :high_sierra
-    sha256 "a9c8080aea6e6f055c601c6ad4ff7752ad650ecf226e276b88a21c0eb21b317f" => :sierra
-    sha256 "9cff7b00e334fd3f90ed6aee94fa57f02904db7a76b0af9aa611f37aff174004" => :el_capitan
+    sha256 "cdef022dd6020e97503ede16d8d0f78c33bcd0290420379c848792ca92eabbcc" => :mojave
+    sha256 "8178f8da3a5d8f45678c5563cc005ea70a93439c2d68dc8daa7716ec6bb58715" => :high_sierra
+    sha256 "9327d7061bffc2f1319e124a5fb5d09921d1855249c8aca18568f5830f0db485" => :sierra
   end
 
   def install
@@ -18,6 +18,7 @@ class MupdfTools < Formula
            "build=release",
            "verbose=yes",
            "HAVE_X11=no",
+           "HAVE_GLUT=no",
            "CC=#{ENV.cc}",
            "prefix=#{prefix}"
 

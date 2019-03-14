@@ -3,20 +3,21 @@ class Twarc < Formula
 
   desc "Command-line tool and Python library for archiving Twitter JSON"
   homepage "https://github.com/DocNow/twarc"
-  url "https://github.com/DocNow/twarc/archive/v1.3.4.tar.gz"
-  sha256 "ae2abc431334f422716d6a404cb2a76e54f9e453e097310e50b60aed647cfd8d"
+  url "https://files.pythonhosted.org/packages/e1/f2/2d79badd5fab00826d5fb2a66b0d1923933ef937338edbdbdd01ae3f5181/twarc-1.6.1.tar.gz"
+  sha256 "2dc79f58859ceb609a139ae90296b9eff754a2219a0b3faa6cd794d2faf6c18b"
+  revision 1
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "44777a56081504622320b03f153b5c988fffe976288df820a07ba7650c48d011" => :high_sierra
-    sha256 "e9435c9c26982e5fd421879ceab60b9da9e4d9afbce30ac42898ae99d54255b8" => :sierra
-    sha256 "511109d8e30da42fd44759f553ef22ab7f08258c418160007346f44e42234e04" => :el_capitan
+    sha256 "efafb2a333928c22287dcdb2bc5f533ba974f06301cc66786a2f5d1281004510" => :mojave
+    sha256 "cc8a3acf5a667b44b9bab745f1169663a4e3bf1a76d9f0453be3c5140a63794a" => :high_sierra
+    sha256 "a7bd954c8c173983e004079fba76021d9d19708c62ecd2da9d049fa518c959ac" => :sierra
   end
 
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "python"
 
   def install
-    venv = virtualenv_create(libexec)
+    venv = virtualenv_create(libexec, "python3")
     system libexec/"bin/pip", "install", "-v", "--no-binary", ":all:",
                               "--ignore-installed", buildpath
     system libexec/"bin/pip", "uninstall", "-y", "twarc"

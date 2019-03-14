@@ -1,25 +1,28 @@
 class Glade < Formula
   desc "RAD tool for the GTK+ and GNOME environment"
   homepage "https://glade.gnome.org/"
-  url "https://download.gnome.org/sources/glade/3.20/glade-3.20.2.tar.xz"
-  sha256 "07d1545570951aeded20e9fdc6d3d8a56aeefe2538734568c5335be336c6abed"
+  url "https://download.gnome.org/sources/glade/3.22/glade-3.22.1.tar.xz"
+  sha256 "dff89a2ef2eaf000ff2a46979978d03cb9202cb04668e01d0ea5c5bb5547e39a"
+  revision 1
 
   bottle do
-    sha256 "ac87e6105abb447609d5eec17e38606b558a1931dced66c708a32ba65ff5a1ac" => :high_sierra
-    sha256 "e61b53f6b7aab37ac47bb91825c0504fd615d152e310d990ed238b0af503b8f7" => :sierra
-    sha256 "567f482c5b8efedd1e1bdccffa8f9a10d6ddcdeddb19fb5dcb67dedc27c381e9" => :el_capitan
+    sha256 "354f3f75dd6f67eb7038bf492137c950e742261da55b35ac6aba6e2491ff3621" => :mojave
+    sha256 "8b2006714375e4ea9fc74bbd73e6ef41da6551a2b0e2813cece71d8ce4ca661c" => :high_sierra
+    sha256 "58616499a9a2b2aef8d6568faf7a7fbac66d7954491e6f00c61acdb2b3ea207d" => :sierra
+    sha256 "812042f677b69a24a9aefdbdeb733691813cb46b33ff50d991af97ddfe39fc59" => :el_capitan
   end
 
-  depends_on "pkg-config" => :build
+  depends_on "docbook-xsl" => :build
+  depends_on "gobject-introspection" => :build
   depends_on "intltool" => :build
   depends_on "itstool" => :build
-  depends_on "docbook-xsl" => :build
-  depends_on "gettext"
-  depends_on "libxml2"
+  depends_on "pkg-config" => :build
   depends_on "adwaita-icon-theme"
-  depends_on "hicolor-icon-theme"
+  depends_on "gettext"
   depends_on "gtk+3"
   depends_on "gtk-mac-integration"
+  depends_on "hicolor-icon-theme"
+  depends_on "libxml2"
 
   def install
     # Find our docbook catalog

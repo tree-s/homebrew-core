@@ -1,26 +1,23 @@
 class Gmsh < Formula
   desc "3D finite element grid generator with CAD engine"
   homepage "https://gmsh.info/"
-  url "https://gmsh.info/src/gmsh-3.0.6-source.tgz"
-  sha256 "9700bcc440d7a6b16a49cbfcdcdc31db33efe60e1f5113774316b6fa4186987b"
-  revision 1
+  url "https://gmsh.info/src/gmsh-4.1.5-source.tgz"
+  sha256 "654d38203f76035a281006b77dcb838987a44fd549287f11c53a1e9cdf598f46"
   head "https://gitlab.onelab.info/gmsh/gmsh.git"
 
   bottle do
     cellar :any
-    sha256 "57cdad859b421b6cc48f6cf164570f67a1101c03c9b276ec18dce3b5c250e995" => :high_sierra
-    sha256 "85e7c6527a94fa3b02d14cce788dc32f6a0b545fa17124f5e4c19288890d8fc6" => :sierra
-    sha256 "d9d6657a71acd75de3833f50d46b454c757f6186f1fe44fdf090ac1604c84f70" => :el_capitan
+    sha256 "a6c6889a892dd7b25fe2d189525a3f963c022286bfc73bcc1b67a145c78f9db7" => :mojave
+    sha256 "6ee75aca4928a04691d72f44eee9f34bf3cc9e462e9da0fffbf980f8abc28c3c" => :high_sierra
+    sha256 "fcaabe537a733317262a4fc09f7dc337d446d32f1201d11365e005a44cb677b2" => :sierra
   end
 
-  option "with-opencascade", "Build with opencascade support"
-
   depends_on "cmake" => :build
+  depends_on "cairo"
+  depends_on "fltk"
   depends_on "gcc" # for gfortran
   depends_on "open-mpi"
-  depends_on "fltk" => :optional
-  depends_on "cairo" if build.with? "fltk"
-  depends_on "opencascade" => :optional
+  depends_on "opencascade"
 
   def install
     args = std_cmake_args + %W[
@@ -34,16 +31,10 @@ class Gmsh < Formula
       -DENABLE_NATIVE_FILE_CHOOSER=ON
       -DENABLE_PETSC=OFF
       -DENABLE_SLEPC=OFF
+      -DENABLE_OCC=ON
     ]
 
-    if build.with? "opencascade"
-      ENV["CASROOT"] = Formula["opencascade"].opt_prefix
-      args << "-DENABLE_OCC=ON"
-    else
-      args << "-DENABLE_OCC=OFF"
-    end
-
-    args << "-DENABLE_FLTK=OFF" if build.without? "fltk"
+    ENV["CASROOT"] = Formula["opencascade"].opt_prefix
 
     mkdir "build" do
       system "cmake", "..", *args
@@ -54,10 +45,6 @@ class Gmsh < Formula
       mkdir_p libexec
       mv bin/"onelab.py", libexec
     end
-  end
-
-  def caveats
-    "To use onelab.py set your PYTHONDIR to #{libexec}"
   end
 
   test do

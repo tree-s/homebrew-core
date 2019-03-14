@@ -1,13 +1,14 @@
 class SNail < Formula
   desc "Fork of Heirloom mailx"
   homepage "https://www.sdaoden.eu/code.html"
-  url "https://www.sdaoden.eu/downloads/s-nail-14.9.6.tar.gz"
-  sha256 "7f33452fa2848bae95fb7ab92a98e11315057104c5484626245316f5f5806acb"
+  url "https://www.sdaoden.eu/downloads/s-nail-14.9.11.tar.gz"
+  sha256 "279202687409b8e7b4f267e178aed1bd4c68b79c01c10b80f07197f2f73d6695"
 
   bottle do
-    sha256 "758115888fe3d5451626401cf8dd9d6d11fc8397b33c82c8221b30fb4d21601e" => :high_sierra
-    sha256 "bf7f18df0e2834026b64edbb9d542d0884e5ac4179e2b23e96b93c0cf778696e" => :sierra
-    sha256 "c707a57fdff1f46ceadb84dfc5b7f7142eaf529e0fa2d0272b298d7b5f3d21f8" => :el_capitan
+    sha256 "50017a1a58e325f6cf2bf442e69279334f97a3167160d09ce14803d115fb74ff" => :mojave
+    sha256 "39c79b2b08e58b4784fb16bdf8ff6133d8eb3b435bbc8e97e493001a16fd5f4c" => :high_sierra
+    sha256 "c1942ec66157c586e6648051d2461ccbd8aaa0b99ec7f4f757c982683c9c08aa" => :sierra
+    sha256 "4d137ea6f6ff75f6bd792584aa4d86ead5445f0e5df9c9ed7074d84df3b7fb0f" => :el_capitan
   end
 
   depends_on "libidn"
@@ -36,7 +37,6 @@ class SNail < Formula
     expected = <<~EOS
       From reproducible_build #{date1.chomp}
       Date: #{date2.chomp}
-      To:
       User-Agent: s-nail reproducible_build
 
       Hello oh you Hammer2!

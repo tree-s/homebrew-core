@@ -3,22 +3,22 @@ class Duplicity < Formula
 
   desc "Bandwidth-efficient encrypted backup"
   homepage "https://launchpad.net/duplicity"
-  url "https://launchpad.net/duplicity/0.7-series/0.7.16/+download/duplicity-0.7.16.tar.gz"
-  sha256 "a8f5e1e77dcc5e03a7d206086b8ef89fa574c59de582ed15db5987c40b842718"
-  revision 1
+  url "https://launchpad.net/duplicity/0.7-series/0.7.18.2/+download/duplicity-0.7.18.2.tar.gz"
+  sha256 "c236888f43128e96cd33017b01a2855c0e24738195fed5cadad08c28fd6b6748"
 
   bottle do
     cellar :any
-    sha256 "9a9e3eaca2fd0b7e4a92b6dddf9bb53d6b79136f48185872de52c5ae46693a78" => :high_sierra
-    sha256 "02d3cdb466e2b3552bc86216874d47583024fc7d2cb97d1d55236cfcf5a6d6c3" => :sierra
-    sha256 "b6aaa3547681fb06acdccaf3beed8a4abbaf9b3ab5057604f6c08f3cd7301bba" => :el_capitan
+    rebuild 1
+    sha256 "5e24f5c2c4fb1a78e6ecb506033775a73e8188f388c1c5697009917d87ca5341" => :mojave
+    sha256 "00f7afbd60c11985716bfce313a3d5e703d3215656c341725debac50165d0d29" => :high_sierra
+    sha256 "1a59958f8a830f5048425a659d8c83d47baecb3073c50c4c527eb05130a8245c" => :sierra
   end
 
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "gnupg"
   depends_on "librsync"
   depends_on "openssl"
-  depends_on "par2" => :optional
-  depends_on "gnupg"
+  # Dependency pycryptopp only supports Python 2
+  depends_on "python@2" # does not support Python 3
 
   # Generated with homebrew-pypi-poet from
   # for i in azure-storage boto dropbox fasteners kerberos mega.py

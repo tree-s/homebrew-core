@@ -5,49 +5,46 @@ class HaskellStack < Formula
 
   desc "The Haskell Tool Stack"
   homepage "https://haskellstack.org/"
-  url "https://github.com/commercialhaskell/stack/releases/download/v1.6.3/stack-1.6.3-sdist-1.tar.gz"
-  version "1.6.3"
-  sha256 "e3fdd37f36acec830d5692be4a5a5fcb5862112eebc4c11f6c3689ec86dba49b"
+  url "https://github.com/commercialhaskell/stack/releases/download/v1.9.3/stack-1.9.3-sdist-1.tar.gz"
+  version "1.9.3"
+  sha256 "14e06a71bf6fafbb2d468f83c70fd4e9490395207d6530ab7b9fc056f8972a46"
   head "https://github.com/commercialhaskell/stack.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "b72341b0d1e3a5364ccfd3cef0b0e9da1ca072be8ada87611cb7f5133f7cdc48" => :high_sierra
-    sha256 "7f157b8e95945f5bc607d1f87436ef50b92bae13d3e12419c5f8349f02233dc3" => :sierra
-    sha256 "263ca39d2d0a3b8af80212b0359c31ac7ba2829da8bbf2c20023081a38afbdeb" => :el_capitan
+    sha256 "e77734678c0a9bb402373a53e1c67663cfd5160f8dd2be3e3a16a569ae5a9a48" => :mojave
+    sha256 "ce65fc3575740104c9a99bd8797ac10e8724d8d36c80326251343ed68ab965c0" => :high_sierra
+    sha256 "3c278a54d4e0d829ab89f018e49d1e69721034a51b56af1435738a5b20e9f5b8" => :sierra
   end
-
-  option "without-bootstrap", "Don't bootstrap a stage 2 stack"
 
   depends_on "cabal-install" => :build
   depends_on "ghc" => :build
 
-  # Remove when stack.yaml uses GHC 8.2.x
-  resource "stack_nightly_yaml" do
-    url "https://raw.githubusercontent.com/commercialhaskell/stack/v1.6.3/stack-nightly.yaml"
-    version "1.6.3"
-    sha256 "55e15c394946ce781d61d2e71a3273fed4d242a5f985a472d131d54ccf2a538c"
+  # Build using a stack config that matches the default Homebrew version of GHC
+  resource "stack_lts_12_yaml" do
+    url "https://raw.githubusercontent.com/commercialhaskell/stack/v1.9.3/stack-lts-12.yaml"
+    version "1.9.3"
+    sha256 "0b4fb72f7c08c96ca853e865036e743cbdc84265dd5d5c4cf5154d305cd680de"
   end
 
   def install
-    buildpath.install resource("stack_nightly_yaml")
+    buildpath.install resource("stack_lts_12_yaml")
 
     cabal_sandbox do
       cabal_install "happy"
 
-      if build.with? "bootstrap"
-        cabal_install
+      cabal_install
 
-        # Let `stack` handle its own parallelization
-        # Prevents "install: mkdir ... ghc-7.10.3/lib: File exists"
-        jobs = ENV.make_jobs
-        ENV.deparallelize
+      # Let `stack` handle its own parallelization
+      # Prevents "install: mkdir ... ghc-7.10.3/lib: File exists"
+      jobs = ENV.make_jobs
+      ENV.deparallelize
 
-        system "stack", "-j#{jobs}", "--stack-yaml=stack-nightly.yaml", "setup"
-        system "stack", "-j#{jobs}", "--local-bin-path=#{bin}", "install"
-      else
-        install_cabal_package
-      end
+      system "stack", "-j#{jobs}", "--stack-yaml=stack-lts-12.yaml",
+             "--system-ghc", "--no-install-ghc", "setup"
+      system "stack", "-j#{jobs}", "--stack-yaml=stack-lts-12.yaml",
+             "--system-ghc", "--no-install-ghc", "--local-bin-path=#{bin}",
+             "install"
     end
   end
 

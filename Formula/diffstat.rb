@@ -8,6 +8,7 @@ class Diffstat < Formula
 
   bottle do
     cellar :any_skip_relocation
+    sha256 "33b2a3e33397f24b695c98fd986ac90394e30f72eacd53ff5338ba4bd392835e" => :mojave
     sha256 "19e885ba26c8b1d9df6e1577a8a419946e9c0e8f1e19223fef5d5b988125c22a" => :high_sierra
     sha256 "30255ba9338a70f51fb80f44cc3993b98e44bd7946f5b598252f9a7d1c6800e9" => :sierra
     sha256 "4b383a964ff74029f6555162d7548e11c1fe8a9f2295671484419c8e32016ede" => :el_capitan
@@ -34,11 +35,7 @@ class Diffstat < Formula
       +  url 'https://mirrors.kernel.org/debian/pool/main/d/diffstat/diffstat_1.61.orig.tar.gz'
       +  sha256 '25359e0c27183f997b36c9202583b5dc2df390c20e22a92606af4bf7856a55ee'
     EOS
-    output = `#{bin}/diffstat diff.diff`
-    diff = <<-EOS
- diffstat.rb |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-    EOS
-    assert_equal diff, output
+    output = shell_output("#{bin}/diffstat diff.diff")
+    assert_match "2 insertions(+), 3 deletions(-)", output
   end
 end

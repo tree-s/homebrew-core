@@ -1,27 +1,25 @@
 class Librealsense < Formula
   desc "Intel RealSense D400 series and SR300 capture"
   homepage "https://github.com/IntelRealSense/librealsense"
-  url "https://github.com/IntelRealSense/librealsense/archive/v2.9.1.tar.gz"
-  sha256 "9c1698c93de5c695f839bac935baffacf2c9b002fe807de8fbe1f31d39b8d0ac"
+  url "https://github.com/IntelRealSense/librealsense/archive/v2.18.0.tar.gz"
+  sha256 "e9ff4c56e00e4bd423a272e2a5750b277f2de630f0ad07bf1d04a9e2a36df5fe"
   head "https://github.com/IntelRealSense/librealsense.git"
 
   bottle do
     cellar :any
-    sha256 "83f3e70454dd4816de36d468312ca8ea8fd03d4593ec3e4c7d92e2148a17daad" => :high_sierra
-    sha256 "4d5a673b4c48956d65ab02eafa8ddc5737e0d555962921407029f436b7f9c222" => :sierra
-    sha256 "3afa6255b0dbf00043e2ce26461168da8032649fd30d56dfa56c298482456048" => :el_capitan
+    sha256 "a7a70a732fa9ed9217c5422d7f9c9c6169e4d5b8ebb2bb84cec3b4412efd3070" => :mojave
+    sha256 "04f4510f41b5c0a030d37c2cab1aa363041105dda0f56e951810b37a6b9300d1" => :high_sierra
+    sha256 "de4a5d1bf80cd189d1b93a927ec65a8466f123d57261caa1f728fbd842cd73de" => :sierra
   end
-
-  option "with-examples", "Install examples"
 
   depends_on "cmake" => :build
   depends_on "pkg-config" => :build
-  depends_on "glfw" if build.with? "examples"
+  depends_on "glfw"
   depends_on "libusb"
 
   def install
     args = std_cmake_args
-    args << "-DBUILD_EXAMPLES=OFF" if build.without? "examples"
+    args << "-DENABLE_CCACHE=OFF"
 
     system "cmake", ".", "-DBUILD_WITH_OPENMP=OFF", *args
     system "make", "install"

@@ -1,38 +1,41 @@
 class Osquery < Formula
   desc "SQL powered operating system instrumentation and analytics"
   homepage "https://osquery.io"
-  # pull from git tag to get submodules
-  url "https://github.com/facebook/osquery/archive/3.0.0.tar.gz"
-  sha256 "763039447574eab32be2700b953bb060e19c6fd7dfcea443422c74e711b8a9a1"
+  url "https://github.com/facebook/osquery/archive/3.3.0.tar.gz"
+  sha256 "b633b41bd9ec7a8569eb03060cc22dd53a36d3ba4ca7fb66a976d7f9f800bf52"
+  revision 2
 
   bottle do
     cellar :any
-    sha256 "fda21a234003b7000db9e98cb933d3962d56e6f2f5f8f9758ed6dadeb64ae305" => :high_sierra
-    sha256 "aff3279aaf7a22ba0599ba2aeee2569f2610eae758e815d7a8c2bcdcb27c091c" => :sierra
+    sha256 "8c276d1d9ce6d6892e6549ceb4809d105667b2c11a3e68a7a4dc90fff80e42fe" => :mojave
+    sha256 "c83fdc5e039b74c97b294d07da268a995aa7991905b759fb4f9959b280c55724" => :high_sierra
+    sha256 "8dd8997697142ed6a074c56f03dbf173d04203cad335ebe03ebea3e0325d3399" => :sierra
   end
 
-  fails_with :gcc => "6"
-
-  # osquery only supports macOS 10.12 and above. Do not remove this.
-  depends_on :macos => :sierra
   depends_on "bison" => :build
   depends_on "cmake" => :build
+  depends_on "python@2" => :build
   depends_on "augeas"
   depends_on "boost"
   depends_on "gflags"
   depends_on "glog"
   depends_on "libarchive"
   depends_on "libmagic"
-  depends_on "lldpd"
   depends_on "librdkafka"
+  depends_on "lldpd"
+  # osquery only supports macOS 10.12 and above. Do not remove this.
+  depends_on :macos => :sierra
   depends_on "openssl"
   depends_on "rapidjson"
   depends_on "rocksdb"
   depends_on "sleuthkit"
+  depends_on "ssdeep"
   depends_on "thrift"
-  depends_on "yara"
   depends_on "xz"
+  depends_on "yara"
   depends_on "zstd"
+
+  fails_with :gcc => "6"
 
   resource "MarkupSafe" do
     url "https://files.pythonhosted.org/packages/c0/41/bae1254e0396c0cc8cf1751cb7d9afc90a602353695af5952530482c963f/MarkupSafe-0.23.tar.gz"
@@ -52,6 +55,13 @@ class Osquery < Formula
   resource "aws-sdk-cpp" do
     url "https://github.com/aws/aws-sdk-cpp/archive/1.3.30.tar.gz"
     sha256 "7b5f9b6d4215069fb75d31db2c8ab06081ab27f59ee33d5bb428fec3e30723f1"
+  end
+
+  # Upstream fix for boost 1.68, remove in next version
+  # https://github.com/facebook/osquery/issues/5069
+  patch do
+    url "https://github.com/facebook/osquery/commit/512f775c.diff?full_index=1"
+    sha256 "8bfafabf51c1b22dcab1a2a49d7d2a6583c49409def0876c79191839ccf23d53"
   end
 
   def install
@@ -79,6 +89,10 @@ class Osquery < Formula
     # Skip test and benchmarking.
     ENV["SKIP_TESTS"] = "1"
     ENV["SKIP_DEPS"] = "1"
+
+    # Skip SMART drive tables.
+    # SMART requires a dependency that isn't packaged by brew.
+    ENV["SKIP_SMART"] = "1"
 
     # Link dynamically against brew-installed libraries.
     ENV["BUILD_LINK_SHARED"] = "1"

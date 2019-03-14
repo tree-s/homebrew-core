@@ -4,23 +4,24 @@ class Agda < Formula
   include Language::Haskell::Cabal
 
   desc "Dependently typed functional programming language"
-  homepage "http://wiki.portal.chalmers.se/agda/"
-  revision 1
+  homepage "https://wiki.portal.chalmers.se/agda/"
 
   stable do
-    url "https://hackage.haskell.org/package/Agda-2.5.3/Agda-2.5.3.tar.gz"
-    sha256 "aa14d4a3582013100f71e64d71c5deff6caa2a286083e20fc16f6dbb0fdf0065"
+    url "https://hackage.haskell.org/package/Agda-2.5.4.2/Agda-2.5.4.2.tar.gz"
+    sha256 "f645add8a47a35da3f37757204fa9c80aeb0993d628fc2057fa343e92e579b1f"
 
     resource "stdlib" do
       url "https://github.com/agda/agda-stdlib.git",
-          :revision => "477ba28360133b1f5c45ce1b4e6b4efd467af331"
+          :tag      => "v0.17",
+          :revision => "5819a4dd9c965296224944f05b1481805649bdc2"
     end
   end
 
   bottle do
-    sha256 "af5bd54a1f52386c3c8c9926f42ed72976e43f0e8f8bfc98dc6632083a79fafb" => :high_sierra
-    sha256 "65302e2ebe392a254221235dc09cde7d2ae9f827b1ad57ac0756662305777d53" => :sierra
-    sha256 "07e1f6b0ebd27aa81757575907d14b2ad9d9398f7e78eeed257397597a30c84f" => :el_capitan
+    rebuild 1
+    sha256 "eef42265827b82744ad2b9d6238fa4d8984d226251fb54825734f300a40faa98" => :mojave
+    sha256 "74b627b7b04489c7ea610fada9df16d3a6f3e5926a6ee40f3032f93e67382b44" => :high_sierra
+    sha256 "b8d0a4cd285ee27406e9dc673d03b6c0bb34604c72919b8059826a7c84b7c547" => :sierra
   end
 
   head do
@@ -31,63 +32,41 @@ class Agda < Formula
     end
   end
 
-  deprecated_option "without-malonzo" => "without-ghc"
-
-  option "without-stdlib", "Don't install the Agda standard library"
-  option "without-ghc", "Disable the GHC backend"
-
-  depends_on "ghc" => :recommended
-  if build.with? "ghc"
-    depends_on "cabal-install"
-  else
-    depends_on "ghc" => :build
-    depends_on "cabal-install" => :build
-  end
-
-  depends_on "emacs" => :recommended
+  depends_on "cabal-install" => [:build, :test]
+  depends_on "emacs"
+  depends_on "ghc"
 
   def install
     # install Agda core
     install_cabal_package :using => ["alex", "happy", "cpphs"]
 
-    if build.with? "stdlib"
-      resource("stdlib").stage lib/"agda"
+    resource("stdlib").stage lib/"agda"
 
-      # generate the standard library's bytecode
-      cd lib/"agda" do
-        cabal_sandbox :home => buildpath, :keep_lib => true do
-          cabal_install "--only-dependencies"
-          cabal_install
-          system "GenerateEverything"
-        end
+    # generate the standard library's bytecode
+    cd lib/"agda" do
+      cabal_sandbox :home => buildpath, :keep_lib => true do
+        cabal_install "--only-dependencies"
+        cabal_install
+        system "GenerateEverything"
       end
+    end
 
-      # generate the standard library's documentation and vim highlighting files
-      cd lib/"agda" do
-        system bin/"agda", "-i", ".", "-i", "src", "--html", "--vim", "README.agda"
-      end
+    # generate the standard library's documentation and vim highlighting files
+    cd lib/"agda" do
+      system bin/"agda", "-i", ".", "-i", "src", "--html", "--vim", "README.agda"
     end
 
     # compile the included Emacs mode
-    if build.with? "emacs"
-      system bin/"agda-mode", "compile"
-      elisp.install_symlink Dir["#{share}/*/Agda-#{version}/emacs-mode/*"]
-    end
+    system bin/"agda-mode", "compile"
+    elisp.install_symlink Dir["#{share}/*/Agda-#{version}/emacs-mode/*"]
   end
 
-  def caveats
-    s = ""
-
-    if build.with? "stdlib"
-      s += <<~EOS
-        To use the Agda standard library by default:
-          mkdir -p ~/.agda
-          echo #{HOMEBREW_PREFIX}/lib/agda/standard-library.agda-lib >>~/.agda/libraries
-          echo standard-library >>~/.agda/defaults
-      EOS
-    end
-
-    s
+  def caveats; <<~EOS
+    To use the Agda standard library by default:
+      mkdir -p ~/.agda
+      echo #{HOMEBREW_PREFIX}/lib/agda/standard-library.agda-lib >>~/.agda/libraries
+      echo standard-library >>~/.agda/defaults
+  EOS
   end
 
   test do
@@ -158,30 +137,24 @@ class Agda < Formula
     system bin/"agda", simpletest
 
     # typecheck a module that uses the standard library
-    if build.with? "stdlib"
-      system bin/"agda", "-i", lib/"agda"/"src", stdlibtest
-    end
+    system bin/"agda", "-i", lib/"agda"/"src", stdlibtest
 
     # compile a simple module using the JS backend
     system bin/"agda", "--js", simpletest
 
     # test the GHC backend
-    if build.with? "ghc"
-      cabal_sandbox do
-        cabal_install "text", "ieee754"
-        dbpath = Dir["#{testpath}/.cabal-sandbox/*-packages.conf.d"].first
-        dbopt = "--ghc-flag=-package-db=#{dbpath}"
+    cabal_sandbox do
+      cabal_install "text", "ieee754"
+      dbpath = Dir["#{testpath}/.cabal-sandbox/*-packages.conf.d"].first
+      dbopt = "--ghc-flag=-package-db=#{dbpath}"
 
-        # compile and run a simple program
-        system bin/"agda", "-c", dbopt, iotest
-        assert_equal "", shell_output(testpath/"IOTest")
+      # compile and run a simple program
+      system bin/"agda", "-c", dbopt, iotest
+      assert_equal "", shell_output(testpath/"IOTest")
 
-        # compile and run a program that uses the standard library
-        if build.with? "stdlib"
-          system bin/"agda", "-c", "-i", lib/"agda"/"src", dbopt, stdlibiotest
-          assert_equal "Hello, world!", shell_output(testpath/"StdlibIOTest")
-        end
-      end
+      # compile and run a program that uses the standard library
+      system bin/"agda", "-c", "-i", lib/"agda"/"src", dbopt, stdlibiotest
+      assert_equal "Hello, world!", shell_output(testpath/"StdlibIOTest")
     end
   end
 end

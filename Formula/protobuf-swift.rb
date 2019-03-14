@@ -1,14 +1,14 @@
 class ProtobufSwift < Formula
   desc "Implementation of Protocol Buffers in Swift"
   homepage "https://github.com/alexeyxo/protobuf-swift"
-  url "https://github.com/alexeyxo/protobuf-swift/archive/4.0.1.tar.gz"
-  sha256 "098434ab76cc489c92100c0352d4476259737ed925d2c98d267848e7c8be80aa"
+  url "https://github.com/alexeyxo/protobuf-swift/archive/4.0.6.tar.gz"
+  sha256 "598d9e459b4ac74bfbcf22857c7e8fda8f5219c10caac0aa18aea7d8710cce22"
 
   bottle do
     cellar :any
-    sha256 "77b09439860f53d4899c8df8a27e004f57ec900266f04afe25ebbf2d86daddbf" => :high_sierra
-    sha256 "10edd63a5c5a366884365ea2d0f4dcf4e8f39f099348989e6e61c71ee98cb08f" => :sierra
-    sha256 "b044fd727cfa69e55d34e050d7be4798c8b54bff5494244a2cafb43b216ac107" => :el_capitan
+    sha256 "64c6b817c6d228fc67069f71b02c22c417ab78c5a9af5852cbc97288a5c68359" => :mojave
+    sha256 "c6c9d9b4d5297302f46c61815f8dc312daa18038462efb3a5678406732ebbebe" => :high_sierra
+    sha256 "94a30e32d24bb183e2b27a5fb6f47204b563b579e0d1e2daecb3c615052bc072" => :sierra
   end
 
   depends_on "autoconf" => :build
@@ -20,6 +20,8 @@ class ProtobufSwift < Formula
     :because => "both install `protoc-gen-swift` binaries"
 
   def install
+    ENV.cxx11
+
     system "protoc", "-Iplugin/compiler",
                      "plugin/compiler/google/protobuf/descriptor.proto",
                      "plugin/compiler/google/protobuf/swift-descriptor.proto",

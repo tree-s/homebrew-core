@@ -1,15 +1,15 @@
 class Qd < Formula
   desc "C++/Fortran-90 double-double and quad-double package"
   homepage "https://crd.lbl.gov/~dhbailey/mpdist/"
-  url "https://crd.lbl.gov/~dhbailey/mpdist/qd-2.3.18.tar.gz"
-  revision 1
-  sha256 "81096b5b33519cbeed5fc8ef58e1d47ee8f546382514849967627b972483716e"
+  url "https://crd.lbl.gov/~dhbailey/mpdist/qd-2.3.21.tar.gz"
+  sha256 "185c97e38b00edf6f5dea3dfc48c5c0e3e8386f6ad2d815a2b93b72998d509f2"
 
   bottle do
     cellar :any
-    sha256 "37b044703d09d11200e23d45a138649dbba9c8876579bfc3201c26c35579e818" => :high_sierra
-    sha256 "b3b9f5d238ffdd8b8992e2f6be9396666bb41650a5697261b197df5b0782d147" => :sierra
-    sha256 "f733c61c8c22c46091fd6007fc555bc53b02adc8f625ed33f5ca56a049ab9c01" => :el_capitan
+    sha256 "f6a06e197e6d4b466a1d1f11f2505dc3c46b97370ae46cdbe008472006db8369" => :mojave
+    sha256 "e265f9098008e2bf26e2f1b1e5ca1e5ec7309575a98f0eac9cb73aa2273896a0" => :high_sierra
+    sha256 "cafc8e6f65cebd1c01f90adb18bc481efa5b8b3d4acf4c0f122940c6088192ba" => :sierra
+    sha256 "7665a3c6b50383b20369c304038df2c75c874229cc79bf96bdd4c12c2efa937f" => :el_capitan
   end
 
   depends_on "gcc" # for gfortran

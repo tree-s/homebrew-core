@@ -1,20 +1,20 @@
 class Watchexec < Formula
   desc "Execute commands when watched files change"
-  homepage "https://github.com/mattgreen/watchexec"
-  url "https://github.com/mattgreen/watchexec/archive/1.8.6.tar.gz"
-  sha256 "4caa882a17d3e826dca92af157382145c599ac204e9b9ea810dc309402a200e8"
+  homepage "https://github.com/watchexec/watchexec"
+  url "https://github.com/watchexec/watchexec/archive/1.9.2.tar.gz"
+  sha256 "dcb41cf075d1f07a7274a3b1138dfc585368d1a55595424290988804b58fdb96"
 
   bottle do
-    sha256 "1187169dd33f3a96a46e4e47f718250fe18a9876e8d6aaa2a2b470d64d6ea9f8" => :high_sierra
-    sha256 "6e0d65a52c506214c0ce5d82d3e3c492224cd5aa33b9eca268e792b5071a2e1e" => :sierra
-    sha256 "31ee106d09477b9a6d3d1959f115d7469174b4383bf368bc423ece55e91890af" => :el_capitan
+    sha256 "48cda48ee0e5b26728764c35f1a21bb8e6cbef5aa34067deae20a48f0a8a5a68" => :mojave
+    sha256 "db7cdbf5129c247378278b41f231bc88f44224134b28a0049e91eea6d5f3ee31" => :high_sierra
+    sha256 "c653234a0a182b6d973211c728687485977de5740f6f6bddd474bf7429b220b7" => :sierra
+    sha256 "5c8b4d95cdabf5136cc74e564e10b0bea7975e36b197126a73ed88c46006871b" => :el_capitan
   end
 
   depends_on "rust" => :build
 
   def install
-    system "cargo", "build", "--release"
-    bin.install "target/release/watchexec"
+    system "cargo", "install", "--root", prefix, "--path", "."
     man1.install "doc/watchexec.1"
   end
 

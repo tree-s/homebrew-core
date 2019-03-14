@@ -1,23 +1,20 @@
 class Openrtsp < Formula
   desc "Command-line RTSP client"
   homepage "http://www.live555.com/openRTSP"
-  url "http://www.live555.com/liveMedia/public/live.2018.01.29.tar.gz"
-  sha256 "f307e308faec29fe3c23f7cba6b80d5b0af7ba27f74d513e9286c9696a690503"
+  url "http://www.live555.com/liveMedia/public/live.2018.10.17.tar.gz"
+  # Keep a mirror as upstream tarballs are removed after each version
+  mirror "https://download.videolan.org/pub/videolan/testing/contrib/live555/live.2018.10.17.tar.gz"
+  sha256 "7c68d9c95b39acd309a2b6a4fc14c3837544a9be3f64062ed38d1ad6f68dc9e8"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "c43b4a7df18efa47e07d36c5eec094cf32340f2daabc4fc3111eda77a83e7d70" => :high_sierra
-    sha256 "281a802f98542a769468da8607d381c3d82f63cbc49ce867cc3e55bf0037c640" => :sierra
-    sha256 "0f2cbe037b83a64f56a69fbef26062d839dc95b1843687fce377004e0b3a7f18" => :el_capitan
+    sha256 "fbf8533b65181a93a166ba5415327a4a294576c55effe2c881fbe20956772853" => :mojave
+    sha256 "fbff910d3f518c592e2f64afa540a17d59db664f06ce5077e1ef7959ee1ce481" => :high_sierra
+    sha256 "293bd6edd7d7de1ea39517b1809865f120570e3645acbd777b704c5ebed16189" => :sierra
   end
 
   def install
-    if MacOS.prefer_64_bit?
-      system "./genMakefiles", "macosx"
-    else
-      system "./genMakefiles", "macosx-32bit"
-    end
-
+    system "./genMakefiles", "macosx"
     system "make", "PREFIX=#{prefix}", "install"
 
     # Move the testing executables out of the main PATH
@@ -27,7 +24,7 @@ class Openrtsp < Formula
   def caveats; <<~EOS
     Testing executables have been placed in:
       #{libexec}
-    EOS
+  EOS
   end
 
   test do

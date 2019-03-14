@@ -1,20 +1,19 @@
 class Spades < Formula
   desc "De novo genome sequence assembly"
   homepage "http://cab.spbu.ru/software/spades/"
-  url "http://cab.spbu.ru/files/release3.11.1/SPAdes-3.11.1.tar.gz"
-  sha256 "3ab85d86bf7d595bd8adf11c971f5d258bbbd2574b7c1703b16d6639a725b474"
-  revision 2
+  url "http://cab.spbu.ru/files/release3.13.0/SPAdes-3.13.0.tar.gz"
+  mirror "https://github.com/ablab/spades/releases/download/v3.13.0/SPAdes-3.13.0.tar.gz"
+  sha256 "c63442248c4c712603979fa70503c2bff82354f005acda2abc42dd5598427040"
 
   bottle do
     cellar :any
-    sha256 "ac5ba28bf8f5a036fef692e9bac49b0a639498a8cad6a147a60278718d7e2dd5" => :high_sierra
-    sha256 "d76f3eaab06132b2abc7111cc0bddb28b83c5bd587838f369059511887d9fe00" => :sierra
-    sha256 "b987897ae0e825ef61471d32a210fadfe54abf3aa8a785d64699d0f123971537" => :el_capitan
+    sha256 "1728c4d25e0f62e1f630de9622a2b6dc1add3703cfa8d7471c415ee21bd6e36e" => :mojave
+    sha256 "3403d415389703649cd92acec88e85646e755a783d289b8a6beb7508ecf96f21" => :high_sierra
+    sha256 "0d01c5eb1d4072a40ae8a1a2436ecd3987250152f4abc3ba76379b914929bc95" => :sierra
   end
 
   depends_on "cmake" => :build
   depends_on "gcc"
-  depends_on "python" if MacOS.version <= :snow_leopard
 
   fails_with :clang # no OpenMP support
 

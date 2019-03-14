@@ -1,22 +1,20 @@
 class Whois < Formula
   desc "Lookup tool for domain names and other internet resources"
   homepage "https://packages.debian.org/sid/whois"
-  url "https://mirrors.ocf.berkeley.edu/debian/pool/main/w/whois/whois_5.3.0.tar.xz"
-  mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/w/whois/whois_5.3.0.tar.xz"
-  sha256 "4d789c403bfb5833c8ae168a5f31be70e34b045bd5d95a54c82a27b0ff135723"
+  url "https://deb.debian.org/debian/pool/main/w/whois/whois_5.4.1.tar.xz"
+  sha256 "3ee6591fb14c103791430a8e6eb3d4c38a9f52aad799ea58c94250bd6985ec50"
+  revision 1
   head "https://github.com/rfc1036/whois.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "f3441458153a0a80f3eac4bbd16c1930ca537026f57cec93bf862633592cef6c" => :high_sierra
-    sha256 "80b5709d8e5d8adb705973a0f2cd9004f0c2387b6222a3f00190afaecd682944" => :sierra
-    sha256 "e61d6ce7a5b53c095fb256a520e279be83035e50cfe72a4751d5c3b2463e3f19" => :el_capitan
+    cellar :any
+    sha256 "3ddfaef6c60a75569e15abe0302ab6bc3c681b03a1092ea5c32bc8ab4af89d16" => :mojave
+    sha256 "44076fd65dbad4824f29d3f4e4257ad1337868f81e009e583e24b351a17bc6ae" => :high_sierra
+    sha256 "ce9876b716a7f0d3ea4edcfb40159dd2b664b8f0cda0f29b5de0c3ad3ade7bbc" => :sierra
   end
 
-  option "with-libidn2", "Compile with IDN support"
-
-  depends_on "pkg-config" => :build if build.with? "libidn2"
-  depends_on "libidn2" => :optional
+  depends_on "pkg-config" => :build
+  depends_on "libidn2"
 
   def install
     ENV.append "LDFLAGS", "-L/usr/lib -liconv"
@@ -30,7 +28,7 @@ class Whois < Formula
   def caveats; <<~EOS
     Debian whois has been installed as `whois` and may shadow the
     system binary of the same name.
-    EOS
+  EOS
   end
 
   test do

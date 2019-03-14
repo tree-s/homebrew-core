@@ -4,19 +4,18 @@ class Khal < Formula
   desc "CLI calendar application"
   homepage "https://lostpackets.de/khal/"
   url "https://github.com/pimutils/khal.git",
-      :tag => "v0.9.8",
-      :revision => "b03df58c129f99a35ba74cda0fbc253eb47cfeac"
-  revision 1
+      :tag      => "v0.9.10",
+      :revision => "9174f0d92f39df5d599ffe052e1f70dd2689502c"
   head "https://github.com/pimutils/khal.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "c9551144bcdfceb76be38eedbea6d56365148c9df0c3a328c4456ef35ab5cce2" => :high_sierra
-    sha256 "525c9a4db1fe70bc48a62f6f7f26512d6aa2a05304a652f378ba99e6404978ed" => :sierra
-    sha256 "71aacae31b8b9d04ab38470fe73a24abaf6ebe4bcf156e354810206d25cce2df" => :el_capitan
+    sha256 "4214e8703e538b81c33c000d174e534cd502e447d5bb28f8813e6bac5ee23880" => :mojave
+    sha256 "b9dcafb54091f8f9e274d0e934cfaf3c26baf0687139dc961853c58fa40d3fdc" => :high_sierra
+    sha256 "16c0880ae011e756ca2317f55e4d33bd58e2f83b3c696e218dde8ece47e0d57f" => :sierra
   end
 
-  depends_on "python3"
+  depends_on "python"
 
   def install
     venv = virtualenv_create(libexec, "python3")

@@ -5,12 +5,12 @@ class SourceHighlight < Formula
   mirror "https://ftpmirror.gnu.org/src-highlite/source-highlight-3.1.8.tar.gz"
   mirror "https://fossies.org/linux/www/source-highlight-3.1.8.tar.gz"
   sha256 "01336a7ea1d1ccc374201f7b81ffa94d0aecb33afc7d6903ebf9fbf33a55ada3"
-  revision 8
+  revision 10
 
   bottle do
-    sha256 "3101cb3776039eba399f7a9d42cbd68120abaa2c3fd02401bd43128020bdf22c" => :high_sierra
-    sha256 "c8f9401b678b754e82d3cd7a78f6e7c164a1ece1832ca73ac77f11023de87de9" => :sierra
-    sha256 "d8f960586c5a0b5249ceacbe3996042fdfbce29a50c3adc65087e02f3daf361b" => :el_capitan
+    sha256 "9277cf220d941d23e2f8aa6fabc49e546d5d2141e10d86533ca0ab308f036552" => :mojave
+    sha256 "e9cee3e1adb85f4342db18e9eb058cb1e890ab4787e2d80c7657379c59db0cf4" => :high_sierra
+    sha256 "ac02e274218e45a543fca0478086bc3fed67d07deff990bf51065586c59602a9" => :sierra
   end
 
   depends_on "boost"
@@ -18,7 +18,7 @@ class SourceHighlight < Formula
   def install
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
-                          "--with-boost=#{HOMEBREW_PREFIX}"
+                          "--with-boost=#{Formula["boost"].opt_prefix}"
     system "make", "install"
 
     bash_completion.install "completion/source-highlight"

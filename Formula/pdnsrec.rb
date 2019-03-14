@@ -1,22 +1,21 @@
 class Pdnsrec < Formula
   desc "Non-authoritative/recursing DNS server"
   homepage "https://www.powerdns.com/recursor.html"
-  url "https://downloads.powerdns.com/releases/pdns-recursor-4.1.1.tar.bz2"
-  sha256 "8feb03c7141997775cb52c131579e8e34c9896ea8bb77276328f5f6cc4e1396b"
+  url "https://downloads.powerdns.com/releases/pdns-recursor-4.1.4.tar.bz2"
+  sha256 "b19f4353bea3fe54a581a4e7ace101637f8474f5ebfe925e2d3ff4910b71b550"
 
   bottle do
-    sha256 "acf3ac20e35b04e046d21f99f74e8301a14f16e8740ac0ab140d2979a5eb6d09" => :high_sierra
-    sha256 "ca5fca7f5c1f2ac202508bc09c11ceb34928e6f02363723f50c1da8ad985e6a6" => :sierra
-    sha256 "19c92e4a6b850eb8852640da9f10e5f71dbf272d22b17c1e78ad9dbe538c088a" => :el_capitan
+    sha256 "324b5650c13c396603b3a3146ec1d34cae0ee6f6581e6a03d4c4cf3f4279e98c" => :mojave
+    sha256 "0bec1537a23c906110eb882451e7f6a23c8cd1f4efe4f0b8d231441aee29712c" => :high_sierra
+    sha256 "13d7deb2f2f06d40842f60f1f641bbd0c00006bbc69673e93a0885563f9cb562" => :sierra
+    sha256 "6c2a044482066cbdf24c8fcf7a828f5035d4757ba678c7640db526f4d6126230" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "boost"
-  depends_on "openssl"
+  depends_on "gcc" if DevelopmentTools.clang_build_version == 600
   depends_on "lua"
-  depends_on "gcc" if DevelopmentTools.clang_build_version <= 600
-
-  needs :cxx11
+  depends_on "openssl"
 
   fails_with :clang do
     build 600

@@ -3,19 +3,18 @@ class Rtv < Formula
 
   desc "Command-line Reddit client"
   homepage "https://github.com/michael-lazar/rtv"
-  url "https://github.com/michael-lazar/rtv/archive/v1.21.0.tar.gz"
-  sha256 "7e6a8de7b3e05b93d135cd2aa869b3d20f6ec26073a586e3595cff7f2df1aafa"
-  revision 1
+  url "https://github.com/michael-lazar/rtv/archive/v1.25.0.tar.gz"
+  sha256 "253455ccfc0d18c1f48465bf69a036ba4e3fd64267b1709a0aaef3419e3344e7"
   head "https://github.com/michael-lazar/rtv.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "c9ee98d9223e0410254b749751c2a175b900e133e5c029c5ae74ae36b1d7ce0f" => :high_sierra
-    sha256 "cb33c61261304d00d606f9666071234f8c8227a4fc7750c94864ac395322ab74" => :sierra
-    sha256 "fb36bbf09f27ca20d22cbdac955363333a5a67bca625237a5049e366091cd732" => :el_capitan
+    sha256 "2ab25cf624f56867c5b66e7d16a411efef1a4dcc410be85ed161326f8cfbddad" => :mojave
+    sha256 "48174b1adafed3cc06d5f6f4482054d9587a2a5bff79c36a5db690b1fb8f83f9" => :high_sierra
+    sha256 "0f00ccc0984e882d22d2cdff8616bb0c7eeb867f6507a8ac20f46b8d9ac21aef" => :sierra
   end
 
-  depends_on "python3"
+  depends_on "python"
 
   def install
     venv = virtualenv_create(libexec, "python3")

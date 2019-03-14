@@ -1,25 +1,37 @@
 class Auditbeat < Formula
   desc "Lightweight Shipper for Audit Data"
   homepage "https://www.elastic.co/products/beats/auditbeat"
-  url "https://github.com/elastic/beats/archive/v6.1.3.tar.gz"
-  sha256 "5a21ce1eca7eab2b8214b54a7f4690cd557cd05073119f861025330e1b4006a3"
+  url "https://github.com/elastic/beats.git",
+      :tag      => "v6.6.0",
+      :revision => "2c385a0764bdc537b6dc078a1d9bf11bb6d7bd95"
   head "https://github.com/elastic/beats.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "2b5a0677d653d335d188f996d52be75274ef771efdafcd6236cf4068245951c5" => :high_sierra
-    sha256 "782dd6a00ff606a6c83d7a7a9c7d5bd4b4246476bd08ad8694234117410bf0f8" => :sierra
-    sha256 "6546f8ed359ef4488b101c8bd07c420d452d660bf3e98cd5485b3c5400e249d7" => :el_capitan
+    sha256 "8d55c4f733d8b6196ed4530fde37f375a868dbc831c3bee53cce1ab1dcbdd07c" => :mojave
+    sha256 "4ba20e8e1c92e4c4822d383d5b6583fa5f4a1fef070135a8e68870b4a5204023" => :high_sierra
+    sha256 "eca7bd37b37f5c626a4af6da7147c4c78720ae8dc44d6ae41dbb71f35f6b5be3" => :sierra
   end
 
   depends_on "go" => :build
+  depends_on "python@2" => :build
 
   resource "virtualenv" do
-    url "https://files.pythonhosted.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/virtualenv-15.1.0.tar.gz"
-    sha256 "02f8102c2436bb03b3ee6dede1919d1dac8a427541652e5ec95171ec8adbc93a"
+    url "https://files.pythonhosted.org/packages/8b/f4/360aa656ddb0f4168aeaa1057d8784b95d1ce12f34332c1cf52420b6db4e/virtualenv-16.3.0.tar.gz"
+    sha256 "729f0bcab430e4ef137646805b5b1d8efbb43fe53d4a0f33328624a84a5121f7"
+  end
+
+  # Patch required to build against go 1.11 (Can be removed with v7.0.0)
+  # partially backport of https://github.com/elastic/beats/commit/8d8eaf34a6cb5f3b4565bf40ca0dc9681efea93c
+  patch do
+    url "https://raw.githubusercontent.com/Homebrew/formula-patches/881f5d1d/auditbeat/go1.11.diff"
+    sha256 "1747ea917ccd4c627fdc412d41b340ec96ce705f529b6e9d91e9bdf482eb792d"
   end
 
   def install
+    # remove non open source files
+    rm_rf "x-pack"
+
     ENV["GOPATH"] = buildpath
     (buildpath/"src/github.com/elastic/beats").install buildpath.children
 
@@ -29,28 +41,35 @@ class Auditbeat < Formula
       system "python", *Language::Python.setup_install_args(buildpath/"vendor")
     end
 
-    ENV.prepend_path "PATH", buildpath/"vendor/bin"
+    ENV.prepend_path "PATH", buildpath/"vendor/bin" # for virtualenv
+    ENV.prepend_path "PATH", buildpath/"bin" # for mage (build tool)
 
     cd "src/github.com/elastic/beats/auditbeat" do
-      # prevent downloading binary wheels
-      inreplace "../libbeat/scripts/Makefile", "pip install", "pip install --no-binary :all"
-      system "make"
-      system "make", "update"
-      (libexec/"bin").install "auditbeat"
-      libexec.install "_meta/kibana"
+      # don't build docs because it would fail creating the combined OSS/x-pack
+      # docs and we aren't installing them anyway
+      inreplace "magefile.go", "mage.GenerateModuleIncludeListGo, Docs)",
+                               "mage.GenerateModuleIncludeListGo)"
 
-      inreplace "auditbeat.yml", /^- module: audit\n^  metricsets: \[kernel\]\n^  kernel.audit_rules: \|/, "#- module: audit\n#  metricsets: [kernel]\n#  kernel.audit_rules: |"
-      (etc/"auditbeat").install Dir["auditbeat*.yml"]
-      prefix.install_metafiles
+      system "make", "mage"
+      # prevent downloading binary wheels during python setup
+      system "make", "PIP_INSTALL_COMMANDS=--no-binary :all", "python-env"
+      system "mage", "-v", "build"
+      system "mage", "-v", "update"
+
+      (etc/"auditbeat").install Dir["auditbeat.*", "fields.yml"]
+      (libexec/"bin").install "auditbeat"
+      prefix.install "build/kibana"
     end
+
+    prefix.install_metafiles buildpath/"src/github.com/elastic/beats"
 
     (bin/"auditbeat").write <<~EOS
       #!/bin/sh
-        exec #{libexec}/bin/auditbeat \
-        -path.config #{etc}/auditbeat \
-        -path.data #{var}/lib/auditbeat \
-        -path.home #{libexec} \
-        -path.logs #{var}/log/auditbeat \
+      exec #{libexec}/bin/auditbeat \
+        --path.config #{etc}/auditbeat \
+        --path.data #{var}/lib/auditbeat \
+        --path.home #{prefix} \
+        --path.logs #{var}/log/auditbeat \
         "$@"
     EOS
   end
@@ -83,15 +102,12 @@ class Auditbeat < Formula
     (testpath/"files").mkpath
     (testpath/"config/auditbeat.yml").write <<~EOS
       auditbeat.modules:
-      - module: audit
-        metricsets: [file]
-        file.paths:
+      - module: file_integrity
+        paths:
           - #{testpath}/files
       output.file:
         path: "#{testpath}/auditbeat"
         filename: auditbeat
-        codec.format:
-          string: '%{[audit]}'
     EOS
     pid = fork do
       exec "#{bin}/auditbeat", "-path.config", testpath/"config", "-path.data", testpath/"data"
@@ -102,7 +118,7 @@ class Auditbeat < Formula
       touch testpath/"files/touch"
       sleep 30
       s = IO.readlines(testpath/"auditbeat/auditbeat").last(1)[0]
-      assert_match "\"action\":\"created\"", s
+      assert_match "\"action\":\[\"created\"\]", s
       realdirpath = File.realdirpath(testpath)
       assert_match "\"path\":\"#{realdirpath}/files/touch\"", s
     ensure

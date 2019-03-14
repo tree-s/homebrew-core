@@ -7,8 +7,8 @@ class HgFlow < Formula
 
   bottle :unneeded
 
-  depends_on "python" if MacOS.version <= :snow_leopard
   depends_on "mercurial"
+  depends_on "python@2"
 
   def install
     if build.head?
@@ -28,7 +28,7 @@ class HgFlow < Formula
         [flow]
         autoshelve = true
 
-    EOS
+  EOS
   end
 
   test do

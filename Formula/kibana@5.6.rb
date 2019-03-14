@@ -4,35 +4,42 @@ class KibanaAT56 < Formula
   desc "Analytics and search dashboard for Elasticsearch"
   homepage "https://www.elastic.co/products/kibana"
   url "https://github.com/elastic/kibana.git",
-      :tag => "v5.6.5",
-      :revision => "80f98787eb860a4e7ef9b6500cf84b65e331d1fc"
-  head "https://github.com/elastic/kibana.git"
+      :tag      => "v5.6.14",
+      :revision => "f909937e01a4b1a9e6b3d48d281fd3fe6a819510"
 
   bottle do
-    sha256 "3e880f44e84bb3955e6bb8469668272355860a4f5255042959848ab1089b0ff4" => :high_sierra
-    sha256 "8974c41db25b412bc897f88f4792a902e0fe60842648f1cd972b4e97b3d3f2f4" => :sierra
-    sha256 "0da051fa54dfa07d9f48772d98bc68e582b0e1b2a26bb0a79a1bf45ca9676078" => :el_capitan
+    cellar :any_skip_relocation
+    sha256 "f6d3107b9a9e65b9d830e79797f3cab76c78ef35054087cb6773888600da85b7" => :mojave
+    sha256 "d04dcc2500ae1f9c0eca52c9c93a742b0f4edf1b6a9b5f6187d96468fe594bf5" => :high_sierra
+    sha256 "485bc105e5d9f8e2a4a45cb9be05d3261947d9ddf33e505468d616d74bfb7302" => :sierra
   end
 
   keg_only :versioned_formula
 
   resource "node" do
-    url "https://nodejs.org/dist/v6.11.1/node-v6.11.1.tar.xz"
-    sha256 "6f6655b85919aa54cb045a6d69a226849802fcc26491d0db4ce59873e41cc2b8"
+    url "https://nodejs.org/dist/v6.15.1/node-v6.15.1.tar.xz"
+    sha256 "c3bde58a904b5000a88fbad3de630d432693bc6d9d6fec60a5a19e68498129c2"
   end
 
   def install
     resource("node").stage do
       system "./configure", "--prefix=#{libexec}/node"
-      system "make", "test"
       system "make", "install"
     end
+
+    # remove with next release: revert incorrect package.json version number
+    inreplace buildpath/"package.json", "\"version\": \"5.6.15\",", "\"version\": \"5.6.14\","
 
     # do not build packages for other platforms
     inreplace buildpath/"tasks/config/platforms.js", /('(linux-x64|windows-x64)',?(?!;))/, "// \\1"
 
     # trick the build into thinking we've already downloaded the Node.js binary
     mkdir_p buildpath/".node_binaries/#{resource("node").version}/darwin-x64"
+
+    # set MACOSX_DEPLOYMENT_TARGET to compile native addons against libc++
+    inreplace libexec/"node/include/node/common.gypi", "'MACOSX_DEPLOYMENT_TARGET': '10.7',",
+                                                       "'MACOSX_DEPLOYMENT_TARGET': '#{MacOS.version}',"
+    ENV["npm_config_nodedir"] = libexec/"node"
 
     # set npm env and fix cache edge case (https://github.com/Homebrew/brew/pull/37#issuecomment-208840366)
     ENV.prepend_path "PATH", prefix/"libexec/node/bin"
@@ -62,10 +69,10 @@ class KibanaAT56 < Formula
     If you wish to preserve your plugins upon upgrade, make a copy of
     #{opt_prefix}/plugins before upgrading, and copy it into the
     new keg location after upgrading.
-    EOS
+  EOS
   end
 
-  plist_options :manual => "kibana"
+  plist_options :manual => "#{HOMEBREW_PREFIX}/opt/kibana@5.6/bin/kibana"
 
   def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>

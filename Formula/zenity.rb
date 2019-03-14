@@ -1,22 +1,18 @@
 class Zenity < Formula
   desc "GTK+ dialog boxes for the command-line"
-  homepage "https://live.gnome.org/Zenity"
-  url "https://download.gnome.org/sources/zenity/3.26/zenity-3.26.0.tar.xz"
-  sha256 "6a7f34626dd62b751fe22bcdb32f3558f8a8fdddcc9406893dd264f0ac18e830"
+  homepage "https://wiki.gnome.org/Projects/Zenity"
+  url "https://download.gnome.org/sources/zenity/3.30/zenity-3.30.0.tar.xz"
+  sha256 "995ef696616492c40be6da99919851d41faed6643a97c9d24743b46bc8b537f2"
 
   bottle do
-    sha256 "8d21567ffffb86f7345993dcc93a865ded92d2df181dfa8c65f9e35fd7beaf00" => :high_sierra
-    sha256 "618ff56a163ed4094c60339853ab76492e8bfec46250a41a94258c13a09b38ed" => :sierra
-    sha256 "07292dedf997e00cf082909b10ba11d1aabf6ca82b1c1832808f31d34377781b" => :el_capitan
+    sha256 "1f45ac15943a7b3493d7833072c253ffa5158aa124fcc734c890f5906496396b" => :mojave
+    sha256 "ef38b762ac8036cf3055f772b661c856e04a387c5e29b4be9b108e5b19485b17" => :high_sierra
+    sha256 "6efdbda681d0357aa8da3cd76fb047d2c66745b75b05a388cc56da5e7e0c5b46" => :sierra
   end
 
-  depends_on "pkg-config" => :build
-  depends_on "intltool" => :build
   depends_on "itstool" => :build
-  depends_on "libxml2"
+  depends_on "pkg-config" => :build
   depends_on "gtk+3"
-  depends_on "gnome-doc-utils"
-  depends_on "rarian"
 
   def install
     system "./configure", "--prefix=#{prefix}"

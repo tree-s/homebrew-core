@@ -1,31 +1,28 @@
 class Cayley < Formula
   desc "Graph database inspired by Freebase and Knowledge Graph"
   homepage "https://github.com/cayleygraph/cayley"
-  url "https://github.com/cayleygraph/cayley/archive/v0.7.0.tar.gz"
-  sha256 "d78970997d2c23991c11d5a06e266d4421a9f175e8364dc6a094308489882314"
+  url "https://github.com/cayleygraph/cayley/archive/v0.7.5.tar.gz"
+  sha256 "4fcc8bf44f775dbbbd6146713f6fbdc80f2d88e2e8b93767f62eb5d635a56739"
   head "https://github.com/google/cayley.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "192570b3e952d0697624b5315348892be330923bdc12b57dafc8b59ce8197983" => :high_sierra
-    sha256 "c558ffdc02dfae52b0dee74b9de1b3b81bf19bebd9459ad1ee529e4ffb4a6623" => :sierra
-    sha256 "14b1f7f81db724c6929e52d9dee0786943fbe23d48ef05f1b8cbd20ec62c3515" => :el_capitan
+    sha256 "377e5180df5cf802155e5d2af615f226706c0f02774b50a53b2b5d44480a151d" => :mojave
+    sha256 "ce7a9c57fbf969e0cf60bc9cdf8f6e1d57e254dc506a9e509cc4d7052bbb53df" => :high_sierra
+    sha256 "a745c0d7c87f43e62232be852ec8df3b8ee5e18cb6595725b5588843521164a4" => :sierra
   end
 
-  option "without-samples", "Don't install sample data"
-
   depends_on "bazaar" => :build
-  depends_on "mercurial" => :build
-  depends_on "glide" => :build
+  depends_on "dep" => :build
   depends_on "go" => :build
+  depends_on "mercurial" => :build
 
   def install
     ENV["GOPATH"] = buildpath
-    ENV["GLIDE_HOME"] = HOMEBREW_CACHE/"glide_home/#{name}"
 
     (buildpath/"src/github.com/cayleygraph/cayley").install buildpath.children
     cd "src/github.com/cayleygraph/cayley" do
-      system "glide", "install"
+      system "dep", "ensure", "-vendor-only"
       system "go", "build", "-o", bin/"cayley", "-ldflags",
              "-X main.Version=#{version}", ".../cmd/cayley"
 
@@ -34,10 +31,9 @@ class Cayley < Formula
 
       (pkgshare/"assets").install "docs", "static", "templates"
 
-      if build.with? "samples"
-        system "gzip", "-d", "data/30kmoviedata.nq.gz"
-        (pkgshare/"samples").install "data/testdata.nq", "data/30kmoviedata.nq"
-      end
+      # Install samples
+      system "gzip", "-d", "data/30kmoviedata.nq.gz"
+      (pkgshare/"samples").install "data/testdata.nq", "data/30kmoviedata.nq"
     end
   end
 
@@ -81,7 +77,7 @@ class Cayley < Formula
         <string>#{var}/log/cayley.log</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

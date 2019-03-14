@@ -1,19 +1,18 @@
 class Netcdf < Formula
   desc "Libraries and data formats for array-oriented scientific data"
   homepage "https://www.unidata.ucar.edu/software/netcdf"
-  url "ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.6.0.tar.gz"
-  mirror "https://www.gfd-dennou.org/library/netcdf/unidata-mirror/cdf-4.6.0.tar.gz"
-  sha256 "4bf05818c1d858224942ae39bfd9c4f1330abec57f04f58b9c3c152065ab3825"
+  url "https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-c-4.6.2.tar.gz"
+  sha256 "c37525981167b3cd82d32e1afa3022afb94e59287db5f116c57f5ed4d9c6a638"
 
   bottle do
-    sha256 "a3c393c2a8bab002e8570c9c3d6d04a62396f88a05da2030979fe80c1cd57f0d" => :high_sierra
-    sha256 "9882c5ed2bbdf0bebffc27ca03481194dd3637b06b6aaccb936eb78eb344e4fd" => :sierra
-    sha256 "cbefb57d4fe56331e5bd7216f57c9f39b69c5489cda775543d007d1034d7fca7" => :el_capitan
+    sha256 "2b607ef71b2f630e73441ed17dc9c40bc7dd9cc726c60563c61445d384ec0c2f" => :mojave
+    sha256 "01ff7533d32cba92da675b1307c97338bee30adc093c8fa222353df896aa645c" => :high_sierra
+    sha256 "bf00eb6cbc31d9e58c63c06724f92b5cd6110c9590659e0aa809e4b999f9abbd" => :sierra
   end
 
   depends_on "cmake" => :build
-  depends_on "hdf5"
   depends_on "gcc" # for gfortran
+  depends_on "hdf5"
 
   resource "cxx" do
     url "https://github.com/Unidata/netcdf-cxx4/archive/v4.3.0.tar.gz"
@@ -27,7 +26,7 @@ class Netcdf < Formula
   end
 
   resource "fortran" do
-    url "ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-4.4.4.tar.gz"
+    url "https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-fortran-4.4.4.tar.gz"
     mirror "https://www.gfd-dennou.org/arch/netcdf/unidata-mirror/netcdf-fortran-4.4.4.tar.gz"
     sha256 "b2d395175f8d283e68c8be516e231a96b191ade67ad0caafaf7fa01b1e6b5d75"
   end
@@ -134,7 +133,7 @@ class Netcdf < Formula
           if (status /= nf90_noerr) call abort
         end subroutine check
       end program test
-      EOS
+    EOS
     system "gfortran", "test.f90", "-L#{lib}", "-I#{include}", "-lnetcdff",
                        "-o", "testf"
     system "./testf"

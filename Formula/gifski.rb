@@ -1,26 +1,26 @@
 class Gifski < Formula
   desc "Highest-quality GIF encoder based on pngquant"
   homepage "https://gif.ski/"
-  url "https://github.com/ImageOptim/gifski/archive/0.7.3.tar.gz"
-  sha256 "0db038fa91764295b0caf473bfc09e577b926260f5f116687600ae7140811721"
+  url "https://github.com/ImageOptim/gifski/archive/0.8.5.tar.gz"
+  sha256 "0c4f946e873e26777423e1bab37392220aec9382ae818866d2e3a52b3c976cf1"
 
   bottle do
-    sha256 "1b0508c892d5509e80c9b1851dd0659453a3227638ff3fb2070510248020a819" => :high_sierra
-    sha256 "ee8baa305702999090f015ccec6b1e4fc336427834cf6c7e61505c3f56740354" => :sierra
-    sha256 "f7d95fd146b488fdd2a3a0a90575edbd5a3623222c4ec50e1b3aa7d453123bef" => :el_capitan
+    sha256 "acf76ee232c73d8682814ef3eaebd143314d8406d972e5f93042ac579d263a12" => :mojave
+    sha256 "ba26d7e59f381268f03c80539710060b6be978a214d1b0d7fda441c7e1aadd98" => :high_sierra
+    sha256 "b4c232f074255a72f3886e2372f62d668d17b106392ed5c4a5fda1b57aa57275" => :sierra
+    sha256 "b93399bf691af7d49c3f84930435c6bc516dc43aeebee1381615b9f032ffad78" => :el_capitan
   end
 
   depends_on "pkg-config" => :build
   depends_on "rust" => :build
-  depends_on "ffmpeg"
 
   def install
-    system "cargo", "build", "--release", "--features=video"
-    bin.install "target/release/gifski"
+    system "cargo", "install", "--root", prefix, "--path", "."
   end
 
   test do
-    system bin/"gifski", "-o", "out.gif", test_fixtures("test.png")
+    png = test_fixtures("test.png")
+    system bin/"gifski", "-o", "out.gif", png, png
     assert_predicate testpath/"out.gif", :exist?
     refute_predicate (testpath/"out.gif").size, :zero?
   end

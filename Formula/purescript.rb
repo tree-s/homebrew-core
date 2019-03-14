@@ -5,34 +5,28 @@ class Purescript < Formula
 
   desc "Strongly typed programming language that compiles to JavaScript"
   homepage "http://www.purescript.org"
-  url "https://github.com/purescript/purescript/archive/v0.11.7.tar.gz"
-  sha256 "56b715acc4b92a5e389f7ec5244c9306769a515e1da2696d9c2c89e318adc9f9"
+  url "https://hackage.haskell.org/package/purescript-0.12.2/purescript-0.12.2.tar.gz"
+  sha256 "e20d050833717bfe0dd43dadca2e802cbff36763bd9cd674ac9c3667a463ebf8"
   head "https://github.com/purescript/purescript.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "b1e281b76d895e1791902765491a35ed2524cff90ecb99a72a190b1e0f387b77" => :high_sierra
-    sha256 "01c8ec5708e23689a7e47a2cea0a3130cdcc4cce3b621c3b4c6b3653a1481617" => :sierra
-    sha256 "ee0a11eb6bfd302a27653c074a0d237b5bdf570579394b94fe21ee0638a8e0ef" => :el_capitan
+    sha256 "fcec4062d8cc3fd4d557968885af1fdbdc0c0c4155360ced8410750d7c6628a5" => :mojave
+    sha256 "4783296a797a920116da18dade95b0e88621a088c9afffe8f2398a12d9fb1a79" => :high_sierra
+    sha256 "0bf8e8eb526136769d2f8e969111cfe7842a3e2a7ce96e33195dd24e3b4141a6" => :sierra
   end
 
   depends_on "cabal-install" => :build
   depends_on "ghc" => :build
 
   def install
-    inreplace (buildpath/"scripts").children, /^purs /, "#{bin}/purs "
-    bin.install (buildpath/"scripts").children
-
     cabal_sandbox do
       if build.head?
         cabal_install "hpack"
         system "./.cabal-sandbox/bin/hpack"
-      else
-        system "cabal", "get", "purescript-#{version}"
-        mv "purescript-#{version}/purescript.cabal", "."
       end
 
-      install_cabal_package "-f release", :using => ["alex", "happy"]
+      install_cabal_package "-f", "release", :using => ["alex", "happy"]
     end
   end
 
@@ -45,7 +39,7 @@ class Purescript < Formula
       main :: Int
       main = 1
     EOS
-    system bin/"psc", test_module_path, "-o", test_target_path
+    system bin/"purs", "compile", test_module_path, "-o", test_target_path
     assert_predicate test_target_path, :exist?
   end
 end

@@ -1,20 +1,19 @@
 class X265 < Formula
   desc "H.265/HEVC encoder"
   homepage "http://x265.org"
-  url "https://bitbucket.org/multicoreware/x265/downloads/x265_2.6.tar.gz"
-  sha256 "1bf0036415996af841884802161065b9e6be74f5f6808ac04831363e2549cdbf"
+  url "https://bitbucket.org/multicoreware/x265/downloads/x265_3.0.tar.gz"
+  sha256 "c5b9fc260cabbc4a81561a448f4ce9cad7218272b4011feabc3a6b751b2f0662"
   head "https://bitbucket.org/multicoreware/x265", :using => :hg
 
   bottle do
     cellar :any
-    sha256 "a108074ba899ceb9ec7ee2254e7ec564d2629413f310f71da4e3fcf451bfb92e" => :high_sierra
-    sha256 "49a58ac4ba4965bd3fafc3a188064c2b29573cb3e991b949198175c72bf223c2" => :sierra
-    sha256 "868310a95be1b8ad9e784a111fd41ec4a2ac4547f437e7cf5920f391dabdc454" => :el_capitan
+    sha256 "324e316181b0348c2362fec475d8a595828783f97a2f59593a7e04493bbcef1c" => :mojave
+    sha256 "4ec43e11f4553bbb26ee7558e03e758d1412ea149b4d57b03b4e0d8b39cb3883" => :high_sierra
+    sha256 "42583ed380b6c3b4de9f03a139a5a183eafe2e466e5583c7cb7ffd7377628b6c" => :sierra
   end
 
   depends_on "cmake" => :build
-  depends_on "yasm" => :build
-  depends_on :macos => :lion
+  depends_on "nasm" => :build
 
   def install
     # Build based off the script at ./build/linux/multilib.sh

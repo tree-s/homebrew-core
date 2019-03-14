@@ -1,19 +1,23 @@
 class Asdf < Formula
   desc "Extendable version manager with support for Ruby, Node.js, Erlang & more"
   homepage "https://github.com/asdf-vm"
-  url "https://github.com/asdf-vm/asdf/archive/v0.4.1.tar.gz"
-  sha256 "09f75fa8afa4efc043af2d90b8b1e3f0f3387cbe9ade42b5c043dee96ae23ef9"
+  url "https://github.com/asdf-vm/asdf/archive/v0.6.3.tar.gz"
+  sha256 "01fb75889b854034ed95c1c728dd53564256ecee6fc7167919283f3b654a4e1d"
+  head "https://github.com/asdf-vm/asdf.git"
 
   bottle :unneeded
 
-  depends_on "autoconf" => :run
-  depends_on "automake" => :run
-  depends_on "libtool" => :run
+  depends_on "autoconf"
+  depends_on "automake"
   depends_on "coreutils"
+  depends_on "libtool"
   depends_on "libyaml"
   depends_on "openssl"
   depends_on "readline"
   depends_on "unixodbc"
+
+  conflicts_with "homeshick",
+    :because => "asdf and homeshick both install files in lib/commands"
 
   def install
     bash_completion.install "completions/asdf.bash"
@@ -26,16 +30,8 @@ class Asdf < Formula
               "exec $(asdf_dir)/libexec/private/asdf-exec "
   end
 
-  def caveats; <<~EOS
-    Add the following line to your bash profile (e.g. ~/.bashrc, ~/.profile, or ~/.bash_profile)
-         source #{opt_prefix}/asdf.sh
-
-    If you use Fish shell, add the following line to your fish config (e.g. ~/.config/fish/config.fish)
-         source #{opt_prefix}/asdf.fish
-    EOS
-  end
-
   test do
-    system "#{bin}/asdf", "plugin-list"
+    output = shell_output("#{bin}/asdf plugin-list 2>&1", 1)
+    assert_match "Oohes nooes ~! No plugins installed", output
   end
 end

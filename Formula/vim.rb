@@ -1,47 +1,28 @@
 class Vim < Formula
   desc "Vi 'workalike' with many additional features"
-  homepage "https://vim.sourceforge.io/"
+  homepage "https://www.vim.org/"
   # vim should only be updated every 50 releases on multiples of 50
-  url "https://github.com/vim/vim/archive/v8.0.1400.tar.gz"
-  sha256 "9e9cdfc137858f2d52276b6df826875aafc9d65b3e46d5d7f8c68deb40da3dbb"
-  revision 4
+  url "https://github.com/vim/vim/archive/v8.1.0950.tar.gz"
+  sha256 "0c43a741424ac3b15347359247d806d3f62d79eea7e8a20f1bfd04bb2cc89f5c"
   head "https://github.com/vim/vim.git"
 
   bottle do
-    rebuild 1
-    sha256 "712ce31e0dee833f70a064a1ff5ed30829b1ed8e7315494b69df310b7bf15362" => :high_sierra
-    sha256 "66c9c4c2ecb4159d872a084003428b0032a2b5359e76a290903f498f6cf3ada5" => :sierra
-    sha256 "9e080b566919cb370ec179e41fe21ba6adb0d5151dc0d41042992eacc0d7f83d" => :el_capitan
+    sha256 "7b16fb8936e142e05b787512dd90fce68e1549f32484585a4e417d21d69ea009" => :mojave
+    sha256 "ec2be06c1d1be519c2d8adacb616bb2cfb20cdef1e6461def46df063ac6076d0" => :high_sierra
+    sha256 "5a409e30eab8a1512390790b9dcf6584ffb7c161ea79145772c7bc7b662b69a7" => :sierra
   end
 
-  deprecated_option "override-system-vi" => "with-override-system-vi"
-
-  option "with-override-system-vi", "Override system vi"
-  option "with-gettext", "Build vim with National Language Support (translated messages, keymaps)"
-  option "with-client-server", "Enable client/server mode"
-
-  LANGUAGES_OPTIONAL = %w[lua python3 tcl].freeze
-  LANGUAGES_DEFAULT  = %w[python].freeze
-
-  option "with-python3", "Build vim with python3 instead of python[2] support"
-  LANGUAGES_OPTIONAL.each do |language|
-    option "with-#{language}", "Build vim with #{language} support"
-  end
-  LANGUAGES_DEFAULT.each do |language|
-    option "without-#{language}", "Build vim without #{language} support"
-  end
-
+  depends_on "gettext"
+  depends_on "lua"
   depends_on "perl"
+  depends_on "python"
   depends_on "ruby"
-  depends_on "python" => :recommended
-  depends_on "gettext" => :optional
-  depends_on "lua" => :optional
-  depends_on "luajit" => :optional
-  depends_on "python3" => :optional
-  depends_on :x11 if build.with? "client-server"
 
   conflicts_with "ex-vi",
     :because => "vim and ex-vi both install bin/ex and bin/view"
+
+  conflicts_with "macvim",
+    :because => "vim and macvim both install vi* binaries"
 
   def install
     ENV.prepend_path "PATH", Formula["python"].opt_libexec/"bin"
@@ -51,42 +32,6 @@ class Vim < Formula
 
     # vim doesn't require any Python package, unset PYTHONPATH.
     ENV.delete("PYTHONPATH")
-
-    opts = ["--enable-perlinterp", "--enable-rubyinterp"]
-
-    (LANGUAGES_OPTIONAL + LANGUAGES_DEFAULT).each do |language|
-      opts << "--enable-#{language}interp" if build.with? language
-    end
-
-    if opts.include?("--enable-pythoninterp") && opts.include?("--enable-python3interp")
-      # only compile with either python or python3 support, but not both
-      # (if vim74 is compiled with +python3/dyn, the Python[3] library lookup segfaults
-      # in other words, a command like ":py3 import sys" leads to a SEGV)
-      opts -= %w[--enable-pythoninterp]
-    end
-
-    opts << "--disable-nls" if build.without? "gettext"
-    opts << "--enable-gui=no"
-
-    if build.with? "client-server"
-      opts << "--with-x"
-    else
-      opts << "--without-x"
-    end
-
-    if build.with?("lua") || build.with?("luajit")
-      ENV["LUA_PREFIX"] = HOMEBREW_PREFIX
-      opts << "--enable-luainterp"
-      opts << "--with-luajit" if build.with? "luajit"
-
-      if build.with?("lua") && build.with?("luajit")
-        onoe <<~EOS
-          Vim will not link against both Luajit & Lua simultaneously.
-          Proceeding with Lua.
-        EOS
-        opts -= %w[--with-luajit]
-      end
-    end
 
     # We specify HOMEBREW_PREFIX as the prefix to make vim look in the
     # the right place (HOMEBREW_PREFIX/share/vim/{vimrc,vimfiles}) for
@@ -101,7 +46,13 @@ class Vim < Formula
                           "--enable-cscope",
                           "--enable-terminal",
                           "--with-compiledby=Homebrew",
-                          *opts
+                          "--enable-perlinterp",
+                          "--enable-rubyinterp",
+                          "--enable-python3interp",
+                          "--enable-gui=no",
+                          "--without-x",
+                          "--enable-luainterp",
+                          "--with-lua-prefix=#{Formula["lua"].opt_prefix}"
     system "make"
     # Parallel install could miss some symlinks
     # https://github.com/vim/vim/issues/1031
@@ -110,27 +61,16 @@ class Vim < Formula
     # statically-linked interpreters like ruby
     # https://github.com/vim/vim/issues/114
     system "make", "install", "prefix=#{prefix}", "STRIP=#{which "true"}"
-    bin.install_symlink "vim" => "vi" if build.with? "override-system-vi"
+    bin.install_symlink "vim" => "vi"
   end
 
   test do
-    if build.with? "python3"
-      (testpath/"commands.vim").write <<~EOS
-        :python3 import vim; vim.current.buffer[0] = 'hello python3'
-        :wq
-      EOS
-      system bin/"vim", "-T", "dumb", "-s", "commands.vim", "test.txt"
-      assert_equal "hello python3", File.read("test.txt").chomp
-    elsif build.with? "python"
-      (testpath/"commands.vim").write <<~EOS
-        :python import vim; vim.current.buffer[0] = 'hello world'
-        :wq
-      EOS
-      system bin/"vim", "-T", "dumb", "-s", "commands.vim", "test.txt"
-      assert_equal "hello world", File.read("test.txt").chomp
-    end
-    if build.with? "gettext"
-      assert_match "+gettext", shell_output("#{bin}/vim --version")
-    end
+    (testpath/"commands.vim").write <<~EOS
+      :python3 import vim; vim.current.buffer[0] = 'hello python3'
+      :wq
+    EOS
+    system bin/"vim", "-T", "dumb", "-s", "commands.vim", "test.txt"
+    assert_equal "hello python3", File.read("test.txt").chomp
+    assert_match "+gettext", shell_output("#{bin}/vim --version")
   end
 end

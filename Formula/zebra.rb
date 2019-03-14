@@ -1,17 +1,17 @@
 class Zebra < Formula
   desc "Information management system"
   homepage "https://www.indexdata.com/zebra"
-  url "http://ftp.indexdata.dk/pub/zebra/idzebra-2.1.3.tar.gz"
-  sha256 "5975c054a4cf50fb97d261b239f6f04f65dec7a2f72022b5abadea4e64405ee3"
+  url "http://ftp.indexdata.dk/pub/zebra/idzebra-2.1.4.tar.gz"
+  sha256 "f45b0461cf40fafddd97d447695a087be0ba0981c108bf509d4c11f6d1db1ae2"
   revision 1
 
   bottle do
-    sha256 "6f7665efc555ed08e5d7b9dd0de741f4e014d26462b163adb29e606456803517" => :high_sierra
-    sha256 "45bda05a03c8c1219550081e21b8e9d3ff833bf0b47b1e1e12cf561c401636d7" => :sierra
-    sha256 "43750c886af867ffffefcaa2e21ac3ac2c1d20cb447fce35329320ff8a965b03" => :el_capitan
+    sha256 "c2cd8d27e0426422eab75017a53a12635faa8784a9895e86596b59e8e2eb515b" => :mojave
+    sha256 "10a073b4fd6f48c197029e1bc736c3299d2a8138690389c5c94fda5a7b091601" => :high_sierra
+    sha256 "7afcb8c211cea6a86800470d3018d165a4e4b82205e788998cde061efa6f8944" => :sierra
   end
 
-  depends_on "icu4c" => :recommended
+  depends_on "icu4c"
   depends_on "yaz"
 
   def install

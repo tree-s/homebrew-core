@@ -1,8 +1,8 @@
 class Nodebrew < Formula
   desc "Node.js version manager"
   homepage "https://github.com/hokaccha/nodebrew"
-  url "https://github.com/hokaccha/nodebrew/archive/v0.9.8.tar.gz"
-  sha256 "040c1b32ddce6d83fda76a50ce9bc635ce0040f76a63617d74234449b8ff078b"
+  url "https://github.com/hokaccha/nodebrew/archive/v1.0.1.tar.gz"
+  sha256 "c34e7186d4fd493c5417ad5563ad39fd493a42695bd9a7758c3df10380e43399"
   head "https://github.com/hokaccha/nodebrew.git"
 
   bottle :unneeded
@@ -22,7 +22,7 @@ class Nodebrew < Formula
 
     To use Homebrew's directories rather than ~/.nodebrew add to your profile:
       export NODEBREW_ROOT=#{var}/nodebrew
-    EOS
+  EOS
   end
 
   test do

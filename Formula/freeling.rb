@@ -1,26 +1,24 @@
 class Freeling < Formula
   desc "Suite of language analyzers"
   homepage "http://nlp.lsi.upc.edu/freeling/"
-  url "https://github.com/TALP-UPC/FreeLing/releases/download/4.0/FreeLing-4.0.tar.gz"
-  sha256 "c79d21c5af215105ba16eb69ee75b589bf7d41abce86feaa40757513e33c6ecf"
-  revision 8
+  url "https://github.com/TALP-UPC/FreeLing/releases/download/4.1/FreeLing-4.1.tar.gz"
+  sha256 "ccb3322db6851075c9419bb5e472aa6b2e32cc7e9fa01981cff49ea3b212247e"
+  revision 2
 
   bottle do
-    sha256 "5a8a54e6fec19fc08e012942e7956d9052dc8d0e948d4420802bbbe32d42f8fd" => :high_sierra
-    sha256 "9377df49e3b5a89954f251d3d6a382adf7a67fef8657c5dd10ff8705da5dc524" => :sierra
-    sha256 "4aeb8e5fc2a7f18394f1aebce4896c59379f8dc9f6d6e4e5b86e0b2f0fe58aa5" => :el_capitan
+    sha256 "571a7becc49b10d599771a2803b4319e9cf2ee27bdd3ea64aa5d55174d9e8685" => :mojave
+    sha256 "6cd3cabd3c23fb08843927e072b296bd30df05bbccedb466228e4226587a3518" => :high_sierra
+    sha256 "a60e1efec1b172922f933b84ae900beeff99a0a84537007f9e92b64cecc78ef6" => :sierra
   end
 
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
-  depends_on "libtool" => :build
+  depends_on "cmake" => :build
   depends_on "icu4c"
 
   conflicts_with "hunspell", :because => "both install 'analyze' binary"
 
   resource "boost" do
-    url "https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.bz2"
-    sha256 "7bcc5caace97baa948931d712ea5f37038dbb1c5d89b43ad4def4ed7cb683332"
+    url "https://dl.bintray.com/boostorg/release/1.68.0/source/boost_1_68_0.tar.bz2"
+    sha256 "7f6130bc3cf65f56a618888ce9d5ea704fa10b462be126ad053e80e553d6d8b7"
   end
 
   def install
@@ -31,11 +29,10 @@ class Freeling < Formula
       end
 
       bootstrap_args = %W[
-        --without-icu
         --prefix=#{libexec}/boost
         --libdir=#{libexec}/boost/lib
         --with-icu=#{Formula["icu4c"].opt_prefix}
-        --with-libraries=program_options,regex,system,thread
+        --with-libraries=atomic,chrono,date_time,filesystem,program_options,regex,system,thread
       ]
 
       args = %W[
@@ -67,18 +64,19 @@ class Freeling < Formula
       MachO::Tools.change_dylib_id(dylib.to_s, dylib.to_s)
     end
 
-    icu4c = Formula["icu4c"]
-    libtool = Formula["libtool"]
-    ENV.append "LDFLAGS", "-L#{libtool.lib}"
-    ENV.append "LDFLAGS", "-L#{icu4c.lib}"
-    ENV.append "LDFLAGS", "-L#{libexec}/boost/lib"
-    ENV.append "CPPFLAGS", "-I#{libtool.include}"
-    ENV.append "CPPFLAGS", "-I#{icu4c.include}"
-    ENV.append "CPPFLAGS", "-I#{libexec}/boost/include"
+    %w[chrono filesystem thread].each do |library|
+      macho = MachO.open("#{libexec}/boost/lib/libboost_#{library}-mt.dylib")
+      macho.change_dylib("libboost_system-mt.dylib",
+                         "#{libexec}/boost/lib/libboost_system-mt.dylib")
+      macho.write!
+    end
 
-    system "autoreconf", "--install"
-    system "./configure", "--prefix=#{prefix}", "--enable-boost-locale"
-    system "make", "install"
+    mkdir "build" do
+      system "cmake", "..",  "-DBoost_INCLUDE_DIR=#{libexec}/boost/include",
+                             "-DBoost_LIBRARY_DIR_RELEASE=#{libexec}/boost/lib",
+                             *std_cmake_args
+      system "make", "install"
+    end
 
     libexec.install "#{bin}/fl_initialize"
     inreplace "#{bin}/analyze",

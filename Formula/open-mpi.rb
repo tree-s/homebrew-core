@@ -1,38 +1,27 @@
 class OpenMpi < Formula
   desc "High performance message passing library"
   homepage "https://www.open-mpi.org/"
-  url "https://www.open-mpi.org/software/ompi/v3.0/downloads/openmpi-3.0.0.tar.bz2"
-  sha256 "f699bff21db0125d8cccfe79518b77641cd83628725a1e1ed3e45633496a82d7"
-  revision 2
+  url "https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.0.tar.bz2"
+  sha256 "2f0b8a36cfeb7354b45dda3c5425ef8393c9b04115570b615213faaa3f97366b"
 
   bottle do
-    sha256 "6d88511d80f47ff79a45588138a62e96a258913d25499ee4dc749fd22e8ae795" => :high_sierra
-    sha256 "7cdc9f6ea9d69ed78d822712794c6f843d426acd7fbdce7ea56cd0d7b2b287c2" => :sierra
-    sha256 "fb76532094bf33f984f7d1573f97942c0d2a5f46a02525dfdc67e4edf142e878" => :el_capitan
+    rebuild 1
+    sha256 "bc3079464eb727d8ae283c81e6ec6189eb749db8ee5254cbf132ee1233dc3508" => :mojave
+    sha256 "ed4e5a8d080142914e4e4142207b8fdc1740aadcc0a4e1a8f5b89a3bb4984008" => :high_sierra
+    sha256 "2e7b97df336f4151eda50bebde5c329b2ab50d79d463fe55ecc68210537910b2" => :sierra
   end
 
   head do
     url "https://github.com/open-mpi/ompi.git"
-    depends_on "automake" => :build
     depends_on "autoconf" => :build
+    depends_on "automake" => :build
     depends_on "libtool" => :build
   end
 
-  option "with-mpi-thread-multiple", "Enable MPI_THREAD_MULTIPLE"
-  option "with-cxx-bindings", "Enable C++ MPI bindings (deprecated as of MPI-3.0)"
-  option "without-fortran", "Do not build the Fortran bindings"
-
-  deprecated_option "disable-fortran" => "without-fortran"
-  deprecated_option "enable-mpi-thread-multiple" => "with-mpi-thread-multiple"
-
-  depends_on "gcc" if build.with? "fortran"
-  depends_on :java => :optional
+  depends_on "gcc"
   depends_on "libevent"
 
   conflicts_with "mpich", :because => "both install MPI compiler wrappers"
-  conflicts_with "lcdf-typetools", :because => "both install same set of binaries"
-
-  needs :cxx11
 
   def install
     # otherwise libmpi_usempi_ignore_tkr gets built as a static library
@@ -49,10 +38,9 @@ class OpenMpi < Formula
       --with-sge
     ]
     args << "--with-platform-optimized" if build.head?
-    args << "--disable-mpi-fortran" if build.without? "fortran"
-    args << "--enable-mpi-thread-multiple" if build.with? "mpi-thread-multiple"
-    args << "--enable-mpi-java" if build.with? "java"
-    args << "--enable-mpi-cxx" if build.with? "cxx-bindings"
+
+    # Fixes an issue in 4.0.0, should be fixed in 4.0.1
+    args << "--enable-mpi1-compatibility"
 
     system "./autogen.pl" if build.head?
     system "./configure", *args
@@ -60,9 +48,9 @@ class OpenMpi < Formula
     system "make", "check"
     system "make", "install"
 
-    # If Fortran bindings were built, there will be stray `.mod` files
-    # (Fortran header) in `lib` that need to be moved to `include`.
-    include.install Dir["#{lib}/*.mod"] if build.with? "fortran"
+    # Fortran bindings install stray `.mod` files (Fortran modules) in `lib`
+    # that need to be moved to `include`.
+    include.install Dir["#{lib}/*.mod"]
   end
 
   test do

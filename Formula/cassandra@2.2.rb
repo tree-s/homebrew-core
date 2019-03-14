@@ -1,14 +1,21 @@
 class CassandraAT22 < Formula
   desc "Eventually consistent, distributed key-value db"
   homepage "https://cassandra.apache.org"
-  url "https://www.apache.org/dyn/closer.cgi?path=/cassandra/2.2.11/apache-cassandra-2.2.11-bin.tar.gz"
-  mirror "https://archive.apache.org/dist/cassandra/2.2.11/apache-cassandra-2.2.11-bin.tar.gz"
-  sha256 "866e1acd88e6e2ec0c3d201bea4c3e4494c5f6189dd810366ec9b6154bad6964"
+  url "https://www.apache.org/dyn/closer.cgi?path=/cassandra/2.2.13/apache-cassandra-2.2.13-bin.tar.gz"
+  mirror "https://archive.apache.org/dist/cassandra/2.2.13/apache-cassandra-2.2.13-bin.tar.gz"
+  sha256 "58a97b4830d45e27f4d81aea7a22d2b395ca37125b7c2acd7d5a163825f459a6"
 
-  bottle :unneeded
+  bottle do
+    cellar :any_skip_relocation
+    sha256 "e8bc94706f66b556ada3089a3bc2918b92e06ca8828060fd84f0abaa07d6e0cf" => :mojave
+    sha256 "184f745b8089be7b3d3743978592ed29d4fe09ebfcfdf737f713ffd713df2e79" => :high_sierra
+    sha256 "f8c12498058b8835f9dd348df8abf7fee6343b1d41ba7fafee46b9d43090b8c5" => :sierra
+  end
+
+  keg_only :versioned_formula
 
   depends_on "cython" => :build
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "python@2" # does not support Python 3.7
 
   # Only >=Yosemite has new enough setuptools for successful compile of the below deps.
   resource "setuptools" do
@@ -88,7 +95,7 @@ class CassandraAT22 < Formula
     (bin/"cqlsh").write_env_script libexec/"bin/cqlsh", :PYTHONPATH => pypath
   end
 
-  plist_options :manual => "cassandra -f"
+  plist_options :manual => "#{HOMEBREW_PREFIX}/opt/cassandra@2.2/bin/cassandra -f"
 
   def plist; <<~EOS
     <?xml version="1.0" encoding="UTF-8"?>
@@ -110,7 +117,7 @@ class CassandraAT22 < Formula
         <string>#{var}/lib/cassandra</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

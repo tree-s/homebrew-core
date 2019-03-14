@@ -1,32 +1,22 @@
 class Burp < Formula
   desc "Network backup and restore"
-  homepage "http://burp.grke.org/"
+  homepage "https://burp.grke.org/"
 
   stable do
-    url "https://downloads.sourceforge.net/project/burp/burp-2.0.54/burp-2.0.54.tar.bz2"
-    sha256 "ae10470586f1fee4556eaae5b3c52b78cfc0eac4109f4b8253c549e7ff000d86"
+    url "https://downloads.sourceforge.net/project/burp/burp-2.1.32/burp-2.1.32.tar.bz2"
+    sha256 "56f8a13ae96e50f2274857a08c9f3d9f06ed6dee306d49fd189e3ff9f93c74fd"
 
     resource "uthash" do
-      url "https://github.com/troydhanson/uthash/archive/v2.0.1.tar.gz"
-      sha256 "613b95fcc368b7d015ad2d0802313277012f50c4ac290c3dfc142d42ebea3337"
+      url "https://github.com/troydhanson/uthash.git",
+          :revision => "1048ed82f22fe57f1e139821ae3a3ce6a52f1002"
     end
   end
 
   bottle do
-    sha256 "9514e480afa08c9dfe14be59610beaf691a6bfe1e2d58327fe57278f822aeedc" => :high_sierra
-    sha256 "c67d91fb1c454af07cf7097484f673e91125aa89ff7e6de6eca8cde508cbe00b" => :sierra
-    sha256 "effe7e754cefe38fa11a50409c7c3fc0ce9c84551de03dfd64302a382622378a" => :el_capitan
-    sha256 "bada46216bdbb6e1e3f6c6506a1e9c8578a077ef8e1fdbcef40c4ef513c84d38" => :yosemite
-  end
-
-  devel do
-    url "https://downloads.sourceforge.net/project/burp/burp-2.1.26/burp-2.1.26.tar.bz2"
-    sha256 "8a146d129be8b7b54f83e93579dd4950f772d2fd3e1d2ea702d63b5d0db9c15b"
-
-    resource "uthash" do
-      url "https://github.com/troydhanson/uthash.git",
-          :revision => "7f1b50be94ceffcc7acd7a7f3f0f8f9aae52cc2f"
-    end
+    sha256 "4cbdd3b5057ce83ac9237689bb0aae356e5d8a1a1f47032b2c282f512d7ab1a2" => :mojave
+    sha256 "63448a114768888ecf29a7e43dc47bfa7d6bf8dcf29100dd686427c767d5c1f1" => :high_sierra
+    sha256 "7227edca3f5ccc37bb27c129f6191440341f1d6513a720a45d0132aae52f2a69" => :sierra
+    sha256 "327c71e933b05d212cc522748e4928b52da9c968f7f2ca50cee31a7ec99add0b" => :el_capitan
   end
 
   head do
@@ -41,18 +31,16 @@ class Burp < Formula
     end
   end
 
+  depends_on "pkg-config" => :build
   depends_on "librsync"
   depends_on "openssl"
 
   def install
     resource("uthash").stage do
-      system "make", "-C", "libut"
-      (buildpath/"uthash/lib").install "libut/libut.a"
-      (buildpath/"uthash/include").install Dir["src/*"]
+      (buildpath/"uthash/include").install "src/uthash.h"
     end
 
     ENV.prepend "CPPFLAGS", "-I#{buildpath}/uthash/include"
-    ENV.prepend "LDFLAGS", "-L#{buildpath}/uthash/lib"
 
     system "autoreconf", "-fiv" if build.head?
 
@@ -72,7 +60,7 @@ class Burp < Formula
   def caveats; <<~EOS
     Before installing the launchd entry you should configure your burp client in
       #{etc}/burp/burp.conf
-    EOS
+  EOS
   end
 
   plist_options :startup => true
@@ -100,7 +88,7 @@ class Burp < Formula
       <string>#{HOMEBREW_PREFIX}</string>
     </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

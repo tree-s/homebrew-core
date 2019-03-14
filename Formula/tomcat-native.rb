@@ -1,21 +1,23 @@
 class TomcatNative < Formula
   desc "Lets Tomcat use some native resources for performance"
   homepage "https://tomcat.apache.org/native-doc/"
-  url "https://www.apache.org/dyn/closer.cgi?path=tomcat/tomcat-connectors/native/1.2.16/source/tomcat-native-1.2.16-src.tar.gz"
-  sha256 "1e9409584c19d868efd056f7dbafc767a630a5a95ee3cd516de8b7aaa4cd97b6"
+  url "https://www.apache.org/dyn/closer.cgi?path=tomcat/tomcat-connectors/native/1.2.19/source/tomcat-native-1.2.19-src.tar.gz"
+  mirror "https://archive.apache.org/dist/tomcat/tomcat-connectors/native/1.2.19/source/tomcat-native-1.2.19-src.tar.gz"
+  sha256 "95c91d17907b321f3abe8799bd73bf32b544dd12ff59bcb3eb7db584bbf65f63"
 
   bottle do
     cellar :any
-    sha256 "b78686398145610c37d78f93d75cd7e0b28fa28c27a4f2b2731f292b98ed2f55" => :high_sierra
-    sha256 "1e80549899d29dcd3d9e396bcbd016ee0f01f2f7cd65f98d699748e6c381e8c6" => :sierra
-    sha256 "478df4f9c769f5f904e65938ff961dd24d9d5b9a742ad2545d3ef9e58babe394" => :el_capitan
+    rebuild 1
+    sha256 "f33bee57406b4046e6b8ab8c4d214c7c2c03edeb797440570646e4c4bd1c2346" => :mojave
+    sha256 "ad856715f0f03622f10df6b090069d5ea2dd7472056133d00b4c74bf6be62ea2" => :high_sierra
+    sha256 "87c67f203543576408082aa94f9abde64372bff2bcf635610eda83e4801b2939" => :sierra
   end
 
   depends_on "libtool" => :build
-  depends_on "tomcat" => :recommended
+  depends_on "apr"
   depends_on :java => "1.7+"
   depends_on "openssl"
-  depends_on "apr"
+  depends_on "tomcat"
 
   def install
     cd "native" do
@@ -28,7 +30,7 @@ class TomcatNative < Formula
       args = ["LIBTOOL=glibtool --tag=CC"]
       # fixes a broken link in mountain lion's apr-1-config (it should be /XcodeDefault.xctoolchain/):
       # usr/local/opt/libtool/bin/glibtool: line 1125: /Applications/Xcode.app/Contents/Developer/Toolchains/OSX10.8.xctoolchain/usr/bin/cc: No such file or directory
-      args << "CC=#{ENV.cc}" if MacOS.version >= :mountain_lion
+      args << "CC=#{ENV.cc}"
       system "make", *args
       system "make", "install"
     end
@@ -42,6 +44,6 @@ class TomcatNative < Formula
       CATALINA_OPTS=\"$CATALINA_OPTS -Djava.library.path=#{opt_lib}\"
 
     If $CATALINA_HOME/bin/setenv.sh doesn't exist, create it and make it executable.
-    EOS
+  EOS
   end
 end

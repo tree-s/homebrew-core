@@ -1,8 +1,8 @@
 class Elasticsearch < Formula
   desc "Distributed search & analytics engine"
   homepage "https://www.elastic.co/products/elasticsearch"
-  url "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.1.3.tar.gz"
-  sha256 "81286935cc95700e604d0c63c411e49d34536346b77f75abe12d0abfddf5b251"
+  url "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-6.6.1.tar.gz"
+  sha256 "cdbc32ef68dcc89eb55dee757b52db6cbb579a136e5cf1df9ab5fb21b40a5242"
 
   head do
     url "https://github.com/elasticsearch/elasticsearch.git"
@@ -63,9 +63,11 @@ class Elasticsearch < Formula
     # Make sure runtime directories exist
     (var/"lib/elasticsearch/#{cluster_name}").mkpath
     (var/"log/elasticsearch").mkpath
-    ln_s etc/"elasticsearch", libexec/"config"
+    ln_s etc/"elasticsearch", libexec/"config" unless (libexec/"config").exist?
     (var/"elasticsearch/plugins").mkpath
-    ln_s var/"elasticsearch/plugins", libexec/"plugins"
+    ln_s var/"elasticsearch/plugins", libexec/"plugins" unless (libexec/"plugins").exist?
+    # fix test not being able to create keystore because of sandbox permissions
+    system bin/"elasticsearch-keystore", "create" unless (etc/"elasticsearch/elasticsearch.keystore").exist?
   end
 
   def caveats
@@ -112,6 +114,7 @@ class Elasticsearch < Formula
   end
 
   test do
+    assert_includes(stable.url, "-oss-")
     require "socket"
 
     server = TCPServer.new(0)

@@ -1,33 +1,24 @@
 class Hdf5AT18 < Formula
   desc "File format designed to store large amounts of data"
   homepage "https://www.hdfgroup.org/HDF5"
-  url "https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.20.tar.bz2"
-  sha256 "a4f2db7e0a078aa324f64e0216a80731731f73025367fa94d158c9b1d3fbdf6f"
+  url "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.bz2"
+  sha256 "e5b1b1dee44a64b795a91c3321ab7196d9e0871fe50d42969761794e3899f40d"
 
   bottle do
-    rebuild 1
-    sha256 "de1706b6d6a77507e56985403bfdb861466c6670e465ca54a32524c9273679f1" => :high_sierra
-    sha256 "c5971253a925403e2ead5da952c27eaaa50b51f28af17bf262ad8ec3fba0dc92" => :sierra
-    sha256 "351aea0c2432b6991f5df4cea14d6b7d280eaaccc051c49ea358565ab9469dde" => :el_capitan
+    sha256 "100e63ca57e49713edef20a610add098d9da6cf75f2e12146eb17a2625a6b6a3" => :mojave
+    sha256 "9df9c3319bf0734c9bed37057db565b11df30db01f380ce069d78bb54a9e01a2" => :high_sierra
+    sha256 "5dfcc37589233e529bf0094bcc376743ca6dee2c40bd7dc87c8d4d5cb6d68a6e" => :sierra
   end
 
   keg_only :versioned_formula
-
-  option "with-mpi", "Enable parallel support"
-  option :cxx11
-
-  deprecated_option "enable-parallel" => "with-mpi"
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool" => :build
   depends_on "gcc" # for gfortran
-  depends_on "open-mpi" if build.with? "mpi"
   depends_on "szip"
 
   def install
-    ENV.cxx11 if build.cxx11?
-
     inreplace %w[c++/src/h5c++.in fortran/src/h5fc.in tools/misc/h5cc.in],
       "${libdir}/libhdf5.settings", "#{pkgshare}/libhdf5.settings"
 
@@ -42,21 +33,8 @@ class Hdf5AT18 < Formula
       --with-szlib=#{Formula["szip"].opt_prefix}
       --enable-build-mode=production
       --enable-fortran
+      --disable-cxx
     ]
-
-    if build.without?("mpi")
-      args << "--enable-cxx"
-    else
-      args << "--disable-cxx"
-    end
-
-    if build.with? "mpi"
-      ENV["CC"] = "mpicc"
-      ENV["CXX"] = "mpicxx"
-      ENV["FC"] = "mpif90"
-
-      args << "--enable-parallel"
-    end
 
     system "./configure", *args
     system "make", "install"
@@ -101,7 +79,7 @@ class Hdf5AT18 < Formula
       if (error /= 0) call abort
       write (*,"(I0,'.',I0,'.',I0)") major, minor, rel
       end
-      EOS
+    EOS
     system "#{bin}/h5fc", "test.f90"
     assert_equal version.to_s, shell_output("./a.out").chomp
   end

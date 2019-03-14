@@ -1,6 +1,7 @@
 class Gtkx < Formula
   desc "GUI toolkit"
   homepage "https://gtk.org/"
+  revision 2
 
   stable do
     url "https://download.gnome.org/sources/gtk+/2.24/gtk+-2.24.32.tar.xz"
@@ -8,29 +9,27 @@ class Gtkx < Formula
   end
 
   bottle do
-    sha256 "fddc3c3e42a03fcd44088060a87adde38153c6dbc4a4db4bbb6ea6fe82502ea6" => :high_sierra
-    sha256 "64652ec795e1e5bef45edcae0e73207c8bd943834e0ab33cfa72a0ec309ea964" => :sierra
-    sha256 "a3797a10d8c6351eb85d60280b7e3ed19e0fd3251df74561b1bde80220eab6d6" => :el_capitan
+    rebuild 1
+    sha256 "b2c76a73e300405cdd6700cc4434d5e7598e9a14714689a5f094aa8a61e3e008" => :mojave
+    sha256 "782c3ac4ef704173cf271de80c4f9146a7e444952ed5813f3e0624f1ff343ea3" => :high_sierra
+    sha256 "9656f083501048e9eb3bde4539520d005cadc04ee242cca78a7e6c349950bdde" => :sierra
   end
 
   head do
-    url "https://git.gnome.org/browse/gtk+.git", :branch => "gtk-2-24"
+    url "https://gitlab.gnome.org/GNOME/gtk.git", :branch => "gtk-2-24"
 
-    depends_on "automake" => :build
     depends_on "autoconf" => :build
-    depends_on "libtool" => :build
+    depends_on "automake" => :build
     depends_on "gtk-doc" => :build
+    depends_on "libtool" => :build
   end
 
-  option "with-quartz-relocation", "Build with quartz relocation support"
-
+  depends_on "gobject-introspection" => :build
   depends_on "pkg-config" => :build
-  depends_on "gdk-pixbuf"
-  depends_on "jasper" => :optional
   depends_on "atk"
-  depends_on "pango"
-  depends_on "gobject-introspection"
+  depends_on "gdk-pixbuf"
   depends_on "hicolor-icon-theme"
+  depends_on "pango"
 
   # Patch to allow Eiffel Studio to run in Cocoa / non-X11 mode, as well as Freeciv's freeciv-gtk2 client
   # See:
@@ -47,12 +46,11 @@ class Gtkx < Formula
     args = ["--disable-dependency-tracking",
             "--disable-silent-rules",
             "--prefix=#{prefix}",
+            "--enable-static",
             "--disable-glibtest",
             "--enable-introspection=yes",
             "--with-gdktarget=quartz",
             "--disable-visibility"]
-
-    args << "--enable-quartz-relocation" if build.with?("quartz-relocation")
 
     if build.head?
       inreplace "autogen.sh", "libtoolize", "glibtoolize"
@@ -61,6 +59,8 @@ class Gtkx < Formula
     end
     system "./configure", *args
     system "make", "install"
+
+    inreplace bin/"gtk-builder-convert", %r{^#!/usr/bin/env python$}, "#!/usr/bin/python"
   end
 
   test do

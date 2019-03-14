@@ -1,33 +1,27 @@
 class PerconaServer < Formula
   desc "Drop-in MySQL replacement"
   homepage "https://www.percona.com"
-  url "https://www.percona.com/downloads/Percona-Server-5.7/Percona-Server-5.7.20-19/source/tarball/percona-server-5.7.20-19.tar.gz"
-  sha256 "17f06c07165954e7eacc3ba2cac0e1d4ba65b0b568f2437298d3c17a6a0940fd"
+  url "https://www.percona.com/downloads/Percona-Server-8.0/Percona-Server-8.0.13-3/source/tarball/percona-server-8.0.13-3.tar.gz"
+  sha256 "ab00626775b85ea506c1d992d66acee50f0bfbde54b830731f61652e87ff93da"
 
   bottle do
-    sha256 "f7e92bf47cdeb861426231fbdf5f641f0ca7e211b8e7f12618251a4905aa8075" => :high_sierra
-    sha256 "651528630a1053592bf0e37f3dcb40ee6e6c27f5e050caf276051d9f9537800b" => :sierra
-    sha256 "f4e786ea655b805196640323c0f7bb135326a77ba99d451cf7db4c1a28c116ae" => :el_capitan
+    sha256 "6fb6012654fa558b4d188b2ab9d8bfc8e7ad25b3124fb27976143ced672f542f" => :mojave
+    sha256 "9d1ba06cca8691dd1ae77b0c03c4b1fd46636194060190892e7a18cb93a1991d" => :high_sierra
+    sha256 "9617fdc84d7b51123c3a89c26788c39a1c9d652f0b0228bb4dca39ba14828fa6" => :sierra
   end
 
-  option "with-debug", "Build with debug support"
-  option "with-embedded", "Build the embedded server"
-  option "with-local-infile", "Build with local infile loading support"
-  option "with-memcached", "Build with InnoDB Memcached plugin"
-  option "with-test", "Build with unit tests"
-
-  deprecated_option "enable-debug" => "with-debug"
-  deprecated_option "enable-local-infile" => "with-local-infile"
-  deprecated_option "enable-memcached" => "with-memcached"
-  deprecated_option "with-tests" => "with-test"
+  pour_bottle? do
+    reason "The bottle needs a var/mysql datadir (yours is var/percona)."
+    satisfy { datadir == var/"mysql" }
+  end
 
   depends_on "cmake" => :build
-  depends_on "openssl"
 
   # https://github.com/Homebrew/homebrew-core/issues/1475
   # Needs at least Clang 3.3, which shipped alongside Lion.
-  # Note: MySQL themselves don't support anything below El Capitan.
-  depends_on :macos => :lion
+  # Note: MySQL themselves don't support anything below Sierra.
+  depends_on :macos => :yosemite
+  depends_on "openssl"
 
   conflicts_with "mariadb", "mysql", "mysql-cluster",
     :because => "percona, mariadb, and mysql install the same binaries."
@@ -36,9 +30,16 @@ class PerconaServer < Formula
   conflicts_with "mariadb-connector-c",
     :because => "both install plugins"
 
+  # https://bugs.mysql.com/bug.php?id=86711
+  # https://github.com/Homebrew/homebrew-core/pull/20538
+  fails_with :clang do
+    build 800
+    cause "Wrong inlining with Clang 8.0, see MySQL Bug #86711"
+  end
+
   resource "boost" do
-    url "https://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.bz2"
-    sha256 "727a932322d94287b62abb1bd2d41723eec4356a7728909e38adb65ca25241ca"
+    url "https://downloads.sourceforge.net/project/boost/boost/1.67.0/boost_1_67_0.tar.bz2"
+    sha256 "2684c972994ee57fc5632e03bf044746f6eb45d4920c343937a465fd67a5adba"
   end
 
   # Where the database files should be located. Existing installs have them
@@ -48,28 +49,12 @@ class PerconaServer < Formula
     @datadir ||= (var/"percona").directory? ? var/"percona" : var/"mysql"
   end
 
-  pour_bottle? do
-    reason "The bottle needs a var/mysql datadir (yours is var/percona)."
-    satisfy { datadir == var/"mysql" }
-  end
-
   def install
-    # Set HAVE_MEMSET_S flag to fix compilation
-    # https://bugs.launchpad.net/percona-server/+bug/1741647
-    ENV.prepend "CPPFLAGS", "-DHAVE_MEMSET_S=1"
-
-    # Don't hard-code the libtool path. See:
-    # https://github.com/Homebrew/legacy-homebrew/issues/20185
-    inreplace "cmake/libutils.cmake",
-      "COMMAND /usr/bin/libtool -static -o ${TARGET_LOCATION}",
-      "COMMAND libtool -static -o ${TARGET_LOCATION}"
-
-    # https://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html
     # -DINSTALL_* are relative to `CMAKE_INSTALL_PREFIX` (`prefix`)
     args = %W[
       -DCOMPILATION_COMMENT=Homebrew
-      -DDEFAULT_CHARSET=utf8
-      -DDEFAULT_COLLATION=utf8_general_ci
+      -DDEFAULT_CHARSET=utf8mb4
+      -DDEFAULT_COLLATION=utf8mb4_0900_ai_ci
       -DINSTALL_DOCDIR=share/doc/#{name}
       -DINSTALL_INCLUDEDIR=include/mysql
       -DINSTALL_INFODIR=share/info
@@ -78,8 +63,12 @@ class PerconaServer < Formula
       -DINSTALL_PLUGINDIR=lib/plugin
       -DMYSQL_DATADIR=#{datadir}
       -DSYSCONFDIR=#{etc}
-      -DWITH_EDITLINE=system
       -DWITH_SSL=yes
+      -DWITH_UNIT_TESTS=OFF
+      -DWITH_EMBEDDED_SERVER=ON
+      -DENABLED_LOCAL_INFILE=1
+      -DWITH_INNODB_MEMCACHED=ON
+      -DWITH_EDITLINE=system
     ]
 
     # MySQL >5.7.x mandates Boost as a requirement to build & has a strict
@@ -96,25 +85,6 @@ class PerconaServer < Formula
     # https://bugs.launchpad.net/percona-server/+bug/1531446
     args.concat %w[-DWITHOUT_TOKUDB=1]
 
-    # Build with debug support
-    args << "-DWITH_DEBUG=1" if build.with? "debug"
-
-    # Build the embedded server
-    args << "-DWITH_EMBEDDED_SERVER=ON" if build.with? "embedded"
-
-    # Build with local infile loading support
-    args << "-DENABLED_LOCAL_INFILE=1" if build.with? "local-infile"
-
-    # Build with InnoDB Memcached plugin
-    args << "-DWITH_INNODB_MEMCACHED=ON" if build.with? "memcached"
-
-    # To enable unit testing at build, we need to download the unit testing suite
-    if build.with? "test"
-      args << "-DENABLE_DOWNLOADS=ON"
-    else
-      args << "-DWITH_UNIT_TESTS=OFF"
-    end
-
     system "cmake", ".", *std_cmake_args, *args
     system "make"
     system "make", "install"
@@ -123,8 +93,8 @@ class PerconaServer < Formula
       system "./mysql-test-run.pl", "status", "--vardir=#{Dir.mktmpdir}"
     end
 
-    # Remove the tests directory if they are not built
-    rm_rf prefix/"mysql-test" if build.without? "test"
+    # Remove the tests directory
+    rm_rf prefix/"mysql-test"
 
     # Don't create databases inside of the prefix!
     # See: https://github.com/Homebrew/homebrew/issues/4975
@@ -195,7 +165,7 @@ class PerconaServer < Formula
       <string>#{datadir}</string>
     </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

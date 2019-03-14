@@ -1,18 +1,16 @@
 class Dcm2niix < Formula
   desc "DICOM to NIfTI converter"
   homepage "https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage"
-  url "https://github.com/rordenlab/dcm2niix/archive/v1.0.20171215.tar.gz"
-  sha256 "16102ece30727900da4ec9eb75bc0ef1030e924aa2f09f3d6251a1335a3d4e39"
+  url "https://github.com/rordenlab/dcm2niix/archive/v1.0.20181125.tar.gz"
+  sha256 "7b17a1333423b383deb2235685390fb0f30495262eb7d0aed293c32cf669936c"
   head "https://github.com/rordenlab/dcm2niix.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "45b3644a820baf951dcaa1f0c39bc089e11486770d621127fa501ef0e6181fde" => :high_sierra
-    sha256 "dc276ad6e059d9fddbc493cd9c380ebddeb248a918193982ec7da5d79628178e" => :sierra
-    sha256 "7aad3796b932e098ee930b5fa4c2331c119cdc24ffd2854a1c761e95aa5b274b" => :el_capitan
+    sha256 "88007ff3d589db9d0d1bf279fdd5b4615832fb4705658d64ec75ba8392253276" => :mojave
+    sha256 "abacf45887c15b756f296ae821978290ec707a76982a8ea3be0088e2147ea0a1" => :high_sierra
+    sha256 "5a3b32eeef358216b95b6606dbd270f6393f3762372f185d3d5a778ad3e9d98d" => :sierra
   end
-
-  option "with-batch"
 
   depends_on "cmake" => :build
 
@@ -22,9 +20,7 @@ class Dcm2niix < Formula
   end
 
   def install
-    args = std_cmake_args
-    args << "-DBATCH_VERSION=ON" if build.with? "batch"
-    system "cmake", ".", *args
+    system "cmake", ".", *std_cmake_args
     system "make", "install"
   end
 

@@ -1,20 +1,20 @@
 class GobjectIntrospection < Formula
   desc "Generate introspection data for GObject libraries"
-  homepage "https://live.gnome.org/GObjectIntrospection"
-  url "https://download.gnome.org/sources/gobject-introspection/1.54/gobject-introspection-1.54.1.tar.xz"
-  sha256 "b88ded5e5f064ab58a93aadecd6d58db2ec9d970648534c63807d4f9a7bb877e"
+  homepage "https://wiki.gnome.org/Projects/GObjectIntrospection"
+  url "https://download.gnome.org/sources/gobject-introspection/1.58/gobject-introspection-1.58.3.tar.xz"
+  sha256 "025b632bbd944dcf11fc50d19a0ca086b83baf92b3e34936d008180d28cdc3c8"
 
   bottle do
-    sha256 "af8872721600cf3b5c033bad125fcef08a59e3ddfde4093fe6bc6bce5331e004" => :high_sierra
-    sha256 "4f07bc2e12b9015a670a999744d8201c575ea9d49421ec617507aa01407d841e" => :sierra
-    sha256 "88736baecfbab3cf709cb6b09de85f9e4a4382ac1d1c59f33af22c522dab81a4" => :el_capitan
+    sha256 "adbc39c550b6e87f089ec59b312c81dbd0c547ca38bf16c8bf102973e2193624" => :mojave
+    sha256 "0075bcc77c062a7f5e33d06ab8e6058e70c3a67cb71e82ad69126c82c100f86c" => :high_sierra
+    sha256 "597f57f061dec016d686f96106d9eb77d8fd9031d0a0c54ad143a1549858d6c2" => :sierra
   end
 
-  depends_on "pkg-config" => :run
-  depends_on "glib"
   depends_on "cairo"
+  depends_on "glib"
   depends_on "libffi"
-  depends_on "python" if MacOS.version <= :mavericks
+  depends_on "pkg-config"
+  depends_on "python"
 
   resource "tutorial" do
     url "https://gist.github.com/7a0023656ccfe309337a.git",
@@ -28,8 +28,9 @@ class GobjectIntrospection < Formula
       s.change_make_var! "GOBJECT_INTROSPECTION_LIBDIR", "#{HOMEBREW_PREFIX}/lib"
     end
 
-    ENV.prepend_path "PATH", Formula["python"].opt_libexec/"bin" if MacOS.version <= :mavericks
-    system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}", "PYTHON=python"
+    system "./configure", "--disable-dependency-tracking",
+                          "--prefix=#{prefix}",
+                          "--with-python=#{Formula["python"].opt_bin}/python3"
     system "make"
     system "make", "install"
   end

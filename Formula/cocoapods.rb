@@ -1,15 +1,17 @@
 class Cocoapods < Formula
   desc "Dependency manager for Cocoa projects"
   homepage "https://cocoapods.org/"
-  url "https://github.com/CocoaPods/CocoaPods/archive/1.4.0.tar.gz"
-  sha256 "c0044f1f74cfe88e6c671dc8225ea8fb94235c6155ca15f1676266f7ef5ba7c5"
+  url "https://github.com/CocoaPods/CocoaPods/archive/1.6.1.tar.gz"
+  sha256 "482fbb5c89d1c7c4456f9c1aba3b6ee41cfe74f8ea389a4d3a0b0415d30cda40"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "1d2df25c8e97fdbaece1f6f8c5c194cf0f1ba76f5f9b7dfdb15b376fac619e02" => :high_sierra
-    sha256 "dfa91a4ddb802965ab2f7092771aa77e1e87de7f810626af5eb0e2f369d9dee9" => :sierra
-    sha256 "b2a3a6356a49ab31e2ee8a5314a67f48cea79590fbfc806a597f31cc647461d0" => :el_capitan
+    sha256 "17bfedd7fbc1e1846ff92bf8524a8e19a0dba884db1454323c5caf28e2ff5235" => :mojave
+    sha256 "a8bf9d17ede7e5a30a44e432c812667b806ddbb0f601cb7b411cd197caa982b5" => :high_sierra
+    sha256 "6a6cbb4bb332db759cbfffed409c1d5bc93b7edff8bd99bb308fa98350ffeba7" => :sierra
   end
+
+  depends_on "ruby" if MacOS.version <= :sierra
 
   def install
     ENV["GEM_HOME"] = libexec

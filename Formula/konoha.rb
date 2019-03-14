@@ -3,12 +3,12 @@ class Konoha < Formula
   homepage "https://github.com/konoha-project/konoha3"
   url "https://github.com/konoha-project/konoha3/archive/v0.1.tar.gz"
   sha256 "e7d222808029515fe229b0ce1c4e84d0a35b59fce8603124a8df1aeba06114d3"
-  revision 3
+  revision 5
 
   bottle do
-    sha256 "1f644e81d2932ecc8a816d04decc4ec0640649db58b7bda67cb28d03769dbb05" => :high_sierra
-    sha256 "c76e500f004558762edfc2fbd45b4d48c946c19861692bd7c32033b4ad5259a8" => :sierra
-    sha256 "fc2b5a70c64bc8cfa74fcfda9b7a9e9f1815c2dcdf8604472306ca7031383456" => :el_capitan
+    sha256 "09af29e79d082fb23348ad7b8f5e2976794bd33208502d6ec2ca3dfed5380ed4" => :mojave
+    sha256 "bbf15f9cac98871a21dae84378117cf2517c90172d41ad27106dc3bb446defec" => :high_sierra
+    sha256 "5b4d33a7fdbad806edf3948e53f29e3c7d08695d0538df3ab06cd8ff91bb50b2" => :sierra
   end
 
   head do
@@ -19,10 +19,10 @@ class Konoha < Formula
 
   depends_on "cmake" => :build
   depends_on "json-c"
-  depends_on "mecab" if MacOS.version >= :mountain_lion
+  depends_on "mecab"
   depends_on "open-mpi"
   depends_on "pcre"
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "python"
   depends_on "sqlite"
 
   def install

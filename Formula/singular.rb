@@ -1,15 +1,15 @@
 class Singular < Formula
   desc "Computer algebra system for polynomial computations"
   homepage "https://www.singular.uni-kl.de/"
-  url "http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/src/4-1-0/singular-4.1.0p3.tar.gz"
-  version "4.1.0p3"
-  sha256 "440164c850d5a1575fcbfe95ab884088d03c0449570d40f465611932ffd0bf80"
-  revision 1
+  url "https://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/4-1-1/singular-4.1.1.tar.gz"
+  sha256 "3792c5707b60c1748298bf47e2277de20303d60563b797372cc0e1eff4bbc583"
+  revision 5
 
   bottle do
-    sha256 "5be41d91381850e9d490e439d86cdf2f93bd308c3e19218164b15f9423c64ef5" => :high_sierra
-    sha256 "dd66f9654f6e64479b266885c2b9466474a06bad3e85166010658820980746e3" => :sierra
-    sha256 "883ba99583262372b1b5e172319920ec64c0c4f7364ef830386490a9bc4a4914" => :el_capitan
+    sha256 "5066f4d8f37460e4c742448904bc0ab86f6c80a33403a8166519e2106d1269c6" => :mojave
+    sha256 "26d97d795cb78e7970766a0838d82cdb83bab2c6364cd0335a35ad8b818ac2c2" => :high_sierra
+    sha256 "d59170be2fc20723900b78e780efc5b56857eae053683b4e5d52670d5db5e1bc" => :sierra
+    sha256 "a31f9779b2572c5e15f8f667c4ab4e32e3c89214d4488193cca66637b36e31c0" => :el_capitan
   end
 
   head do
@@ -21,6 +21,7 @@ class Singular < Formula
   end
 
   depends_on "gmp"
+  depends_on "mpfr"
   depends_on "ntl"
 
   def install
@@ -28,7 +29,8 @@ class Singular < Formula
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--disable-silent-rules",
-                          "--prefix=#{prefix}"
+                          "--prefix=#{prefix}",
+                          "CXXFLAGS=-std=c++11"
     system "make", "install"
   end
 

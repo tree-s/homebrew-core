@@ -1,34 +1,39 @@
 class MingwW64 < Formula
   desc "Minimalist GNU for Windows and GCC cross-compilers"
   homepage "https://mingw-w64.org/"
-  url "https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v5.0.3.tar.bz2"
-  sha256 "2a601db99ef579b9be69c775218ad956a24a09d7dabc9ff6c5bd60da9ccc9cb4"
-  revision 2
+  url "https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v5.0.4.tar.bz2"
+  sha256 "5527e1f6496841e2bb72f97a184fc79affdcd37972eaa9ebf7a5fd05c31ff803"
+  revision 1
 
   bottle do
-    sha256 "263eedfa805ef8e53ae365f303ddacdeecba759630bc60fd6fa6fa1fba583293" => :high_sierra
-    sha256 "56c84c7ad3d5a2a2858eeb79f33eada75488107c352252f5533f5e805d175d74" => :sierra
-    sha256 "91f92b16c39d0afebef40845c5b6aea9d4ad95165afef8024c2e1cd768d43ad0" => :el_capitan
+    sha256 "99643788f39f714277782d585854b426be3a05b3ca4ea6ad976bddf04fad10e2" => :mojave
+    sha256 "d8ee55c3d49dab59470fcd0c2d748faca388d65ac6a339b32f55c61bbcaa7563" => :high_sierra
+    sha256 "123187cb05418b0dea7fc52ed884d0c29af3794a4729befeed645384816c9d8d" => :sierra
+    sha256 "3d17f00fef77e7ca948989413a97955c6628d0dde124ef461d21f6b8528e592c" => :el_capitan
   end
-
-  depends_on "gmp"
-  depends_on "mpfr"
-  depends_on "libmpc"
-  depends_on "isl"
 
   # Apple's makeinfo is old and has bugs
   depends_on "texinfo" => :build
 
+  depends_on "gmp"
+  depends_on "isl"
+  depends_on "libmpc"
+  depends_on "mpfr"
+
   resource "binutils" do
-    url "https://ftp.gnu.org/gnu/binutils/binutils-2.29.1.tar.gz"
-    mirror "https://ftpmirror.gnu.org/binutils/binutils-2.29.1.tar.gz"
-    sha256 "0d9d2bbf71e17903f26a676e7fba7c200e581c84b8f2f43e72d875d0e638771c"
+    url "https://ftp.gnu.org/gnu/binutils/binutils-2.31.1.tar.gz"
+    mirror "https://ftpmirror.gnu.org/binutils/binutils-2.31.1.tar.gz"
+    sha256 "e88f8d36bd0a75d3765a4ad088d819e35f8d7ac6288049780e2fefcad18dde88"
   end
 
   resource "gcc" do
-    url "https://ftp.gnu.org/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.xz"
-    mirror "https://ftpmirror.gnu.org/gcc/gcc-7.3.0/gcc-7.3.0.tar.xz"
-    sha256 "832ca6ae04636adbb430e865a1451adf6979ab44ca1c8374f61fba65645ce15c"
+    url "https://ftp.gnu.org/gnu/gcc/gcc-8.2.0/gcc-8.2.0.tar.xz"
+    mirror "https://ftpmirror.gnu.org/gcc/gcc-8.2.0/gcc-8.2.0.tar.xz"
+    sha256 "196c3c04ba2613f893283977e6011b2345d1cd1af9abeac58e916b1aab3e0080"
+
+    # isl 0.20 compatibility, remove in next GCC version
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86724
+    patch :DATA
   end
 
   def target_archs
@@ -80,6 +85,7 @@ class MingwW64 < Formula
         --with-mpc=#{Formula["libmpc"].opt_prefix}
         --with-isl=#{Formula["isl"].opt_prefix}
         --disable-multilib
+        --enable-threads=posix
       ]
 
       mkdir "#{buildpath}/gcc/build-#{arch}" do
@@ -109,13 +115,10 @@ class MingwW64 < Formula
         system "make", "install"
       end
 
-      # Finish building GCC (runtime libraries)
-      chdir "#{buildpath}/gcc/build-#{arch}" do
-        system "make"
-        system "make", "install"
-      end
-
       # Build the winpthreads library
+      # we need to build this prior to the
+      # GCC runtime libraries, to have `-lpthread`
+      # available, for `--enable-threads=posix`
       args = %W[
         CC=#{target}-gcc
         CXX=#{target}-g++
@@ -125,6 +128,12 @@ class MingwW64 < Formula
       ]
       mkdir "mingw-w64-libraries/winpthreads/build-#{arch}" do
         system "../configure", *args
+        system "make"
+        system "make", "install"
+      end
+
+      # Finish building GCC (runtime libraries)
+      chdir "#{buildpath}/gcc/build-#{arch}" do
         system "make"
         system "make", "install"
       end
@@ -166,3 +175,17 @@ class MingwW64 < Formula
     end
   end
 end
+
+__END__
+diff --git a/gcc/graphite.h b/gcc/graphite.h
+index 4e0e58c..be0a22b 100644
+--- a/gcc/graphite.h
++++ b/gcc/graphite.h
+@@ -37,6 +37,8 @@ along with GCC; see the file COPYING3.  If not see
+ #include <isl/schedule.h>
+ #include <isl/ast_build.h>
+ #include <isl/schedule_node.h>
++#include <isl/id.h>
++#include <isl/space.h>
+
+ typedef struct poly_dr *poly_dr_p;

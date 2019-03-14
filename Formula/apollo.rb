@@ -7,17 +7,12 @@ class Apollo < Formula
   bottle do
     cellar :any_skip_relocation
     rebuild 1
+    sha256 "0bea2c3db30793391d982ff0d6233e11b93df47a34fe253c8daf8dc6f0fe05fd" => :mojave
     sha256 "48b09eb2c2be0ed37a27b6b4d6835c5db6d80c877ea10e46296ddd17f8e646ba" => :high_sierra
     sha256 "1d4d6ac835aa8f72d8fb3084780e215986737c6609dff27a552730f2df9f5fc7" => :sierra
     sha256 "1521942c30bd7443a79d944c384391cea0944089a0242b89f31c2c2e4dda1e81" => :el_capitan
     sha256 "1521942c30bd7443a79d944c384391cea0944089a0242b89f31c2c2e4dda1e81" => :yosemite
   end
-
-  deprecated_option "no-bdb" => "without-bdb"
-  deprecated_option "no-mqtt" => "without-mqtt"
-
-  option "without-bdb", "Install without bdb store support"
-  option "without-mqtt", "Install without MQTT protocol support"
 
   depends_on :java => "1.7+"
 
@@ -38,8 +33,8 @@ class Apollo < Formula
     prefix.install %w[docs examples]
     libexec.install Dir["*"]
 
-    (libexec/"lib").install resource("bdb-je") if build.with? "bdb"
-    (libexec/"lib").install resource("mqtt") if build.with? "mqtt"
+    (libexec/"lib").install resource("bdb-je")
+    (libexec/"lib").install resource("mqtt")
 
     (bin/"apollo").write_env_script libexec/"bin/apollo", Language::Java.java_home_env
   end
@@ -47,7 +42,7 @@ class Apollo < Formula
   def caveats; <<~EOS
     To create the broker:
         #{bin}/apollo create #{var}/apollo
-    EOS
+  EOS
   end
 
   plist_options :manual => "#{HOMEBREW_PREFIX}/var/apollo/bin/apollo-broker run"
@@ -72,7 +67,7 @@ class Apollo < Formula
         <string>#{var}/apollo</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

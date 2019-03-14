@@ -1,14 +1,16 @@
 class Inspectrum < Formula
   desc "Offline radio signal analyser"
   homepage "https://github.com/miek/inspectrum"
-  url "https://github.com/miek/inspectrum/archive/v0.2.tar.gz"
-  sha256 "50b7db9b86208f414c387700a358eb58364094f3e8a4985f586f4f815645898a"
+  url "https://github.com/miek/inspectrum/archive/v0.2.2.tar.gz"
+  sha256 "9e513101a59822c86b84cb7717f395c59bb27a6c192fe021cf4ffb7cf1d09c78"
   head "https://github.com/miek/inspectrum.git"
 
   bottle do
-    sha256 "c982163a1a70eb676d6fe8e9744a25e03edeea31744ce30beef75f6c47e924d1" => :high_sierra
-    sha256 "b34f9c01e3a888f97d1c832c7fbcf4f4a036c3bcf47f058b81f41affe4f0f94c" => :sierra
-    sha256 "f384448eac77bffb041890951b4ba401b11587eefc9d089162fbe63b7cd08e42" => :el_capitan
+    cellar :any
+    sha256 "54282d4f9ec25f3573d93b497197c5b240561321525fea3617a28efe02e3c16a" => :mojave
+    sha256 "e54bcce14f93b2c84b738ca978b4b931df3b59d8c444288c5619a759b378a04c" => :high_sierra
+    sha256 "0877551fa20ea67f1aab886ccd90577760ad7ab295787dd37e509283cb2129d2" => :sierra
+    sha256 "ae97d37f999dab31422a9a9dac70756e8f5b97a0f6520cb59ae94bee5a992755" => :el_capitan
   end
 
   depends_on "cmake" => :build

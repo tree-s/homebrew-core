@@ -1,14 +1,14 @@
 class Webp < Formula
   desc "Image format providing lossless and lossy compression for web images"
   homepage "https://developers.google.com/speed/webp/"
-  url "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.6.1.tar.gz"
-  sha256 "06503c782d9f151baa325591c3579c68ed700ffc62d4f5a32feead0ff017d8ab"
+  url "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.2.tar.gz"
+  sha256 "3d47b48c40ed6476e8047b2ddb81d93835e0ca1b8d3e8c679afbb3004dd564b1"
 
   bottle do
     cellar :any
-    sha256 "f42744b43febbc4a5d8cac83c87c0aee99c5c1cf7306beb9ed1811be702b318b" => :high_sierra
-    sha256 "d4c014af0a6786cad79a22c9310b36704682df1fddb7f34bf887aaea27fdd531" => :sierra
-    sha256 "ac9503f2951034f2cad4dec141c11d564580a622d916c152788a4e3f3116b0ba" => :el_capitan
+    sha256 "e481c511582d5e23078c6a19fb224afe625422a457eaaeea8183c229947a9ced" => :mojave
+    sha256 "d045f6c3963381fb509c8f752e89a5d48c623d6622bff8c68c8f4327924796ff" => :high_sierra
+    sha256 "95e05535e7701de8ced6c4a98ecc9af78e87c06a0c69c4bcdb00fdc9c566d531" => :sierra
   end
 
   head do
@@ -18,23 +18,18 @@ class Webp < Formula
     depends_on "libtool" => :build
   end
 
+  depends_on "jpeg"
   depends_on "libpng"
-  depends_on "jpeg" => :recommended
-  depends_on "libtiff" => :optional
-  depends_on "giflib" => :optional
 
   def install
-    args = [
-      "--disable-dependency-tracking",
-      "--disable-gl",
-      "--enable-libwebpmux",
-      "--enable-libwebpdemux",
-      "--enable-libwebpdecoder",
-      "--prefix=#{prefix}",
-    ]
-    args << "--disable-gif" if build.without? "giflib"
     system "./autogen.sh" if build.head?
-    system "./configure", *args
+    system "./configure", "--prefix=#{prefix}",
+                          "--disable-dependency-tracking",
+                          "--disable-gif",
+                          "--disable-gl",
+                          "--enable-libwebpdecoder",
+                          "--enable-libwebpdemux",
+                          "--enable-libwebpmux"
     system "make", "install"
   end
 

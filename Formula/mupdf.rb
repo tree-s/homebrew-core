@@ -1,20 +1,19 @@
 class Mupdf < Formula
   desc "Lightweight PDF and XPS viewer"
   homepage "https://mupdf.com/"
-  url "https://mupdf.com/downloads/mupdf-1.12.0-source.tar.gz"
-  sha256 "5c6353a82f1512f4f5280cf69a3725d1adac9c8b22377ec2a447c4fc45528755"
+  url "https://mupdf.com/downloads/archive/mupdf-1.14.0-source.tar.gz"
+  sha256 "c443483a678c3fc258fa4adc124146225d0bb443c522619faadebf6b363d7724"
   head "https://git.ghostscript.com/mupdf.git"
 
   bottle do
     cellar :any_skip_relocation
-    rebuild 1
-    sha256 "4b9122fa576b3bb24754016fa9dad09113dcbe0fe982cff3341d0f8d718fae25" => :high_sierra
-    sha256 "a9745c00b9efe835197f89e973f4b25698567c011aa1fdf3052c586ba3503a87" => :sierra
-    sha256 "771078a7ae9a600933d1f38ff80389b7bc158e8aecde9c9c7bf7aecddc75e7a8" => :el_capitan
+    sha256 "ff48af84431d902475fd863213c719a493e234cea7780715cc33e259658b23f4" => :mojave
+    sha256 "3fc3d421c951188f9aa9900d68d0c02475bcebb404a8cc79d962f73ebc29be2f" => :high_sierra
+    sha256 "5bbec2ae4979636e506a413759d5f81928fb299b9bf9fbecf902cc150d3d2142" => :sierra
   end
 
-  depends_on :x11
   depends_on "openssl"
+  depends_on :x11
 
   conflicts_with "mupdf-tools",
     :because => "mupdf and mupdf-tools install the same binaries."
@@ -25,7 +24,10 @@ class Mupdf < Formula
            "verbose=yes",
            "CC=#{ENV.cc}",
            "prefix=#{prefix}"
-    bin.install_symlink "mutool" => "mudraw"
+
+    # Symlink `mutool` as `mudraw` (a popular shortcut for `mutool draw`).
+    bin.install_symlink bin/"mutool" => "mudraw"
+    man1.install_symlink man1/"mutool.1" => "mudraw.1"
   end
 
   test do

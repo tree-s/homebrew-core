@@ -1,15 +1,15 @@
 class Gopass < Formula
   desc "The slightly more awesome Standard Unix Password Manager for Teams"
   homepage "https://www.justwatch.com/gopass"
-  url "https://github.com/justwatchcom/gopass/releases/download/v1.6.10/gopass-1.6.10.tar.gz"
-  sha256 "2b481d0847abb2cb2446dfca6533c2e051b976011f42745c1ab1abbbf0bbdc8b"
-  head "https://github.com/justwatchcom/gopass.git"
+  url "https://github.com/gopasspw/gopass/releases/download/v1.8.4/gopass-1.8.4.tar.gz"
+  sha256 "2a00263dd169b560c75572239ba341edeec8acb66518fdca33d55d81fb94fc9f"
+  head "https://github.com/gopasspw/gopass.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "a30f17220395b1aeb731ea60f6f3e0fe0443915e41fdf7c71d0e703798b70a64" => :high_sierra
-    sha256 "14e3be402cb9784aecd694e2cf3bba7bc123d9e90d6ed79fcc2c0f9a4c3a3d8c" => :sierra
-    sha256 "3da71a728f98b072a1bfa087cbda00566d5c5011edd4e72e701041a5486bc00f" => :el_capitan
+    sha256 "5589d624a7d4087f6f54f2f78f8b5a16803acf762217a65e6d69eae0d4ddb0ef" => :mojave
+    sha256 "92fecc68946782936b09d0a8b9a78961f0dafa35605a317cadbd0f58948e9b5e" => :high_sierra
+    sha256 "e4b03e45da2ee61507c1e7a7780e298c8bb3d96743572b1e84d6b76339d89219" => :sierra
   end
 
   depends_on "go" => :build
@@ -17,9 +17,9 @@ class Gopass < Formula
 
   def install
     ENV["GOPATH"] = buildpath
-    (buildpath/"src/github.com/justwatchcom/gopass").install buildpath.children
+    (buildpath/"src/github.com/gopasspw/gopass").install buildpath.children
 
-    cd "src/github.com/justwatchcom/gopass" do
+    cd "src/github.com/gopasspw/gopass" do
       prefix.install_metafiles
       ENV["PREFIX"] = prefix
       system "make", "install"
@@ -46,7 +46,7 @@ class Gopass < Formula
     begin
       system Formula["gnupg"].opt_bin/"gpg", "--batch", "--gen-key", "batch.gpg"
 
-      system bin/"gopass", "init", "--nogit", "testing@foo.bar"
+      system bin/"gopass", "init", "--rcs", "noop", "testing@foo.bar"
       system bin/"gopass", "generate", "Email/other@foo.bar", "15"
       assert_predicate testpath/".password-store/Email/other@foo.bar.gpg", :exist?
     ensure

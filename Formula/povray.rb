@@ -1,27 +1,26 @@
 class Povray < Formula
   desc "Persistence Of Vision RAYtracer (POVRAY)"
-  homepage "http://www.povray.org/"
-  url "https://github.com/POV-Ray/povray/archive/v3.7.0.7.tar.gz"
-  sha256 "085746e891edbb2cfda22bb2a8b86043bd680a68ad9121bc568118c730ace7b9"
+  homepage "https://www.povray.org/"
+  url "https://github.com/POV-Ray/povray/archive/v3.7.0.8.tar.gz"
+  sha256 "53d11ebd2972fc452af168a00eb83aefb61387662c10784e81b63e44aa575de4"
+  revision 1
 
   bottle do
-    sha256 "35f5427c7f206b4964e0d0fbf76bd03f3796b0afc8622790f962c318c92fb298" => :high_sierra
-    sha256 "c0ceb17e9bf1f3de0cc9d66ef5e1142fc725d1a09e415a13fdba8e06b428535f" => :sierra
-    sha256 "cb34de2b4310b67342fddf0aebfa48f03eadc5c7f4c653fa64139241fdf1da71" => :el_capitan
+    rebuild 1
+    sha256 "eae4cf975215cdfdeadb665c53061c6ed2b4f9fa95121e7145222409b0e44c56" => :mojave
+    sha256 "4472bb00380eb26d3045dd5e67effa4f75934936263129009f9a80bbf5290633" => :high_sierra
+    sha256 "f21cb29c30c8367aa14f6a4485bf03377f23e30b2e7178be466d12bb84be26a9" => :sierra
+    sha256 "f2f0bf20fbe2d5b1ce91ecdf4eca52e4a544323910febae396d8b9fb1c0044ec" => :el_capitan
   end
 
-  depends_on :macos => :lion
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "boost"
   depends_on "jpeg"
   depends_on "libpng"
   depends_on "libtiff"
-  depends_on "openexr" => :optional
 
-  deprecated_option "use-openexr" => "with-openexr"
-
-  needs :cxx11
+  depends_on "openexr"
 
   def install
     ENV.cxx11
@@ -33,11 +32,10 @@ class Povray < Formula
       --prefix=#{prefix}
       --mandir=#{man}
       --with-boost=#{Formula["boost"].opt_prefix}
+      --with-openexr=#{Formula["openexr"].opt_prefix}
       --without-libsdl
       --without-x
     ]
-
-    args << "--with-openexr=#{Formula["openexr"].opt_prefix}" if build.with? "openexr"
 
     # Adjust some scripts to search for `etc` in HOMEBREW_PREFIX.
     %w[allanim allscene portfolio].each do |script|

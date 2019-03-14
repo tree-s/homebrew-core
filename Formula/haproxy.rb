@@ -1,19 +1,25 @@
 class Haproxy < Formula
   desc "Reliable, high performance TCP/HTTP load balancer"
   homepage "https://www.haproxy.org/"
-  url "https://www.haproxy.org/download/1.8/src/haproxy-1.8.3.tar.gz"
-  sha256 "3dc7f65c4ed6ac1420dfd01896833e0f765f72471fbfa316a195793272e58b4a"
+  url "https://www.haproxy.org/download/1.9/src/haproxy-1.9.4.tar.gz"
+  sha256 "8483fe12b30256f83d542b3f699e165d8f71bf2dfac8b16bb53716abce4ba74f"
 
   bottle do
     cellar :any
-    sha256 "7e86fa045c41c1ccac2f2976525c522ba0d022a969181daae7b1936e1e975e3c" => :high_sierra
-    sha256 "ebff36f5d8dd62c65fd2ee7ff9c7cdb206dafcad916e7000d81d116915d79121" => :sierra
-    sha256 "ec75ef322bd99f1ccab4b0dd72b08abfba7cf557750b9ea5298d8449c23da890" => :el_capitan
+    sha256 "005dc544ba30b5eb288ab7582bafb2c1016a4683158ac06f5885b2f63f491526" => :mojave
+    sha256 "33ff7981eb28bc40e4771b6a9f6dbe7ac25172c17b5b914009ec3c6e87292a30" => :high_sierra
+    sha256 "9fda53095c30ede7977de844002bf646b577e50bce218219a27b0187ac3da4c3" => :sierra
   end
 
   depends_on "openssl"
   depends_on "pcre"
-  depends_on "lua" => :optional
+
+  # Patch for BUILD/MEDIUM: initcall: Fix build on MacOS. See haproxy/haproxy#42
+  # Should be safe to remove on > 1.9.4 release as upstream intend to backport
+  patch do
+    url "https://github.com/haproxy/haproxy/commit/9efa7b8.patch?full_index=1"
+    sha256 "756b26d3518cbf9a84f5957719beb764ac4d25bdb783f839d5b05c5283ac2f62"
+  end
 
   def install
     args = %w[
@@ -22,17 +28,10 @@ class Haproxy < Formula
       USE_POLL=1
       USE_PCRE=1
       USE_OPENSSL=1
+      USE_THREAD=1
       USE_ZLIB=1
       ADDLIB=-lcrypto
     ]
-
-    if build.with?("lua")
-      lua = Formula["lua"]
-      args << "USE_LUA=1"
-      args << "LUA_LIB=#{lua.opt_lib}"
-      args << "LUA_INC=#{lua.opt_include}"
-      args << "LUA_LD_FLAGS=-L#{lua.opt_lib}"
-    end
 
     # We build generic since the Makefile.osx doesn't appear to work
     system "make", "CC=#{ENV.cc}", "CFLAGS=#{ENV.cflags}", "LDFLAGS=#{ENV.ldflags}", *args
@@ -63,7 +62,7 @@ class Haproxy < Formula
         <string>#{var}/log/haproxy.log</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

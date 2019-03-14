@@ -2,7 +2,7 @@ class Riak < Formula
   desc "Distributed database"
   homepage "http://basho.com/products/riak-kv/"
   url "https://github.com/basho/riak.git",
-      :tag => "riak-2.2.3",
+      :tag      => "riak-2.2.3",
       :revision => "d96b67eeb5f934c673ee8e5c75c00a3861f388aa"
 
   bottle do
@@ -12,7 +12,6 @@ class Riak < Formula
     sha256 "803da1ba13fca2ff1c5ed1d341c064218a03697d8114e40c325553a430920653" => :yosemite
   end
 
-  depends_on :macos => :mountain_lion
   depends_on :arch => :x86_64
   depends_on "erlang@17"
 

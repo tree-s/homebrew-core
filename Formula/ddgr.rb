@@ -1,18 +1,17 @@
 class Ddgr < Formula
   desc "DuckDuckGo from the terminal"
   homepage "https://github.com/jarun/ddgr"
-  url "https://github.com/jarun/ddgr/archive/v1.2.tar.gz"
-  sha256 "a9828b8863949dc93dd574a15b6779d9390b6f5e277e35c157064d7c06423758"
-  revision 1
+  url "https://github.com/jarun/ddgr/archive/v1.6.tar.gz"
+  sha256 "eae7ff1ab44dfda168a8bbe46593e80ca4a26ab45a9efbab13e6f466349e0e5c"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "f0ec88b48600ba5e744e11e3cd943f0b92525052d2de0b660feeb1eed4b575d4" => :high_sierra
-    sha256 "f0ec88b48600ba5e744e11e3cd943f0b92525052d2de0b660feeb1eed4b575d4" => :sierra
-    sha256 "f0ec88b48600ba5e744e11e3cd943f0b92525052d2de0b660feeb1eed4b575d4" => :el_capitan
+    sha256 "0c307cf8cb01fee1ad0306e8463dfae4ece2d47974e3d44105326255b0b72a03" => :mojave
+    sha256 "598196edcbeb1d40d9288bad01775b2b56713758e24a51538a6487dc57bd8521" => :high_sierra
+    sha256 "598196edcbeb1d40d9288bad01775b2b56713758e24a51538a6487dc57bd8521" => :sierra
   end
 
-  depends_on "python3"
+  depends_on "python"
 
   def install
     system "make", "install", "PREFIX=#{prefix}"

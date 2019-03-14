@@ -3,35 +3,33 @@ class GnomeRecipes < Formula
   homepage "https://wiki.gnome.org/Apps/Recipes"
   url "https://download.gnome.org/sources/gnome-recipes/2.0/gnome-recipes-2.0.2.tar.xz"
   sha256 "1be9d2fcb7404a97aa029d2409880643f15071c37039247a6a4320e7478cd5fb"
-  revision 2
+  revision 8
 
   bottle do
-    sha256 "9250ea26b664e3ec8982762710969f15582b7e87e11e989584294a6147c07926" => :high_sierra
-    sha256 "e44081479d677544aa1c89cf1fcd2aef07f6afd6fa4eb81fe9a0a39677ae0e0c" => :sierra
-    sha256 "5271c2503df67137bce7a6eb04c581474e23015332ea0aed73870a849053d973" => :el_capitan
+    sha256 "d4b76cbd04850877a91f733dcf1039ade2abf71b4bbf46cf55dcded08cd5b823" => :mojave
+    sha256 "7a3248e3ba15d91ed5ce28520c7e384bdf1f5f05f4fcc6f8d6deb425a40b0447" => :high_sierra
+    sha256 "7c84b25efe430c5a8436e144c45243ff588177aba5ed63b2ba42ab8214196ddb" => :sierra
   end
 
+  depends_on "itstool" => :build
   depends_on "meson" => :build
   depends_on "ninja" => :build
   depends_on "pkg-config" => :build
-  depends_on "itstool" => :build
-  depends_on "python3" => :build
-  depends_on "gtk+3"
+  depends_on "python" => :build
   depends_on "adwaita-icon-theme"
-  depends_on "libcanberra"
   depends_on "gnome-autoar"
-  depends_on "gspell"
-  depends_on "libsoup"
   depends_on "gnu-tar"
-
-  # dependencies for goa
-  depends_on "intltool" => :build
-  depends_on "json-glib"
-  depends_on "librest"
+  depends_on "gspell"
+  depends_on "gtk+3"
+  depends_on "json-glib" # for goa
+  depends_on "libcanberra"
+  depends_on "librest" # for goa
+  depends_on "libsoup"
+  depends_on "libxml2"
 
   resource "goa" do
-    url "https://download.gnome.org/sources/gnome-online-accounts/3.26/gnome-online-accounts-3.26.1.tar.xz"
-    sha256 "603c110405cb89a01497a69967f10e3f3f36add3dc175b062ec4c5ed4485621b"
+    url "https://download.gnome.org/sources/gnome-online-accounts/3.30/gnome-online-accounts-3.30.2.tar.xz"
+    sha256 "05c7e588c884a4145db376880303588f74b76d1fa11afbeccb74c6eff36b2fdc"
   end
 
   def install

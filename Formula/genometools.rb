@@ -3,19 +3,22 @@ class Genometools < Formula
   homepage "http://genometools.org/"
   url "http://genometools.org/pub/genometools-1.5.10.tar.gz"
   sha256 "0208591333b74594bc219fb67f5a29b81bb2ab872f540c408ac1743716274e6a"
+  revision 2
   head "https://github.com/genometools/genometools.git"
 
   bottle do
     cellar :any
-    sha256 "41b8f4a189050f98d0f78c3972d8efb095a2eea8400c486eb6d785a3f89cadae" => :high_sierra
-    sha256 "b081ac73906f972a1858d86070d6d79ad3985e703f347c1fe49b0511e15e0232" => :sierra
-    sha256 "06a7a3d2450c7c6538f2005d12135e8a26e2d086fc6f1d5867e9fe03fcce9833" => :el_capitan
+    sha256 "89af40c5d74a8f622011c6e6dbeebebf5826492f9dbfb599f9e4a989b10d9206" => :mojave
+    sha256 "3b3c2538f258f57f3d7e44e5aab06de29c3046f6269a680d251d8978545cb708" => :high_sierra
+    sha256 "18204808f670a6a7f7f7281aad8dd0c26036c1d779686d0dac7faef093d81a9e" => :sierra
   end
 
   depends_on "pkg-config" => :build
   depends_on "cairo"
   depends_on "pango"
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "python"
+
+  conflicts_with "libslax", :because => "both install `bin/gt`"
 
   def install
     system "make", "prefix=#{prefix}"
@@ -27,13 +30,13 @@ class Genometools < Formula
         "gtlib = CDLL(\"libgenometools\" + soext)",
         "gtlib = CDLL(\"#{lib}/libgenometools\" + soext)"
 
-      system "python", *Language::Python.setup_install_args(prefix)
-      system "python", "-m", "unittest", "discover", "tests"
+      system "python3", *Language::Python.setup_install_args(prefix)
+      system "python3", "-m", "unittest", "discover", "tests"
     end
   end
 
   test do
     system "#{bin}/gt", "-test"
-    system "python", "-c", "import gt"
+    system "python3", "-c", "import gt"
   end
 end

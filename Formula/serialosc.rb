@@ -2,8 +2,8 @@ class Serialosc < Formula
   desc "Opensound control server for monome devices"
   homepage "https://monome.org/docs/osc/"
   url "https://github.com/monome/serialosc.git",
-    :tag => "v1.4.1",
-    :revision => "4fec6f11276dd302faf9ca8e0a8e126f273cf954"
+      :tag      => "v1.4.1",
+      :revision => "4fec6f11276dd302faf9ca8e0a8e126f273cf954"
   head "https://github.com/monome/serialosc.git"
 
   bottle do
@@ -13,8 +13,8 @@ class Serialosc < Formula
     sha256 "538a58e048362ab6561a3ba60a4bce9a262ec6245c2bdbf2c3b07a21c8f725cc" => :el_capitan
   end
 
-  depends_on "liblo"
   depends_on "confuse"
+  depends_on "liblo"
   depends_on "libmonome"
 
   def install

@@ -1,32 +1,34 @@
 class Baobab < Formula
   desc "Gnome disk usage analyzer"
   homepage "https://wiki.gnome.org/Apps/Baobab"
-  url "https://download.gnome.org/sources/baobab/3.26/baobab-3.26.1.tar.xz"
-  sha256 "7a59ab5945f5d90725231b10d85a1893403f56660b1627c111d2b4eeb1ef787e"
+  url "https://download.gnome.org/sources/baobab/3.30/baobab-3.30.0.tar.xz"
+  sha256 "5e4dd06f241eb32f00850efa1a4541cee088de480be2b52d788143187410a74f"
 
   bottle do
-    sha256 "79af97969e50a395e46f26764ac1301c604b7eaea79dc55ca6e97d0e80892709" => :high_sierra
-    sha256 "9ac8b22b290f7fd9f27d186f9d830179ab8f872fac8a997f29b01b0cf8a14786" => :sierra
-    sha256 "ba775ce84312519ee0da57407c63eaa29157de455ecd2cfca9bb9349ad09ba34" => :el_capitan
+    rebuild 1
+    sha256 "e8319cfc39f4120159194d06eb9314d10118cce307b3f14cf5eb1b1d19a933fa" => :mojave
+    sha256 "5334181b0761c0b329727064cc0af772774a5a25ab047e1bca187f62f0558ca9" => :high_sierra
+    sha256 "e256084a6b1a30cd87c04b37cefdef405c63bb1b6720e210138bbcd63f02aaad" => :sierra
   end
 
-  depends_on "pkg-config" => :build
-  depends_on "intltool" => :build
   depends_on "itstool" => :build
-  depends_on "libxml2" => :build
-  depends_on "python" => :build if MacOS.version <= :snow_leopard
+  depends_on "meson" => :build
+  depends_on "ninja" => :build
+  depends_on "pkg-config" => :build
+  depends_on "python" => :build
   depends_on "vala" => :build
+  depends_on "adwaita-icon-theme"
   depends_on "gtk+3"
   depends_on "hicolor-icon-theme"
-  depends_on "adwaita-icon-theme"
 
   def install
-    system "./configure", "--disable-dependency-tracking",
-                          "--disable-silent-rules",
-                          "--prefix=#{prefix}",
-                          "--disable-schemas-compile"
-    ENV.append_path "PYTHONPATH", "#{Formula["libxml2"].opt_lib}/python2.7/site-packages"
-    system "make", "install"
+    # stop meson_post_install.py from doing what needs to be done in the post_install step
+    ENV["DESTDIR"] = "/"
+    mkdir "build" do
+      system "meson", "--prefix=#{prefix}", ".."
+      system "ninja"
+      system "ninja", "install"
+    end
   end
 
   def post_install

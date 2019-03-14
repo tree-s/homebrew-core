@@ -1,26 +1,25 @@
 class Wartremover < Formula
   desc "Flexible Scala code linting tool"
   homepage "https://github.com/wartremover/wartremover"
-  url "https://github.com/wartremover/wartremover/archive/v2.1.1.tar.gz"
-  sha256 "4c789ee33ecff2b655bc839c5ebc7b20d581f99529f8f553628ed38d9615e553"
+  url "https://github.com/wartremover/wartremover/archive/v2.3.7.tar.gz"
+  sha256 "7a418ec9cd5fddb8499b6e1551071be0553cd66c63378107e3e561c47ce421ca"
   head "https://github.com/wartremover/wartremover.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "bf550c84f6496836bac31e52f0fd9409183db5835b874d7da2d7d1d343c645e7" => :high_sierra
-    sha256 "38422af4a85e008b1405bac3aba599e5465b1ce5990ebd482132d460eb31ba49" => :sierra
-    sha256 "2a91c4fb3c3f070a2828875eacc72c73d36928bea0b9169769435ed66538d9ff" => :el_capitan
-    sha256 "a39d5db621275982f364f37a5e6d2c0ccd3a507c1c9afa8a6693123b75d4413c" => :yosemite
+    sha256 "7be61c2a96a178c4cdafc761bd72e04a24d5e12c1dc4ad6d5b8432c23de751f9" => :mojave
+    sha256 "dfa2c1fc983b25b25dac84a17bc0616ed830f2e90dd103f07c4256c9e088ea9a" => :high_sierra
+    sha256 "69bae9cedcd33931a7eeb9154069550930f9d25546f9e6be9e69a6ee68163d31" => :sierra
   end
 
   depends_on "sbt" => :build
-  depends_on :java => "1.6+"
+  depends_on :java => "1.8"
 
   def install
     system "./sbt", "-sbt-jar", Formula["sbt"].opt_libexec/"bin/sbt-launch.jar",
                     "core/assembly"
     libexec.install "wartremover-assembly.jar"
-    bin.write_jar_script libexec/"wartremover-assembly.jar", "wartremover"
+    bin.write_jar_script libexec/"wartremover-assembly.jar", "wartremover", :java_version => "1.8"
   end
 
   test do

@@ -1,19 +1,19 @@
 class Vala < Formula
   desc "Compiler for the GObject type system"
-  homepage "https://live.gnome.org/Vala"
-  url "https://download.gnome.org/sources/vala/0.38/vala-0.38.6.tar.xz"
-  sha256 "8c676b8307a12fba3420f861463c7e40b2743b0d6fef91f9516a3441ea25029a"
+  homepage "https://wiki.gnome.org/Projects/Vala"
+  url "https://download.gnome.org/sources/vala/0.42/vala-0.42.5.tar.xz"
+  sha256 "8c33b4abc0573d364781bbfe54a1668ed34956902e471191a31cf05dc87c6e12"
 
   bottle do
-    sha256 "f6e204de47e3538d1c597918153ef728ae6d6f5153d949a37b82dba45d0daeba" => :high_sierra
-    sha256 "bdc70e77dc4cb79c1bf0d93a6108bd8e1e8c066e72a1bd4df5eb220ea4406f79" => :sierra
-    sha256 "cd6b078d0e9926acd9777b1d0fbaf420dbadae310518c85db4357f40d7c4229b" => :el_capitan
+    sha256 "51c9fe61fe3b1b680c8208cc0bbc83fa0f0ea8f7ee4c4ddabad3cbb4bcf953fb" => :mojave
+    sha256 "e531087ef3b3b1c7c28a7560cbe5b92f1b547b9a049c01e46b990c15c4afc495" => :high_sierra
+    sha256 "f623af0de13794641e85ad057b9955f8dac56da2445a0df41ea364de2baa6f6f" => :sierra
   end
 
-  depends_on "pkg-config" => :run
   depends_on "gettext"
   depends_on "glib"
   depends_on "graphviz"
+  depends_on "pkg-config"
 
   def install
     system "./configure", "--disable-dependency-tracking",
@@ -26,7 +26,7 @@ class Vala < Formula
   test do
     test_string = "Hello Homebrew\n"
     path = testpath/"hello.vala"
-    path.write <<-EOS
+    path.write <<~EOS
       void main () {
         print ("#{test_string}");
       }

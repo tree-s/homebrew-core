@@ -2,21 +2,20 @@ class Libsass < Formula
   desc "C implementation of a Sass compiler"
   homepage "https://github.com/sass/libsass"
   url "https://github.com/sass/libsass.git",
-      :tag => "3.4.8",
-      :revision => "a1f13edf19f90f0723e02a736a33e0fc03c6c584"
+      :tag      => "3.5.5",
+      :revision => "39e30874b9a5dd6a802c20e8b0470ba44eeba929"
   head "https://github.com/sass/libsass.git"
 
   bottle do
     cellar :any
-    sha256 "26f55250d3fcddc334a5f995feadfe781245746b10ce429d421e0f730799281e" => :high_sierra
-    sha256 "f2d42d8b41e1341885bbcdeed2dd556a4c2346e3d54b0ccf3a1d69011c37af24" => :sierra
-    sha256 "ba7455458afd25a3f6bb37a31568dfc8571e7fcfd367c4c9028d3c6c80368838" => :el_capitan
+    sha256 "bd0c7fe1a88cd783286ebe7adda1f5d58fed6f4ce93058cc64acef7dbd24cfe1" => :mojave
+    sha256 "bf0b547c31a0867296928d7c65a60aef8e1a7cfb362b17abf9da82e7fd6da717" => :high_sierra
+    sha256 "f093528300b5b5221e6a0bdd5e464c508cb290de2cbfb4932f6aa7ccaaab354c" => :sierra
   end
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool" => :build
-  needs :cxx11
 
   def install
     ENV.cxx11

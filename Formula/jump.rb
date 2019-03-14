@@ -1,15 +1,15 @@
 class Jump < Formula
   desc "Helps you navigate your file system faster by learning your habits"
   homepage "https://github.com/gsamokovarov/jump"
-  url "https://github.com/gsamokovarov/jump/archive/v0.18.0.tar.gz"
-  sha256 "68d520d2aa67981e8f59a70cec24137375ed0bd757fa8d44e670efbc21b7a2c6"
+  url "https://github.com/gsamokovarov/jump/archive/v0.22.0.tar.gz"
+  sha256 "67d5239a5a187ae39a5b4e4fdbc0ce917db1d5384c34cd336e9f3cf95c436175"
   head "https://github.com/gsamokovarov/jump.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "3aadaf3585a6385ead346e6aec41c860cb2324d03ca8e6d32bcb6b54258ffc06" => :high_sierra
-    sha256 "86fc2255812cd798f7cb75a056e82a6284183a166a5c39abfa2bfcd1cb9042b8" => :sierra
-    sha256 "72a0d85e9d7d205543a954d577e3187541476edeef02017730b823d2fcfe88ee" => :el_capitan
+    sha256 "e1b3d072fc77dfdcf996a156b4aad18231d3eb6e4f60c30d36413b2e5fda2265" => :mojave
+    sha256 "c4593b2d462f90e07de46f6ef3c10fb8acee00a86750ffac08ea00d909a9196d" => :high_sierra
+    sha256 "aae48a7e31b328afbda4025af4356b86a5dd94fe9f0657ac681d7d882578da70" => :sierra
   end
 
   depends_on "go" => :build
@@ -19,8 +19,10 @@ class Jump < Formula
     (buildpath/"src/github.com/gsamokovarov").mkpath
     ln_s buildpath, buildpath/"src/github.com/gsamokovarov/jump"
 
+    ENV["GO111MODULE"] = "off"
     system "go", "build", "-o", "#{bin}/jump"
     man1.install "man/jump.1"
+    man1.install "man/j.1"
   end
 
   test do

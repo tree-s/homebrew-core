@@ -1,17 +1,17 @@
 class Tintin < Formula
   desc "MUD client"
   homepage "https://tintin.sourceforge.io/"
-  url "https://downloads.sourceforge.net/project/tintin/TinTin%2B%2B%20Source%20Code/2.01.4/tintin-2.01.4.tar.gz"
-  sha256 "dd22afbff45a93ec399065bae385489131af7e1b6ae8abb28f80d6a03b82ebbc"
-  revision 1
+  url "https://downloads.sourceforge.net/tintin/tintin-2.01.6.tar.gz"
+  sha256 "522b3ca3ef2aadc0c3c3fd4a2cb9b779c977c9db5ea5e18309bf120cd11d153e"
 
   bottle do
     cellar :any
-    sha256 "8ad66191775045c0d6252bc4e2fa8c2d44e0290087e9a4d8627c125da19dd61c" => :high_sierra
-    sha256 "4940d4f93f2606e9cd14e044e57d557c6b5bba2f7853432a101e868e048e4801" => :sierra
-    sha256 "42985a4b7b44e3036348ce810aa6301adac1564bbb5caac55fb44e14e10a9e25" => :el_capitan
+    sha256 "0095d467450f7e04547555ce696ab3c1237957522b5ad71abe344a8ebfbcde10" => :mojave
+    sha256 "ab8ce7088ab4406f546b2875b47ba06ede4cdbfc3d83e698081343b3fcaa8ff8" => :high_sierra
+    sha256 "c3c5c1bdc641d73852bbe723f6c6e441c4dc01ee4aaa84bb3bd584f0825ce9e4" => :sierra
   end
 
+  depends_on "gnutls"
   depends_on "pcre"
 
   def install

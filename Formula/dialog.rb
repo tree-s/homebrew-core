@@ -1,14 +1,14 @@
 class Dialog < Formula
   desc "Display user-friendly message boxes from shell scripts"
   homepage "https://invisible-island.net/dialog/"
-  url "https://invisible-mirror.net/archives/dialog/dialog-1.3-20171209.tgz"
-  sha256 "20139442119e2eff5c35236e8e5e313c901539008d9cccf8c8ab3851b41267e6"
+  url "https://invisible-mirror.net/archives/dialog/dialog-1.3-20181107.tgz"
+  sha256 "efeaca8027dda53a9f3cf6c7b5c1a77093825b7a9b85c23c0c6c96afc3506457"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "0168f1b0060b33b57099f1dc5412d84620b6ae27a23c80ba0b7c8d8c7a6045ac" => :high_sierra
-    sha256 "16dcced9f6ffc983ce1aea72b562aae09fce59f9b380e9b593e03759e2e79537" => :sierra
-    sha256 "8d55d6e400627561189a0fb9785ae8e9d6fdc79ed81337edb9a4bd9a07d42a61" => :el_capitan
+    sha256 "c356e3a474ebf3d580ec4674d87aec9c88ba7137e0f6fefd8c73cbf99d327b76" => :mojave
+    sha256 "cf169dff8e776ac85d3a662db2abd9fbd578affc994dcb866547ee06630b68f6" => :high_sierra
+    sha256 "68b0c43919cde70242f56ba550b666c2a6f9e6baefca50615923efa262052d5b" => :sierra
   end
 
   def install

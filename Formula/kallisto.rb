@@ -1,22 +1,34 @@
 class Kallisto < Formula
   desc "Quantify abundances of transcripts from RNA-Seq data"
   homepage "https://pachterlab.github.io/kallisto/"
-  url "https://github.com/pachterlab/kallisto/archive/v0.43.1.tar.gz"
-  sha256 "2164938c2c61c04e338c4c132cf749f56d39e6f0b4c517121bca1fbc218e430e"
-  revision 1
+  url "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
+  sha256 "42cf3949065e286e0a184586e160a909d7660825dbbb25ca350cb1dd82aafa57"
 
   bottle do
     cellar :any
-    sha256 "7def510bff1b872bff522fc561ccf197d2810f1d8df8fa3bf1870225ec74bd6a" => :high_sierra
-    sha256 "975be5f037dfc6a47b65ef79bc3c3a9a0583e7eaa36add776a034a7bdf7f3893" => :sierra
-    sha256 "9174135661c12414338e2a5280ee31951f97e8d55bd30ba423099e9b872da42e" => :el_capitan
+    sha256 "b8cae9afc8e18cceb114b84ecd53f24e3b00b803589b125eda5f6307e364e0a8" => :mojave
+    sha256 "127c2e5aae118640a218e8141e441d649b900d4acf554cf3059e921c3dff262e" => :high_sierra
+    sha256 "f865065a6ce9703669d5af9447a681e5a248b23da4a974ff49a57ece7e6f159a" => :sierra
   end
 
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
   depends_on "cmake" => :build
   depends_on "hdf5"
 
   def install
+    # Upstream issue 15 Feb 2018 "cmake does not run autoreconf for htslib"
+    # https://github.com/pachterlab/kallisto/issues/159
+    system "autoreconf", "-fiv", "ext/htslib"
+
     system "cmake", ".", *std_cmake_args
+
+    # Upstream issue 15 Feb 2018 "parallelized build failure"
+    # https://github.com/pachterlab/kallisto/issues/160
+    # Upstream issue 15 Feb 2018 "cannot use system htslib"
+    # https://github.com/pachterlab/kallisto/issues/161
+    system "make", "htslib"
+
     system "make", "install"
   end
 

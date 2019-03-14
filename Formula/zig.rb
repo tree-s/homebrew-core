@@ -1,13 +1,14 @@
 class Zig < Formula
   desc "Programming language designed for robustness, optimality, and clarity"
-  homepage "http://ziglang.org/"
-  url "https://github.com/zig-lang/zig/archive/0.1.1.tar.gz"
-  sha256 "fabbfcb0bdb08539d9d8e8e1801d20f25cb0025af75ac996f626bb5e528e71f1"
+  homepage "https://ziglang.org/"
+  url "https://github.com/ziglang/zig/archive/0.3.0.tar.gz"
+  sha256 "23ebb962823b2c78fd7bb16dd033b189c3050eee9991070debbd79c9b8648772"
+  head "https://github.com/ziglang/zig.git"
 
   bottle do
-    sha256 "2184016574a84b2c0a8cdedd95727a265bb6459d580348200722e4cf36b82ed7" => :high_sierra
-    sha256 "78b8bac1021aa558183c8f9d46a918c89378b6473a688f20713d9b9c85879562" => :sierra
-    sha256 "2862e1ca07f7150b31a034cb486351b7499f6c6ba9c8dd46015b5517a876c6aa" => :el_capitan
+    sha256 "93c95a500ebf3a57025a980aabeb47a9ffd93606ef7f67461b457a29f80663cb" => :mojave
+    sha256 "2debc5e9a4d567b8412aa38645f2bfe485eac79c4e953710d5c05e006b56ff4d" => :high_sierra
+    sha256 "2d57cb9516cc3d2d5f4c83c33beece104166c348808751d6195054f05858fcb2" => :sierra
   end
 
   depends_on "cmake" => :build
@@ -20,9 +21,10 @@ class Zig < Formula
 
   test do
     (testpath/"hello.zig").write <<~EOS
-      const io = @import("std").io;
-      pub fn main() -> %void {
-          %%io.stdout.printf("Hello, world!");
+      const std = @import("std");
+      pub fn main() !void {
+          var stdout_file = try std.io.getStdOut();
+          try stdout_file.write("Hello, world!");
       }
     EOS
     system "#{bin}/zig", "build-exe", "hello.zig"

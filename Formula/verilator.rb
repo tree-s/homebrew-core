@@ -1,26 +1,22 @@
 class Verilator < Formula
   desc "Verilog simulator"
   homepage "https://www.veripool.org/wiki/verilator"
-  url "https://www.veripool.org/ftp/verilator-3.918.tgz"
-  sha256 "377057a2d6ff577e54cacfead6e6ece53decd6cddfd50ec27cd45b93a599685c"
+  url "https://www.veripool.org/ftp/verilator-4.010.tgz"
+  sha256 "5651748fe28e373ebf7a6364f5e7935ec9b39d29671f683f366e99d5e157d571"
 
   bottle do
-    sha256 "a7045ca8a5e19a660636aa0b52c8d5f3333799a068353314570f4d952eace01b" => :high_sierra
-    sha256 "edb227b38ec501c4188cfe809133115f299a6425230e9328a26ad28efb47673d" => :sierra
-    sha256 "443be0517c89747bbc8dc56fdd2f2fbf837b44f4b9ddf01c68ce99be7f51acda" => :el_capitan
+    sha256 "84c91ebd242e484a9e27fd1d021fe23ffd401d0d8ede93d11cf89ed692685a0e" => :mojave
+    sha256 "c1e2097d8982d930291f9b875ee30c0906914c8b6226d1163bedf4c69979a88e" => :high_sierra
+    sha256 "780bc1bca97ba26494d0249609879b9036bb46c7afc34e223be7974a36264181" => :sierra
   end
 
   head do
     url "http://git.veripool.org/git/verilator", :using => :git
-    depends_on "automake" => :build
     depends_on "autoconf" => :build
+    depends_on "automake" => :build
   end
 
   skip_clean "bin" # Allows perl scripts to keep their executable flag
-
-  # Needs a newer flex on Lion (and presumably below)
-  # https://www.veripool.org/issues/720-Verilator-verilator-not-building-on-Mac-OS-X-Lion-10-7-
-  depends_on "flex" if MacOS.version <= :lion
 
   def install
     system "autoconf" if build.head?

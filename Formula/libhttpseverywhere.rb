@@ -1,31 +1,32 @@
 class Libhttpseverywhere < Formula
   desc "Bring HTTPSEverywhere to desktop apps"
   homepage "https://github.com/gnome/libhttpseverywhere"
-  url "https://download.gnome.org/sources/libhttpseverywhere/0.6/libhttpseverywhere-0.6.6.tar.xz"
-  sha256 "af52638f6da4dfe9e1532ced907519d1096269882447fb976f936eda7403b4ca"
+  url "https://download.gnome.org/sources/libhttpseverywhere/0.8/libhttpseverywhere-0.8.3.tar.xz"
+  sha256 "1c006f5633842a2b131c1cf644ab929556fc27968a60da55c00955bd4934b6ca"
 
   bottle do
     cellar :any
-    sha256 "d76292f894a83e2cc100a2a632d505781194dbae4bd418d63ed015f1fd6b7b1a" => :high_sierra
-    sha256 "203afceabb262a6c58ef645db491093e1fa7ad9a51e0901260c4094ed455afcb" => :sierra
-    sha256 "05ed8c5bfb788fcddd6022d48052da1c63b4dfda0e7bfcef8917662324fcea32" => :el_capitan
+    sha256 "332c2aad0bcc26b7e29c8fb77c4b4a3dc842d4e769aa323b4a39e298106e2516" => :mojave
+    sha256 "2ce35886b26f24cf347feb2a603f75c26ed5a3ab81853e5e42a7494dbe0993b8" => :high_sierra
+    sha256 "6b532d6d32e37b39e3ceeacb2914d23a8ef1b59347203a7c499cb39fb320a8ea" => :sierra
+    sha256 "c6dc35ab2114924942f08fd412b4b5e0ea34751c6d72e3642a2b26614b8dc3b3" => :el_capitan
   end
 
-  depends_on "meson" => :build
+  depends_on "gobject-introspection" => :build
+  depends_on "meson-internal" => :build
   depends_on "ninja" => :build
-  depends_on "vala" => :build
   depends_on "pkg-config" => :build
+  depends_on "vala" => :build
   depends_on "glib"
   depends_on "json-glib"
-  depends_on "libsoup"
-  depends_on "libgee"
   depends_on "libarchive"
+  depends_on "libgee"
+  depends_on "libsoup"
 
   def install
     mkdir "build" do
       system "meson", "--prefix=#{prefix}", ".."
       system "ninja"
-      system "ninja", "test"
       system "ninja", "install"
     end
   end
@@ -52,7 +53,7 @@ class Libhttpseverywhere < Formula
       -I#{gettext.opt_include}
       -I#{glib.opt_include}/glib-2.0
       -I#{glib.opt_lib}/glib-2.0/include
-      -I#{include}/httpseverywhere-0.6
+      -I#{include}/httpseverywhere-0.8
       -I#{json_glib.opt_include}/json-glib-1.0
       -I#{libarchive.opt_include}
       -I#{libgee.opt_include}/gee-0.8
@@ -71,7 +72,7 @@ class Libhttpseverywhere < Formula
       -lgio-2.0
       -lglib-2.0
       -lgobject-2.0
-      -lhttpseverywhere-0.6
+      -lhttpseverywhere-0.8
       -lintl
       -ljson-glib-1.0
       -lsoup-2.4

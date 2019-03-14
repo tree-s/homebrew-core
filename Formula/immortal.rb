@@ -1,15 +1,15 @@
 class Immortal < Formula
   desc "OS agnostic (*nix) cross-platform supervisor"
   homepage "https://immortal.run/"
-  url "https://github.com/immortal/immortal/archive/0.18.0.tar.gz"
-  sha256 "8a2328daa5fce82e333fa01e1d87ea7720a405756788cc7edee96b7bb22b26e8"
+  url "https://github.com/immortal/immortal/archive/0.22.0.tar.gz"
+  sha256 "2e5886b49155dc77dd532e157ff1470fb1fb17414a42f2f1addebae3d29063f7"
   head "https://github.com/immortal/immortal.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "deebb8a1f75da45655d196fbb8d3cc557604e8c65b7ae0fcaa1ba1995861a53a" => :high_sierra
-    sha256 "a174ec2100bd0f6cd9b685e7baec1e0de0f93e949300631b69bbe05e1d26e11e" => :sierra
-    sha256 "71a52e92493c351223aee8cbc69dc21cc0d7cac516296685403c8c4da939111f" => :el_capitan
+    sha256 "07d9d90f193320f849749a3dac873ff270d097264096ac7219dd5a3d7cf6357f" => :mojave
+    sha256 "b63e3bcdfd7f667198c9318861694871b58394d1b5ee4e128b6f0a73ad60474d" => :high_sierra
+    sha256 "81d6d822e3c74eb1e24c09855328d6bdb9f9be1de11c4fe8a9e23d92b6d398e5" => :sierra
   end
 
   depends_on "dep" => :build
@@ -19,7 +19,7 @@ class Immortal < Formula
     ENV["GOPATH"] = buildpath
     (buildpath/"src/github.com/immortal/immortal").install buildpath.children
     cd "src/github.com/immortal/immortal" do
-      system "dep", "ensure"
+      system "dep", "ensure", "-vendor-only"
       ldflags = "-s -w -X main.version=#{version}"
       system "go", "build", "-ldflags", ldflags, "-o", "#{bin}/immortal", "cmd/immortal/main.go"
       system "go", "build", "-ldflags", ldflags, "-o", "#{bin}/immortalctl", "cmd/immortalctl/main.go"

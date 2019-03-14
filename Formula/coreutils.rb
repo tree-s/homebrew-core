@@ -1,14 +1,15 @@
 class Coreutils < Formula
   desc "GNU File, Shell, and Text utilities"
   homepage "https://www.gnu.org/software/coreutils"
-  url "https://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz"
-  mirror "https://ftpmirror.gnu.org/coreutils/coreutils-8.29.tar.xz"
-  sha256 "92d0fa1c311cacefa89853bdb53c62f4110cdfda3820346b59cbd098f40f955e"
+  url "https://ftp.gnu.org/gnu/coreutils/coreutils-8.30.tar.xz"
+  mirror "https://ftpmirror.gnu.org/coreutils/coreutils-8.30.tar.xz"
+  sha256 "e831b3a86091496cdba720411f9748de81507798f6130adeaef872d206e1b057"
+  revision 2
 
   bottle do
-    sha256 "20e12e8aaa50778db12accc12fc2ae5e29cdd58988064dbc912bcfb10a106272" => :high_sierra
-    sha256 "83cb185057a6add9b9289504801240f33020494c4b85af07272a85050cd99f65" => :sierra
-    sha256 "0c25b2cebfd54bf325360b6ab566df78a6711f5526fd44fc244558748bd27475" => :el_capitan
+    sha256 "92161dab4f1411cbf973797c88c11e80373a46073fbad9ae9969a6701b562f2b" => :mojave
+    sha256 "efdf04fdbc358a3381937f8b2603f3d5dfaaf5432530dacbae8f42a0ee768cc1" => :high_sierra
+    sha256 "7a487b6b88c33e7ff55677d2609c08bbce80079e7fefd5dcc825440c3bbd4ee1" => :sierra
   end
 
   head do
@@ -19,16 +20,17 @@ class Coreutils < Formula
     depends_on "bison" => :build
     depends_on "gettext" => :build
     depends_on "texinfo" => :build
-    depends_on "xz" => :build
     depends_on "wget" => :build
+    depends_on "xz" => :build
   end
 
-  depends_on "gmp" => :optional
-
+  conflicts_with "aardvark_shell_utils", :because => "both install `realpath` binaries"
+  conflicts_with "b2sum", :because => "both install `b2sum` binaries"
   conflicts_with "ganglia", :because => "both install `gstat` binaries"
   conflicts_with "gegl", :because => "both install `gcut` binaries"
   conflicts_with "idutils", :because => "both install `gid` and `gid.1`"
-  conflicts_with "aardvark_shell_utils", :because => "both install `realpath` binaries"
+  conflicts_with "md5sha1sum", :because => "both install `md5sum` and `sha1sum` binaries"
+  conflicts_with "truncate", :because => "both install `truncate` binaries"
 
   def install
     if MacOS.version == :el_capitan
@@ -50,8 +52,8 @@ class Coreutils < Formula
     args = %W[
       --prefix=#{prefix}
       --program-prefix=g
+      --without-gmp
     ]
-    args << "--without-gmp" if build.without? "gmp"
     system "./configure", *args
     system "make", "install"
 
@@ -63,32 +65,32 @@ class Coreutils < Formula
     coreutils_filenames(man1).each do |cmd|
       (libexec/"gnuman"/"man1").install_symlink man1/"g#{cmd}" => cmd
     end
+    libexec.install_symlink "gnuman" => "man"
 
     # Symlink non-conflicting binaries
-    bin.install_symlink "grealpath" => "realpath"
-    man1.install_symlink "grealpath.1" => "realpath.1"
+    no_conflict = %w[
+      b2sum base32 chcon hostid md5sum nproc numfmt pinky ptx realpath runcon
+      sha1sum sha224sum sha256sum sha384sum sha512sum shred shuf stdbuf tac timeout truncate
+    ]
+    no_conflict.each do |cmd|
+      bin.install_symlink "g#{cmd}" => cmd
+      man1.install_symlink "g#{cmd}.1" => "#{cmd}.1"
+    end
   end
 
   def caveats; <<~EOS
-    All commands have been installed with the prefix 'g'.
-
-    If you really need to use these commands with their normal names, you
+    Commands also provided by macOS have been installed with the prefix "g".
+    If you need to use these commands with their normal names, you
     can add a "gnubin" directory to your PATH from your bashrc like:
-
-        PATH="#{opt_libexec}/gnubin:$PATH"
-
-    Additionally, you can access their man pages with normal names if you add
-    the "gnuman" directory to your MANPATH from your bashrc as well:
-
-        MANPATH="#{opt_libexec}/gnuman:$MANPATH"
-
-    EOS
+      PATH="#{opt_libexec}/gnubin:$PATH"
+  EOS
   end
 
   def coreutils_filenames(dir)
     filenames = []
     dir.find do |path|
       next if path.directory? || path.basename.to_s == ".DS_Store"
+
       filenames << path.basename.to_s.sub(/^g/, "")
     end
     filenames.sort

@@ -2,28 +2,26 @@ class Landscaper < Formula
   desc "Manage the application landscape in a Kubernetes cluster"
   homepage "https://github.com/Eneco/landscaper"
   url "https://github.com/Eneco/landscaper.git",
-      :tag => "1.0.12",
-      :revision => "26ac1fe512df4170a83b1f325d98673838aaa1a4"
+      :tag      => "v1.0.21",
+      :revision => "df2a7d6a7db7a552576899b9fe8c85fdcc0af973"
   head "https://github.com/Eneco/landscaper.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "183246ed331441e2b3c68e11a62591685cee31a86ecd71b502376ed1a8f28e55" => :high_sierra
-    sha256 "ca2ca5a91405dba1230e284f56eb290db13a9f3f595f76c72a85e51f46ee8fc5" => :sierra
-    sha256 "44af281913b949c376dd0fd7e0abe78a171d971e457348062b93c2d77618fcf2" => :el_capitan
+    sha256 "11265aaba50abe95269919c30b04a4684dc25d1ccf50823a20b7950963608e80" => :mojave
+    sha256 "7c701bb9a5082cd20d7e32d75f7eb8c0d527de13381e0a92ffd9a632ef672b0a" => :high_sierra
+    sha256 "5e01053b264faed028ad4fbea43019187f68f25b6350d4fc5cbd80c202ecb7ad" => :sierra
   end
 
+  depends_on "dep" => :build
   depends_on "go" => :build
-  depends_on "glide" => :build
-  depends_on "kubernetes-cli" => :run
-  depends_on "kubernetes-helm" => :run
+  depends_on "kubernetes-cli"
+  depends_on "kubernetes-helm"
 
   def install
     ENV["GOPATH"] = buildpath
-    ENV["GLIDE_HOME"] = HOMEBREW_CACHE/"glide_home/#{name}"
     ENV.prepend_create_path "PATH", buildpath/"bin"
-    arch = MacOS.prefer_64_bit? ? "amd64" : "x86"
-    ENV["TARGETS"] = "darwin/#{arch}"
+    ENV["TARGETS"] = "darwin/amd64"
     dir = buildpath/"src/github.com/eneco/landscaper"
     dir.install buildpath.children - [buildpath/".brew_home"]
 

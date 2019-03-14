@@ -1,15 +1,15 @@
 class Wget < Formula
   desc "Internet file retriever"
   homepage "https://www.gnu.org/software/wget/"
-  url "https://ftp.gnu.org/gnu/wget/wget-1.19.4.tar.gz"
-  mirror "https://ftpmirror.gnu.org/wget/wget-1.19.4.tar.gz"
-  sha256 "93fb96b0f48a20ff5be0d9d9d3c4a986b469cb853131f9d5fe4cc9cecbc8b5b5"
-  revision 1
+  url "https://ftp.gnu.org/gnu/wget/wget-1.20.1.tar.gz"
+  mirror "https://ftpmirror.gnu.org/wget/wget-1.20.1.tar.gz"
+  sha256 "b783b390cb571c837b392857945f5a1f00ec6b043177cc42abb8ee1b542ee1b3"
+  revision 4
 
   bottle do
-    sha256 "7989ae0ee0d212237ba31e8024189ba57a4296be67e08aeeea879d603ca66b59" => :high_sierra
-    sha256 "e4b88af13d56bd1aadbef96abdfff0a3919da8da96acc2e7ffd3ef812232a687" => :sierra
-    sha256 "3091698e33a73f706918967dddc3ce1d295f1ae351b5d32932cd3e9013ee5283" => :el_capitan
+    sha256 "27e8cf4d5455f59447c73f3607911c5448debbd0849bf55bb73d95db2beed687" => :mojave
+    sha256 "2323e1201edae18b1e1d7bdc99c5a5bcc168052fadfc2d88384e29e045c6f92e" => :high_sierra
+    sha256 "a08923ff33761878bd009dbc83c36c98b1d401811da4ac7cde95e7a85683efa9" => :sierra
   end
 
   head do
@@ -21,33 +21,20 @@ class Wget < Formula
     depends_on "gettext"
   end
 
-  deprecated_option "enable-debug" => "with-debug"
-
-  option "with-debug", "Build with debug support"
-
   depends_on "pkg-config" => :build
-  depends_on "pod2man" => :build if MacOS.version <= :snow_leopard
   depends_on "libidn2"
   depends_on "openssl"
-  depends_on "pcre" => :optional
-  depends_on "libmetalink" => :optional
-  depends_on "gpgme" => :optional
 
   def install
-    args = %W[
-      --prefix=#{prefix}
-      --sysconfdir=#{etc}
-      --with-ssl=openssl
-      --with-libssl-prefix=#{Formula["openssl"].opt_prefix}
-    ]
-
-    args << "--disable-debug" if build.without? "debug"
-    args << "--disable-pcre" if build.without? "pcre"
-    args << "--with-metalink" if build.with? "libmetalink"
-    args << "--with-gpgme-prefix=#{Formula["gpgme"].opt_prefix}" if build.with? "gpgme"
-
-    system "./bootstrap" if build.head?
-    system "./configure", *args
+    system "./bootstrap", "--skip-po" if build.head?
+    system "./configure", "--prefix=#{prefix}",
+                          "--sysconfdir=#{etc}",
+                          "--with-ssl=openssl",
+                          "--with-libssl-prefix=#{Formula["openssl"].opt_prefix}",
+                          "--disable-debug",
+                          "--disable-pcre",
+                          "--disable-pcre2",
+                          "--without-libpsl"
     system "make", "install"
   end
 

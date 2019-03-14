@@ -1,15 +1,16 @@
 class Multimarkdown < Formula
   desc "Turn marked-up plain text into well-formatted documents"
   homepage "https://fletcher.github.io/MultiMarkdown-6/"
-  url "https://github.com/fletcher/MultiMarkdown-6/archive/6.2.3.tar.gz"
-  sha256 "639c25ce0285f6e8ff119ef9c6416609a1f8ed0da7847e69245ec01d80262c4f"
+  url "https://github.com/fletcher/MultiMarkdown-6/archive/6.4.0.tar.gz"
+  sha256 "fa9daa089bc0f8bc1f69fd7365778d59210b446ce7008d03b87fb572df8ff5d3"
   head "https://github.com/fletcher/MultiMarkdown-6.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "35e966adf5a362b9c56968f716cfbffb85ae20aed2e9e42c9ad41b8677fdc841" => :high_sierra
-    sha256 "d9569efcba9b2038fb8ddac568b464cdc724ceeffa7f35855a34d1a1535b0aca" => :sierra
-    sha256 "c6087305b183bc7b29d8334b7e9df67be7078874f566c3748df79d10dbdd241f" => :el_capitan
+    sha256 "67b5b3efbd5508240db39a8e07de73d3afb54b6d7026cfc91bd52c8bab84e4e8" => :mojave
+    sha256 "4b0c84924e451362afe93a6046bfa31bb9ea567930f7d21ad2436241fc44d3d7" => :high_sierra
+    sha256 "3a314a87893e7eea9fc3542d5574d5fdadf96a77763ddef403335a34ee21d35c" => :sierra
+    sha256 "580595562320f4d5b78d0abb2e41f0773c91ef0c0bda6f7560486e3d05c52e13" => :el_capitan
   end
 
   depends_on "cmake" => :build
@@ -19,6 +20,11 @@ class Multimarkdown < Formula
   conflicts_with "discount", :because => "both install `markdown` binaries"
 
   def install
+    # Reported upstream 2 Sep 2018 https://github.com/fletcher/MultiMarkdown-6/issues/142
+    inreplace "CMakeLists.txt",
+              "SET(CMAKE_OSX_DEPLOYMENT_TARGET \"10.4\"",
+              "SET(CMAKE_OSX_DEPLOYMENT_TARGET \"#{MacOS.version}\""
+
     system "make", "release"
 
     cd "build" do

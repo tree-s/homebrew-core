@@ -1,25 +1,32 @@
 class Atk < Formula
   desc "GNOME accessibility toolkit"
   homepage "https://library.gnome.org/devel/atk/"
-  url "https://download.gnome.org/sources/atk/2.26/atk-2.26.1.tar.xz"
-  sha256 "ef00ff6b83851dddc8db38b4d9faeffb99572ba150b0664ee02e46f015ea97cb"
+  url "https://download.gnome.org/sources/atk/2.30/atk-2.30.0.tar.xz"
+  sha256 "dd4d90d4217f2a0c1fee708a555596c2c19d26fef0952e1ead1938ab632c027b"
 
   bottle do
-    sha256 "08bf533625443e9f7e47c08d163fcc74fcc973c6aae9b61b6ef1a09d506d6a3b" => :high_sierra
-    sha256 "cce0be459801eb065dd540baee6aec81740895e46f422722f23c9bfb3dd0a1ff" => :sierra
-    sha256 "40860eef1dacca8db3f7de7b1c2aa302e352ea6cd9f05a3ab84234b77bcf6b1c" => :el_capitan
+    sha256 "ef98c860ad49b7c335854dc8a558e193353a8afad8d22d0bc1be1d82ccc716c7" => :mojave
+    sha256 "13a414fd51dc409c7fb66ff5a91920f11cda4a18e311b16249df7a1395e8f2b5" => :high_sierra
+    sha256 "945bbdb2a8e1ed4802a9b437fcdfccd59d0de099bcbee66e32a42f7cf9c86896" => :sierra
+    sha256 "786efff084a599afbdc9ab706da2e64ae1c4fc29110ab8f7379649a9651599e2" => :el_capitan
   end
 
+  depends_on "gobject-introspection" => :build
+  depends_on "meson-internal" => :build
+  depends_on "ninja" => :build
   depends_on "pkg-config" => :build
   depends_on "glib"
-  depends_on "gobject-introspection"
+
+  patch :DATA
 
   def install
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--enable-introspection=yes"
-    system "make"
-    system "make", "install"
+    ENV.refurbish_args
+
+    mkdir "build" do
+      system "meson", "--prefix=#{prefix}", ".."
+      system "ninja"
+      system "ninja", "install"
+    end
   end
 
   test do
@@ -50,3 +57,21 @@ class Atk < Formula
     system "./test"
   end
 end
+
+__END__
+diff --git a/meson.build b/meson.build
+index 59abf5e..7af4f12 100644
+--- a/meson.build
++++ b/meson.build
+@@ -73,11 +73,6 @@ if host_machine.system() == 'linux'
+   common_ldflags += cc.get_supported_link_arguments(test_ldflags)
+ endif
+
+-# Maintain compatibility with autotools on macOS
+-if host_machine.system() == 'darwin'
+-  common_ldflags += [ '-compatibility_version 1', '-current_version 1.0', ]
+-endif
+-
+ # Functions
+ checked_funcs = [
+   'bind_textdomain_codeset',

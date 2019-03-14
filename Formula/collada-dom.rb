@@ -14,6 +14,7 @@ class ColladaDom < Formula
   end
 
   bottle do
+    sha256 "59315cc7de779a0111beba6d3d7144c47827815f3b394de90fbfcf086e6b28d2" => :mojave
     sha256 "21de8eab55b0011919fff439eeabc87f7dc1fe6a886ef0c2c3205fd21532d338" => :high_sierra
     sha256 "100e69e1bc65b07f00dcb9d9baf290a727e39ecbf01d27b9a62d26ac14abb59b" => :sierra
     sha256 "98e726f47020580acc1a10be5366394fb137fc4729e3446e5e0130a69b2d38da" => :el_capitan
@@ -21,14 +22,9 @@ class ColladaDom < Formula
     sha256 "5ddb31dec3a705e99ca17ec2c6ef1bafb101eac16167d451c3e6eda2dc9c0761" => :mavericks
   end
 
-  devel do
-    url "https://github.com/rdiankov/collada-dom/archive/v2.4.4.tar.gz"
-    sha256 "0dfa494827faa971310c871535b319cadbd0c2d6958ee11b303c61a55a5a437a"
-  end
-
   depends_on "cmake" => :build
-  depends_on "pcre"
   depends_on "boost"
+  depends_on "pcre"
 
   def install
     system "cmake", ".", *std_cmake_args

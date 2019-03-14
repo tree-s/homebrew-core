@@ -1,31 +1,50 @@
 class ApacheArrow < Formula
   desc "Columnar in-memory analytics layer designed to accelerate big data"
   homepage "https://arrow.apache.org/"
-  url "https://www.apache.org/dyn/closer.cgi?path=arrow/arrow-0.8.0/apache-arrow-0.8.0.tar.gz"
-  sha256 "b142b883c7107485a296655e8d7421d11891acbca15862f37a4a8c1b13d4e9c4"
+  url "https://www.apache.org/dyn/closer.cgi?path=arrow/arrow-0.12.0/apache-arrow-0.12.0.tar.gz"
+  sha256 "34dae7e4dde9274e9a52610683e78a80f3ca312258ad9e9f2c0973cf44247a98"
   head "https://github.com/apache/arrow.git"
 
   bottle do
     cellar :any
-    sha256 "d9b331ee4ebff205e029854c76e41dea5dbc57dfdc98626c1b557ae434840804" => :high_sierra
-    sha256 "c43c8f8198daad4b9580ddd0fc33beda3eac94374a075611f9dd834234e677e6" => :sierra
-    sha256 "64d0e868864c37293a454052420d3203d4e689d4be5a4e6b2892a5a6aac6fd3a" => :el_capitan
+    sha256 "20239347b1fec7ddc982af8ebc2de3c9893b40ab58742aa7df89102e7f9f9cb7" => :mojave
+    sha256 "cbe0e81596b6bdb8be0cd5280b0c2dbdb0677d4ebafb804f7139c9ca4eb780db" => :high_sierra
+    sha256 "0859a159c71cfa7f930f286211ba6f24a9bb2678a6bae47bab731c78e32685b0" => :sierra
   end
 
-  # NOTE: remove ccache with Apache Arrow 0.5 and higher version
+  depends_on "autoconf" => :build
   depends_on "cmake" => :build
   depends_on "boost"
-  depends_on "jemalloc"
-  depends_on "ccache" => :recommended
-
-  needs :cxx11
+  depends_on "flatbuffers"
+  depends_on "lz4"
+  depends_on "numpy"
+  depends_on "protobuf"
+  depends_on "python"
+  depends_on "snappy"
+  depends_on "thrift"
+  depends_on "zstd"
 
   def install
     ENV.cxx11
+    args = %W[
+      -DARROW_ORC=ON
+      -DARROW_PARQUET=ON
+      -DARROW_PLASMA=ON
+      -DARROW_PROTOBUF_USE_SHARED=ON
+      -DARROW_PYTHON=ON
+      -DFLATBUFFERS_HOME=#{Formula["flatbuffers"].prefix}
+      -DLZ4_HOME=#{Formula["lz4"].prefix}
+      -DPROTOBUF_HOME=#{Formula["protobuf"].prefix}
+      -DPYTHON_EXECUTABLE=#{Formula["python"].bin/"python3"}
+      -DSNAPPY_HOME=#{Formula["snappy"].prefix}
+      -DTHRIFT_HOME=#{Formula["thrift"].prefix}
+      -DZSTD_HOME=#{Formula["zstd"].prefix}
+    ]
 
-    cd "cpp" do
-      system "cmake", ".", *std_cmake_args
-      system "make", "unittest"
+    mkdir "build"
+    cd "build" do
+      system "cmake", "../cpp", *std_cmake_args, *args
+      system "make"
       system "make", "install"
     end
   end
@@ -33,8 +52,7 @@ class ApacheArrow < Formula
   test do
     (testpath/"test.cpp").write <<~EOS
       #include "arrow/api.h"
-      int main(void)
-      {
+      int main(void) {
         arrow::int64();
         return 0;
       }

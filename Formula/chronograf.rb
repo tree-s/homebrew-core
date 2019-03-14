@@ -3,22 +3,22 @@ require "language/node"
 class Chronograf < Formula
   desc "Open source monitoring and visualization UI for the TICK stack"
   homepage "https://docs.influxdata.com/chronograf/latest/"
-  url "https://github.com/influxdata/chronograf/archive/1.4.0.1.tar.gz"
-  sha256 "31df9f36354d07d0d935ae095b74fab003d5aced658763b8eb4bfd2a51c22bdc"
+  url "https://github.com/influxdata/chronograf/archive/1.7.8.tar.gz"
+  sha256 "dbfc514416c05d4ea208a5249958fb029f0a36babdc1a8d08899c073df0797fd"
   head "https://github.com/influxdata/chronograf.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "6002c9963f30a79754076dda58ef4aeb9a7d6e7ba157a5398f9474c68a1a1356" => :high_sierra
-    sha256 "fcbf8c991b12b44cecb049e2e3031a78ee695f3733ff82632b53c7d3dff2a0c6" => :sierra
-    sha256 "b94673f2fa103f1f49ba31479d3357019dbe281a3829bda5040a09097f77726d" => :el_capitan
+    sha256 "7be6ecfca7859fc77bf646b6196b5c2828e831ba9a5dca4d9ccf413baed89906" => :mojave
+    sha256 "ed65a95b1ca1f8bde178764b2ccec476c743e988b836f1317af5fee1a76fb628" => :high_sierra
+    sha256 "1da28dade02442cc34d26c8d05f7dff7bfac2e7b21a79b202db3dc56b486b45c" => :sierra
   end
 
   depends_on "go" => :build
   depends_on "node" => :build
   depends_on "yarn" => :build
-  depends_on "influxdb" => :recommended
-  depends_on "kapacitor" => :recommended
+  depends_on "influxdb"
+  depends_on "kapacitor"
 
   def install
     ENV["GOPATH"] = buildpath
@@ -26,6 +26,9 @@ class Chronograf < Formula
     Language::Node.setup_npm_environment
     chronograf_path = buildpath/"src/github.com/influxdata/chronograf"
     chronograf_path.install buildpath.children
+
+    # fixes yarn + upath@1.0.4 incompatibility, remove once upath is upgraded to 1.0.5+
+    Pathname.new("#{ENV["HOME"]}/.yarnrc").write("ignore-engines true\n")
 
     cd chronograf_path do
       system "make", "dep"
@@ -64,7 +67,7 @@ class Chronograf < Formula
         <string>#{var}/log/chronograf.log</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

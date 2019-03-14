@@ -1,16 +1,16 @@
 class Blastem < Formula
   desc "Fast and accurate Genesis emulator"
   homepage "https://www.retrodev.com/blastem/"
-  url "https://www.retrodev.com/repos/blastem/archive/3d48cb0c28be.tar.gz"
-  version "0.5.1"
-  sha256 "1929e39179ef46fd6b43b0bfd8f51dff29fc4ec001bd2e53811579707f5d9f1f"
+  url "https://www.retrodev.com/repos/blastem/archive/357b4951d9b2.tar.gz"
+  version "0.6.1"
+  sha256 "63ed9a1d068d97f7bb47770449715767442a1356912cb15bee1f7fe8765b9880"
   head "https://www.retrodev.com/repos/blastem", :using => :hg
 
   bottle do
     cellar :any
-    sha256 "950fdcccc00508c7648fb2df90267bf5a9a2bf1844f00a14e320ec274c9c30bd" => :high_sierra
-    sha256 "530e0fbfb551845ed326faa4942da3e4516b4fb77885f8a8cc7e99a40c2f179e" => :sierra
-    sha256 "572a00653d2a1c8d51ba5ae77d1ad0bddbcc69e9f535c594f334d73176d09f5b" => :el_capitan
+    sha256 "4becc15b16ef0a6b58a731d7e78bb5dfdf3360cb4ccd3b86bb274d25c2ef6152" => :mojave
+    sha256 "26b745117fe55e41fa2d3dfde89e6ea092983e3f2f09934bbcc46325a60f4b50" => :high_sierra
+    sha256 "0c7a00d5ed0f16fa729be9f24b440a2f2ab21bbb6822bfc80e78d59c8f6f1092" => :sierra
   end
 
   depends_on "freetype" => :build
@@ -18,6 +18,7 @@ class Blastem < Formula
   depends_on "libpng" => :build # for xcftools
   depends_on "pkg-config" => :build
   depends_on "glew"
+  depends_on "python@2"
   depends_on "sdl2"
 
   resource "Pillow" do
@@ -38,14 +39,14 @@ class Blastem < Formula
   def install
     ENV.prepend_create_path "PYTHONPATH", buildpath/"vendor/lib/python2.7/site-packages"
 
-    unless MacOS::CLT.installed?
+    if MacOS.sdk_path_if_needed
       ENV.append "CPPFLAGS", "-I#{MacOS.sdk_path}/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers"
       ENV.append "CPPFLAGS", "-I#{MacOS.sdk_path}/usr/include/ffi" # libffi
     end
 
     resource("Pillow").stage do
       inreplace "setup.py" do |s|
-        sdkprefix = MacOS::CLT.installed? ? "" : MacOS.sdk_path
+        sdkprefix = MacOS.sdk_path_if_needed ? MacOS.sdk_path : ""
         s.gsub! "ZLIB_ROOT = None", "ZLIB_ROOT = ('#{sdkprefix}/usr/lib', '#{sdkprefix}/usr/include')"
         s.gsub! "JPEG_ROOT = None", "JPEG_ROOT = ('#{Formula["jpeg"].opt_prefix}/lib', '#{Formula["jpeg"].opt_prefix}/include')"
         s.gsub! "FREETYPE_ROOT = None", "FREETYPE_ROOT = ('#{Formula["freetype"].opt_prefix}/lib', '#{Formula["freetype"].opt_prefix}/include')"

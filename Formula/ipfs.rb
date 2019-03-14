@@ -2,15 +2,15 @@ class Ipfs < Formula
   desc "Peer-to-peer hypermedia protocol"
   homepage "https://ipfs.io/"
   url "https://github.com/ipfs/go-ipfs.git",
-      :tag => "v0.4.13",
-      :revision => "cc01b7f188622e7148ce041b9d09252c85041d9f"
+      :tag      => "v0.4.18",
+      :revision => "aefc746f34e5ffdee5fba1915c6603b65a0ebf81"
   head "https://github.com/ipfs/go-ipfs.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "fe4eeb4a7e62352b7fea0a279f2826f66a5efbb7d75f379d24f0fa0c2b5d0fb5" => :high_sierra
-    sha256 "d7a6736094edcca57bc4c6a9c63a4934f818f5efc6edaf82765deee3416068c7" => :sierra
-    sha256 "016cf5df0044524e8fd8129ef420293971c9c0d25b956c3855571bfc41252873" => :el_capitan
+    sha256 "338d2a56d12e905ae6916df9aedce66068cfa9368054b5c7d4bdb9877e0c2b06" => :mojave
+    sha256 "cd05be50fbf6162d208bfbe5300accfa1a08abc7ec2a2230621afbb5319f8491" => :high_sierra
+    sha256 "b3a9d6f5e74876b0081193a690e470d94d56c290e67e444cfdda67603b85518a" => :sierra
   end
 
   depends_on "go" => :build
@@ -43,7 +43,7 @@ class Ipfs < Formula
       <true/>
     </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

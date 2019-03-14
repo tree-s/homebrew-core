@@ -3,20 +3,21 @@ class Zbackup < Formula
   homepage "http://zbackup.org"
   url "https://github.com/zbackup/zbackup/archive/1.4.4.tar.gz"
   sha256 "efccccd2a045da91576c591968374379da1dc4ca2e3dec4d3f8f12628fa29a85"
-  revision 6
+  revision 8
 
   bottle do
     cellar :any
-    sha256 "e68198033bdb384d3f0988ff641a15ed74eca20b54d99176cd3c95215aa8371e" => :high_sierra
-    sha256 "9669c67980ca07319479ab94197678a1b2357bb8c77457e9886cb82af0a8d708" => :sierra
-    sha256 "a09a760ce9c152937146d68e113a99c0869b22b80a6fc9ae634f61c06e609126" => :el_capitan
+    sha256 "07ca77fddf0e9a79bb5923ace0c64a8ea0ea95ef6bb04e744f7b3f82ba0cd79f" => :mojave
+    sha256 "21d8cad2823234c8c3670e5fb565db3024ca7cc4632786b14f3f4ae2b7ec3f37" => :high_sierra
+    sha256 "0b89a926af81bb4d7270f8724f7a4e9ec0dd763669603dd480d12f5690c86d96" => :sierra
+    sha256 "34bbe1ac111fd38719ea48a27bcb84d5563b5b4ca2579e4b15a9ad6ae224fdcd" => :el_capitan
   end
 
   depends_on "cmake" => :build
+  depends_on "lzo"
   depends_on "openssl"
   depends_on "protobuf"
   depends_on "xz" # get liblzma compression algorithm library from XZutils
-  depends_on "lzo"
 
   # These fixes are upstream and can be removed in version 1.5+
   patch do
@@ -30,6 +31,8 @@ class Zbackup < Formula
   end
 
   def install
+    ENV.cxx11
+
     # Avoid collision with protobuf 3.x CHECK macro
     inreplace [
       "backup_creator.cc",

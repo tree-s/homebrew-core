@@ -1,14 +1,15 @@
 class Tig < Formula
   desc "Text interface for Git repositories"
   homepage "https://jonas.github.io/tig/"
-  url "https://github.com/jonas/tig/releases/download/tig-2.3.2/tig-2.3.2.tar.gz"
-  sha256 "6410e51c6149d76eac3510d04f9a736139f85e7c881646937d009caacf98cff1"
+  url "https://github.com/jonas/tig/releases/download/tig-2.4.1/tig-2.4.1.tar.gz"
+  sha256 "b6b6aa183e571224d0e1fab3ec482542c1a97fa7a85b26352dc31dbafe8558b8"
   revision 1
 
   bottle do
-    sha256 "31bc0f57539393ca38dfe8e60c5a67bd2844e36f934c9c15aaa635cb413c23ee" => :high_sierra
-    sha256 "65fb2c2852ca01cf5f8b1f344e4486fa78edc203d987fdc78b6222f6b8606101" => :sierra
-    sha256 "edc285535427f0255e184e360bc2efb87f7d86cab4e70f796a58bb62c349c708" => :el_capitan
+    cellar :any
+    sha256 "eba3a55c27fa0574f50afa7c93992e2ca977bfec4614c3cbf659a8139af33ef9" => :mojave
+    sha256 "4a73419c6034c18896d658938992a2c3ec8f4c5cd0567323cde27c6270861d03" => :high_sierra
+    sha256 "09939bc22023b396db534f278257343b0752509a53eea5f2a417cbb0a47b3b8c" => :sierra
   end
 
   head do
@@ -20,7 +21,7 @@ class Tig < Formula
     depends_on "xmlto" => :build
   end
 
-  depends_on "readline" => :recommended
+  depends_on "readline"
 
   def install
     system "./autogen.sh" if build.head?
@@ -40,7 +41,7 @@ class Tig < Formula
       #{opt_pkgshare}/examples/tigrc
     to override the system-wide default configuration, copy the sample to:
       #{etc}/tigrc
-    EOS
+  EOS
   end
 
   test do

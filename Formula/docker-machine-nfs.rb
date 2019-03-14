@@ -1,8 +1,8 @@
 class DockerMachineNfs < Formula
   desc "Activates NFS on docker-machine"
   homepage "https://github.com/adlogix/docker-machine-nfs"
-  url "https://github.com/adlogix/docker-machine-nfs/archive/0.5.0.tar.gz"
-  sha256 "25522c0e9632bc384ea7df51d2ea7a8b7e5bfe4da21cd21c643521d03f01d4f8"
+  url "https://github.com/adlogix/docker-machine-nfs/archive/0.5.2.tar.gz"
+  sha256 "58ac0384a6db4edd648534af5d11ef3d39d13b4b534b9a7070912504ec3601f6"
 
   bottle :unneeded
 

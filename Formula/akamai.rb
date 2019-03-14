@@ -1,18 +1,18 @@
 class Akamai < Formula
   desc "CLI toolkit for working with Akamai's APIs"
   homepage "https://github.com/akamai/cli"
-  url "https://github.com/akamai/cli/archive/0.4.2.tar.gz"
-  sha256 "0a0335c85427d58dd97cab54a69ab0c7cbe7a9f732f28674b697ed30f293e18c"
+  url "https://github.com/akamai/cli/archive/1.1.2.tar.gz"
+  sha256 "99ccc7e107507b6898869fd763d794726360ff331ecc6dd18dfb4a2a8f76e73f"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "225f31bd4166ec6537ff8a2ddea57bb11652e8771c2465c2f64dd64311f4d026" => :high_sierra
-    sha256 "a32b5cf2669fe402ab8fc4905fceca236348dc738298bf8f7551f41fdd8b049e" => :sierra
-    sha256 "6dd3e1cef09fd226521b44cf0d6f3cb1c9bd5b17671c5c2592bdd2915ff53b60" => :el_capitan
+    sha256 "d4f25281fdf275a98dc99338025cac79ad6062ba849b6e179d59c289b3c3b078" => :mojave
+    sha256 "71e42b88dcfa4018a4fc5d83ebd46585f0968b548b51b35c4657b4c55ba36192" => :high_sierra
+    sha256 "f0bac148bc05e2d078655e5bdd214e61c7c9238163dbecfd45c32c65f5d05a7d" => :sierra
   end
 
+  depends_on "dep" => :build
   depends_on "go" => :build
-  depends_on "glide" => :build
 
   def install
     ENV["GOPATH"] = buildpath
@@ -22,7 +22,7 @@ class Akamai < Formula
     srcpath.install buildpath.children
 
     cd srcpath do
-      system "glide", "install"
+      system "dep", "ensure", "-vendor-only"
       system "go", "build", "-tags", "noautoupgrade nofirstrun", "-o", bin/"akamai"
       prefix.install_metafiles
     end

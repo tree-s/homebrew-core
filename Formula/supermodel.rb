@@ -1,14 +1,16 @@
 class Supermodel < Formula
   desc "Sega Model 3 arcade emulator"
-  homepage "http://www.supermodel3.com/"
-  url "http://www.supermodel3.com/Files/Supermodel_0.2a_Src.zip"
+  homepage "https://www.supermodel3.com/"
+  url "https://www.supermodel3.com/Files/Supermodel_0.2a_Src.zip"
   sha256 "ecaf3e7fc466593e02cbf824b722587d295a7189654acb8206ce433dcff5497b"
   head "https://svn.code.sf.net/p/model3emu/code/trunk"
 
   bottle do
-    sha256 "fc580e52830ebc6bcf985332fdaeacd1a7b6eaff4191af22b27081b3c7244f88" => :sierra
-    sha256 "d10f4431f15c326033e7fd7eac2ad1fded338783db37c5d9ed222ad20bdd29a5" => :el_capitan
-    sha256 "ec5fab8a117e7e438c4b3d3b173ed8e87082bab2ebc029f9108d602f2e439f26" => :yosemite
+    rebuild 1
+    sha256 "85678e40606c4bff6ff454ec15bafd2ab317887b2fb48865433d8cb0cdae7a3a" => :mojave
+    sha256 "83c0dbca7a5c28564eba4e7a73894746004aab5025071b350c3c47271fc42625" => :high_sierra
+    sha256 "1203bb3d289e36e1ca15720dbcd4e63ffcf4fa4d09588cb4fb81092cb72399ec" => :sierra
+    sha256 "78cf8e9fb973e3cd136a212936bdc8003d9897a1bb8a6a1eba3cc7ff0fba3c88" => :el_capitan
   end
 
   depends_on "sdl"
@@ -39,7 +41,7 @@ class Supermodel < Formula
   def caveats; <<~EOS
     Config, Saves, and NVRAM are located in the following directory:
       #{var}/supermodel/
-    EOS
+  EOS
   end
 
   test do

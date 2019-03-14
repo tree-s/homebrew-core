@@ -1,17 +1,17 @@
 class Modules < Formula
   desc "Dynamic modification of a user's environment via modulefiles"
   homepage "https://modules.sourceforge.io/"
-  url "https://downloads.sourceforge.net/project/modules/Modules/modules-4.1.0/modules-4.1.0.tar.bz2"
-  sha256 "b83733168ca3fe952cef685fe0d4fdd561685e0ef8c8d02b4c9b4415bf1312ab"
+  url "https://downloads.sourceforge.net/project/modules/Modules/modules-4.1.4/modules-4.1.4.tar.bz2"
+  sha256 "7eaf26b66cbf3ba101ec5a693b7bfb3a47f3c86cad09e47c4126f3d785864c55"
 
   bottle do
-    sha256 "293e90e75239faff2658297940f1ed30dc3664a9a081299ad933a97ca49e652c" => :high_sierra
-    sha256 "153168521e2b05146de915ccf46fc031a4a965cdba14ddcdf5200645211b14c0" => :sierra
-    sha256 "fbcf6e89165b5d0c56a6f27e4e5fd23d0a369f16a0028feed1a4051adea692af" => :el_capitan
+    sha256 "1bfdf504b019fa4c8ffe7db7d9cef79a1a2c23e381b04d7eed98f041b3507987" => :mojave
+    sha256 "29eacb986d942b621d5aa161952c962250cc6d96acb9929425d8a5284f7a6ca2" => :high_sierra
+    sha256 "4e45ab192bad2a47c3b63e7de10d61c701a1f8a70a011956b21203074dee8418" => :sierra
+    sha256 "b3a8d7c48c0b6c56a706357da2a0b6087c593f2254acd7b84956e6870053b8e1" => :el_capitan
   end
 
-  depends_on "coreutils" => :build # assumes GNU cp options are available
-  depends_on :x11 => :optional
+  depends_on "grep" => :build # configure checks for ggrep
 
   def install
     ENV.prepend_path "PATH", Formula["coreutils"].opt_libexec/"gnubin"
@@ -21,12 +21,12 @@ class Modules < Formula
     args = %W[
       --disable-dependency-tracking
       --prefix=#{prefix}
-      --with-tcl=#{MacOS.sdk_path}/System/Library/Frameworks/Tcl.framework
       --datarootdir=#{share}
       --disable-versioning
+      --with-tcl=#{MacOS.sdk_path}/System/Library/Frameworks/Tcl.framework
+      --without-x
       CPPFLAGS=-DUSE_INTERP_ERRORLINE
     ]
-    args << "--without-x" if build.without? "x11"
     system "./configure", *args
     system "make", "install"
   end
@@ -36,7 +36,7 @@ class Modules < Formula
       source #{opt_prefix}/init/zsh
     You will also need to reload your .zshrc:
       source ~/.zshrc
-    EOS
+  EOS
   end
 
   test do

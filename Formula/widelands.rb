@@ -3,31 +3,32 @@ class Widelands < Formula
   homepage "https://wl.widelands.org/"
   url "https://launchpad.net/widelands/build19/build19/+download/widelands-build19-src.tar.bz2"
   sha256 "e511f9d26828a2b71b64cdfc6674e6e847543b2da73961ab882acca36c7c01a6"
-  revision 8
+  revision 13
 
   bottle do
-    sha256 "18b34abd369e071601a35ab96e9b9776998f1f572ff638f50e79e9c9b6578397" => :high_sierra
-    sha256 "2509f447f7be88a86602e239a0f711143a8438f9caccfcb1f0339c6583892869" => :sierra
-    sha256 "552ff9433e4ea9b01e7b00372ce370cc1d0b0e3f98c21333498fd4da68c77d6d" => :el_capitan
+    sha256 "1f47eacc59619797f3609a71460e6f8e25d3e19fcfcecb8cdec41dae621e020f" => :mojave
+    sha256 "33f630588ed1f396056e9dfe71004bd0fa8f1567082bacbfd94e882253622df4" => :high_sierra
+    sha256 "02c4096b565587cca30d721d936cf243dd5c92800a7b7693a3b7f40877ddca2e" => :sierra
   end
 
   depends_on "cmake" => :build
   depends_on "boost"
-  depends_on "libpng"
-  depends_on "minizip"
+  depends_on "doxygen"
   depends_on "gettext"
+  depends_on "glew"
+  depends_on "icu4c"
+  depends_on "libpng"
+  depends_on "lua"
+  depends_on "minizip"
   depends_on "sdl2_image"
   depends_on "sdl2_mixer"
   depends_on "sdl2_net"
   depends_on "sdl2_ttf"
-  depends_on "doxygen"
-  depends_on "glew"
-  depends_on "lua"
-  depends_on "icu4c"
-
-  needs :cxx11
 
   def install
+    # icu4c 61.1 compatability
+    ENV.append "CXXFLAGS", "-DU_USING_ICU_NAMESPACE=1"
+
     ENV.cxx11
     mkdir "build" do
       system "cmake", "..",

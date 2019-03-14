@@ -1,22 +1,23 @@
 class Libmspub < Formula
   desc "Interpret and import Microsoft Publisher content"
   homepage "https://wiki.documentfoundation.org/DLP/Libraries/libmspub"
-  url "https://dev-www.libreoffice.org/src/libmspub/libmspub-0.1.3.tar.xz"
-  sha256 "f0225f0ff03f6bec4847d7c2d8719a36cafc4b97a09e504b610372cc5b981c97"
+  url "https://dev-www.libreoffice.org/src/libmspub/libmspub-0.1.4.tar.xz"
+  sha256 "ef36c1a1aabb2ba3b0bedaaafe717bf4480be2ba8de6f3894be5fd3702b013ba"
+  revision 3
 
   bottle do
     cellar :any
-    sha256 "bd35b73b9a1d0a740a113dfd921f62a103cd66c83018b027a1a97415509a6732" => :high_sierra
-    sha256 "1e00c58cbc9530cf5bf0a344cf2aaa16e5613c88ab4e3883668975917cc05a95" => :sierra
-    sha256 "1fec7ae574d1addc7d6f89fb6b4bd5212b88e431add06b656a204a2a41708e09" => :el_capitan
+    sha256 "88fcaf08da9f11bedb81f2e5f7ce489325109e4481729cda57f168f2b7eaae75" => :mojave
+    sha256 "6d4a84da0d0cfc06f07e61043ff3f36310f06a3f2eff259c619b1c188f5113bd" => :high_sierra
+    sha256 "857c89b5a164acf971221125715acd419bccd092ca8ab2683f68b4174c6dd859" => :sierra
   end
 
-  depends_on "pkg-config" => :build
   depends_on "boost" => :build
   depends_on "libwpg" => :build
-  depends_on "libwpd"
+  depends_on "pkg-config" => :build
   depends_on "icu4c"
   depends_on "librevenge"
+  depends_on "libwpd"
 
   def install
     system "./configure", "--without-docs",

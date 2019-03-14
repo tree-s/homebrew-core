@@ -1,37 +1,32 @@
 class Transmission < Formula
   desc "Lightweight BitTorrent client"
   homepage "https://www.transmissionbt.com/"
-  url "https://github.com/transmission/transmission-releases/raw/bce6e29/transmission-2.93.tar.xz"
-  sha256 "8815920e0a4499bcdadbbe89a4115092dab42ce5199f71ff9a926cfd12b9b90b"
+  url "https://github.com/transmission/transmission-releases/raw/dc77bea/transmission-2.94.tar.xz"
+  sha256 "35442cc849f91f8df982c3d0d479d650c6ca19310a994eccdaa79a4af3916b7d"
 
   bottle do
-    sha256 "753d56b0ecb6e70ed2841b1abc23247c1b02666e2b95c5a6ac32e9815a0c6131" => :high_sierra
-    sha256 "5e190bda32de9a3ab3dbd7909a23cf79b1fbd891c10f9a537469a29a7d85d6dd" => :sierra
-    sha256 "ba5967f2f272d2376f14b1c0043853f0d103877cb865546fe919b8ae74316982" => :el_capitan
+    rebuild 1
+    sha256 "2a7d6cb307a817eed5a02bab0dcfbb2d024d626bd768116d5107ef74a79282a5" => :mojave
+    sha256 "6aa06621a0754c3a2f76572f68f0992747b4b2240e7424795f63071bfab5475b" => :high_sierra
+    sha256 "57ec396481d8107933552649d46de6ec78aaaa6c3a80ab27d1ba2a9465925471" => :sierra
   end
-
-  option "with-nls", "Build with native language support"
 
   depends_on "pkg-config" => :build
   depends_on "curl" if MacOS.version <= :leopard
   depends_on "zlib"
   depends_on "libevent"
 
-  if build.with? "nls"
-    depends_on "intltool" => :build
-    depends_on "gettext"
-  end
-
   def install
     ENV.append "LDFLAGS", "-framework Foundation -prebind"
     ENV.append "LDFLAGS", "-liconv"
 
-    args = %W[--disable-dependency-tracking
-              --prefix=#{prefix}
-              --disable-mac
-              --without-gtk]
-
-    args << "--disable-nls" if build.without? "nls"
+    args = %W[
+      --disable-dependency-tracking
+      --prefix=#{prefix}
+      --disable-mac
+      --disable-nls
+      --without-gtk
+    ]
 
     system "./configure", *args
     system "make"
@@ -46,9 +41,9 @@ class Transmission < Formula
     Transmission.app can be downloaded directly from the website:
       https://www.transmissionbt.com/
 
-    Alternatively, install with Homebrew-Cask:
+    Alternatively, install with Homebrew Cask:
       brew cask install transmission
-    EOS
+  EOS
   end
 
   plist_options :manual => "transmission-daemon --foreground"
@@ -79,6 +74,6 @@ class Transmission < Formula
         <true/>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 end

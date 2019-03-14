@@ -1,23 +1,23 @@
 class JenkinsLts < Formula
   desc "Extendable open-source CI server"
   homepage "https://jenkins.io/index.html#stable"
-  url "http://mirrors.jenkins.io/war-stable/2.89.3/jenkins.war"
-  sha256 "79f176e9388cdeb0deb0e6af49ff9d1ff4b7a3c47102af11e3e9461bf268983a"
+  url "http://mirrors.jenkins.io/war-stable/2.150.3/jenkins.war"
+  sha256 "4fc2700a27a6ccc53da9d45cc8b2abd41951b361e562e1a1ead851bea61630fd"
 
   bottle :unneeded
 
-  depends_on :java => "1.7+"
+  depends_on :java => "1.8"
 
   def install
     system "jar", "xvf", "jenkins.war"
     libexec.install "jenkins.war", "WEB-INF/jenkins-cli.jar"
-    bin.write_jar_script libexec/"jenkins.war", "jenkins-lts"
-    bin.write_jar_script libexec/"jenkins-cli.jar", "jenkins-lts-cli"
+    bin.write_jar_script libexec/"jenkins.war", "jenkins-lts", :java_version => "1.8"
+    bin.write_jar_script libexec/"jenkins-cli.jar", "jenkins-lts-cli", :java_version => "1.8"
   end
 
   def caveats; <<~EOS
     Note: When using launchctl the port will be 8080.
-    EOS
+  EOS
   end
 
   plist_options :manual => "jenkins-lts"
@@ -31,7 +31,11 @@ class JenkinsLts < Formula
         <string>#{plist_name}</string>
         <key>ProgramArguments</key>
         <array>
-          <string>/usr/bin/java</string>
+          <string>/usr/libexec/java_home</string>
+          <string>-v</string>
+          <string>1.8</string>
+          <string>--exec</string>
+          <string>java</string>
           <string>-Dmail.smtp.starttls.enable=true</string>
           <string>-jar</string>
           <string>#{opt_libexec}/jenkins.war</string>
@@ -42,7 +46,7 @@ class JenkinsLts < Formula
         <true/>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

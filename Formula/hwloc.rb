@@ -1,14 +1,14 @@
 class Hwloc < Formula
   desc "Portable abstraction of the hierarchical topology of modern architectures"
   homepage "https://www.open-mpi.org/projects/hwloc/"
-  url "https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.9.tar.bz2"
-  sha256 "394333184248d63cb2708a976e57f05337d03bb50c33aa3097ff5c5a74a85164"
+  url "https://www.open-mpi.org/software/hwloc/v2.0/downloads/hwloc-2.0.3.tar.bz2"
+  sha256 "e393aaf39e576b329a2bff3096d9618d4e39f416874390b58e6573349554c725"
 
   bottle do
     cellar :any
-    sha256 "639f5ae402481d9f8ff540e1d5131ba037791c585fbfdc26e58850b00428e46d" => :high_sierra
-    sha256 "5ba351fdb5f165f29f00428f5ea429c055a59914e0691577a5e02500c5dc6c21" => :sierra
-    sha256 "e3ea9be003573ee1d254c38f2ddf65de8c7d18a4fcedc87545825d796d19341e" => :el_capitan
+    sha256 "d290f5193bf9455ce1789b13ddabaf5aa38d1a72da98bc5fe063caf7390427e9" => :mojave
+    sha256 "db1830961ee0aa952607ea8ac23226a584e0e0202ea4f2b9f2ac2499f5e2cd6f" => :high_sierra
+    sha256 "ca80d65cb76a981a41fd347abda2ddfa8f2a9b44ec7cf3f90a551acc8f0e490b" => :sierra
   end
 
   head do
@@ -19,7 +19,6 @@ class Hwloc < Formula
   end
 
   depends_on "pkg-config" => :build
-  depends_on "cairo" => :optional
 
   def install
     system "./autogen.sh" if build.head?
@@ -35,7 +34,7 @@ class Hwloc < Formula
   end
 
   test do
-    system ENV.cc, pkgshare/"tests/hwloc_groups.c", "-I#{include}",
+    system ENV.cc, pkgshare/"tests/hwloc/hwloc_groups.c", "-I#{include}",
                    "-L#{lib}", "-lhwloc", "-o", "test"
     system "./test"
   end

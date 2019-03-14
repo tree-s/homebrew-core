@@ -2,15 +2,15 @@ class Syncthing < Formula
   desc "Open source continuous file synchronization application"
   homepage "https://syncthing.net/"
   url "https://github.com/syncthing/syncthing.git",
-      :tag => "v0.14.43",
-      :revision => "a9f0659f2f4bf910f82b652fd27a864074ec7ab8"
+      :tag      => "v1.0.1",
+      :revision => "1e69997ecdbf87ceaad76bd0149d98f560f4fdb5"
   head "https://github.com/syncthing/syncthing.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "38b51fc2079f67d34f3f82829f5219ed8bcf0c2b58f1e05f242bc6bc87f3c3b9" => :high_sierra
-    sha256 "1387e7fbdb3b113477d32e948c57e9121d893962730fc9eca91f9beb302a51d6" => :sierra
-    sha256 "9e38fffd7bfe40e5aba8c81bc6e73961e00f716afc32609c5667141e28719245" => :el_capitan
+    sha256 "dae415f2ac3d7319a440c8ea261d75b7b3ed4043c2a4e86291cf45b1e125edde" => :mojave
+    sha256 "e4e42282d3e0265dc0e4a7e37827b182bf5f9b255253f0f85e35916d20a4c905" => :high_sierra
+    sha256 "8294b3d3c9806a69b39c17bab01dfe61d07d853e61ad8b8c7f1f623b41386722" => :sierra
   end
 
   depends_on "go" => :build
@@ -19,7 +19,7 @@ class Syncthing < Formula
     ENV["GOPATH"] = buildpath
     (buildpath/"src/github.com/syncthing/syncthing").install buildpath.children
     ENV.append_path "PATH", buildpath/"bin"
-    cd buildpath/"src/github.com/syncthing/syncthing" do
+    cd "src/github.com/syncthing/syncthing" do
       system "./build.sh", "noupgrade"
       bin.install "syncthing"
       man1.install Dir["man/*.1"]
@@ -59,7 +59,7 @@ class Syncthing < Formula
         <string>#{var}/log/syncthing.log</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

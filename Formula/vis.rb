@@ -1,31 +1,25 @@
 class Vis < Formula
   desc "Vim-like text editor"
   homepage "https://github.com/martanne/vis"
-  revision 2
-
+  url "https://github.com/martanne/vis/archive/v0.5.tar.gz"
+  sha256 "77ea70ebc9c811d88e32199ef5b3ee9b834ac1e880fb61b6d2460f93f0587df5"
   head "https://github.com/martanne/vis.git"
 
-  stable do
-    url "https://github.com/martanne/vis/archive/v0.4.tar.gz"
-    sha256 "f11ba41cfb86dd39475960abfd12469de4da0ccfdb941f1d7680d89d987694c5"
-
-    patch do
-      url "https://github.com/martanne/vis/commit/73ef4885.patch?full_index=1"
-      sha256 "639f2b5ff708327c5d6b5b7d198b24cb4a71a72ae935a92bd765bd532c755603"
-    end
-  end
-
   bottle do
-    sha256 "3ae7e1e1213928f4c6fbac2e24c797ac69b0c711cc29011ceaf515a9ce9dd39c" => :high_sierra
-    sha256 "c8c60ae96962570361c5a7dbaf3aab5d3ea408d9560d1b007d2b11c42316d8d3" => :sierra
-    sha256 "9668e33187b9a55dfc67bcf39604d7bc9559fa1bd0e16fa7e33e1772b45f3afb" => :el_capitan
+    rebuild 1
+    sha256 "93c11117e6a40af5059b02810737dbb1cd494a1eae88acc0d0230d0afeae4768" => :mojave
+    sha256 "da6c3c09d9b53f77c0aecbdd99d145447ed12505f3d2103532502415b53f4564" => :high_sierra
+    sha256 "831f3f4424b231e086784a1741eb1bdc94b5134fa220176a24848f7f226634ab" => :sierra
+    sha256 "d902e9dbb59c21ab7b8d3476c9125a160c8633599ed1097caa001f32ac50f3b4" => :el_capitan
   end
 
+  depends_on "luarocks" => :build
+  depends_on "pkg-config" => :build
   depends_on "libtermkey"
   depends_on "lua"
 
   resource "lpeg" do
-    url "https://luarocks.org/manifests/gvvaughan/lpeg-1.0.1-1.src.rock", :using => :nounzip
+    url "https://luarocks.org/manifests/gvvaughan/lpeg-1.0.1-1.src.rock"
     sha256 "149be31e0155c4694f77ea7264d9b398dd134eca0d00ff03358d91a6cfb2ea9d"
   end
 

@@ -1,22 +1,26 @@
 class Packetbeat < Formula
   desc "Lightweight Shipper for Network Data"
   homepage "https://www.elastic.co/products/beats/packetbeat"
-  url "https://github.com/elastic/beats/archive/v6.1.3.tar.gz"
-  sha256 "5a21ce1eca7eab2b8214b54a7f4690cd557cd05073119f861025330e1b4006a3"
+  # Pinned at 6.2.x because of a licencing issue
+  # See: https://github.com/Homebrew/homebrew-core/pull/28995
+  url "https://github.com/elastic/beats/archive/v6.2.4.tar.gz"
+  sha256 "87d863cf55863329ca80e76c3d813af2960492f4834d4fea919f1d4b49aaf699"
   head "https://github.com/elastic/beats.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "d21b117dffc035cff53cd4d5dbaf5783d111b46f9e479eb1b916346eaa7e86f1" => :high_sierra
-    sha256 "1751eb6e9b53a08d65548f5fd7e7fffc08573546bfbd00a1feed9f54e8380e16" => :sierra
-    sha256 "27d1dec5987ea5920f69103b52bc8245829926dd4e738ff31158b0a26c8cc8c5" => :el_capitan
+    sha256 "78a69711df0bd6000c6ac9175d0722eb63036742aa95685789f52ab8c69230c2" => :mojave
+    sha256 "c49e265502b3be8c83ec949e1c25781ca2560a2956fe4bdcb462dd871c35a4b7" => :high_sierra
+    sha256 "db873b1e0f6344a316b234402f8994b12eef03eb4deb662b50277e6eabea8053" => :sierra
+    sha256 "a655b33e3a1602a68ae3e2954cb03bd3b3f2d17954a68b9df2e48eb990c8c140" => :el_capitan
   end
 
   depends_on "go" => :build
+  depends_on "python@2" => :build
 
   resource "virtualenv" do
-    url "https://files.pythonhosted.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/virtualenv-15.1.0.tar.gz"
-    sha256 "02f8102c2436bb03b3ee6dede1919d1dac8a427541652e5ec95171ec8adbc93a"
+    url "https://files.pythonhosted.org/packages/b1/72/2d70c5a1de409ceb3a27ff2ec007ecdd5cc52239e7c74990e32af57affe9/virtualenv-15.2.0.tar.gz"
+    sha256 "1d7e241b431e7afce47e77f8843a276f652699d1fa4f93b9d8ce0076fd7b0b54"
   end
 
   def install
@@ -32,27 +36,27 @@ class Packetbeat < Formula
     ENV.prepend_path "PATH", buildpath/"vendor/bin"
 
     cd "src/github.com/elastic/beats/packetbeat" do
-      # prevent downloading binary wheels
-      inreplace "../libbeat/scripts/Makefile", "pip install", "pip install --no-binary :all"
       system "make"
-      system "make", "update"
-      (libexec/"bin").install "packetbeat"
-      libexec.install "_meta/kibana"
+      # prevent downloading binary wheels during python setup
+      system "make", "PIP_INSTALL_COMMANDS=--no-binary :all", "python-env"
+      system "make", "DEV_OS=darwin", "update"
 
       inreplace "packetbeat.yml", "packetbeat.interfaces.device: any", "packetbeat.interfaces.device: en0"
 
-      (etc/"packetbeat").install Dir["packetbeat*.yml"]
-      (etc/"packetbeat").install "fields.yml"
-      prefix.install_metafiles
+      (etc/"packetbeat").install Dir["packetbeat.*", "fields.yml"]
+      (libexec/"bin").install "packetbeat"
+      prefix.install "_meta/kibana"
     end
+
+    prefix.install_metafiles buildpath/"src/github.com/elastic/beats"
 
     (bin/"packetbeat").write <<~EOS
       #!/bin/sh
       exec #{libexec}/bin/packetbeat \
-        -path.config #{etc}/packetbeat \
-        -path.home #{prefix} \
-        -path.logs #{var}/log/packetbeat \
-        -path.data #{var}/lib/packetbeat \
+        --path.config #{etc}/packetbeat \
+        --path.data #{var}/lib/packetbeat \
+        --path.home #{prefix} \
+        --path.logs #{var}/log/packetbeat \
         "$@"
     EOS
   end

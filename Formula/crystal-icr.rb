@@ -1,17 +1,17 @@
 class CrystalIcr < Formula
   desc "Interactive console for Crystal programming language"
   homepage "https://github.com/crystal-community/icr"
-  url "https://github.com/crystal-community/icr/archive/v0.5.0.tar.gz"
-  sha256 "f2b5cb971b368085e9c4f607d906e0622aa94d65c0f7c820d9cbdf23fb972c33"
+  url "https://github.com/crystal-community/icr/archive/v0.6.0.tar.gz"
+  sha256 "970d5ecbde6bb370c8178339db42e7812b7a2f3a5db3eec868cc18c19523c0ea"
   revision 1
 
   bottle do
-    sha256 "114bfed2c7e7f7428b9c06668b37b8eb346dd01b7d9064d3cb16089189b5b78a" => :high_sierra
-    sha256 "8a16ff49e83574e05f35ea5fc77fa24fc380babaab1128d67e4476202055c552" => :sierra
-    sha256 "0bdb50bd547c9d153dd2cd07bba5979a09242a3dbcf53856cc118e32c307736b" => :el_capitan
+    sha256 "b623200d377ee356c083db16c9a27b5f8b4a49439d308291de3e866d06229fcf" => :mojave
+    sha256 "fb253d4602327a09a5828fda371fa0bc318f79ffd96163926de5f19f338c675b" => :high_sierra
+    sha256 "45aed3c4edbb7d3ae2d93c093a3bafe9296760693a1fe02d28180e20bd2feecc" => :sierra
   end
 
-  depends_on "crystal-lang"
+  depends_on "crystal"
   depends_on "readline"
 
   def install

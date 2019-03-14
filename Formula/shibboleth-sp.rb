@@ -1,30 +1,29 @@
 class ShibbolethSp < Formula
   desc "Shibboleth 2 Service Provider daemon"
   homepage "https://wiki.shibboleth.net/confluence/display/SHIB2"
-  url "https://shibboleth.net/downloads/service-provider/2.6.1/shibboleth-sp-2.6.1.tar.bz2"
-  sha256 "1121e3b726b844d829ad86f2047be62da4284ce965ac184de2f81903f16b98e4"
+  url "https://shibboleth.net/downloads/service-provider/3.0.2/shibboleth-sp-3.0.2.tar.bz2"
+  sha256 "7aab399aeaf39145c60e1713dbc29a65f618e9eca84505f5ed03cee63e3f31a3"
+  revision 4
 
   bottle do
-    sha256 "1a91c531f1be5c05e66aa27f486034dc80f8a43b831ef7af67cbf4df5b8b3f67" => :high_sierra
-    sha256 "e2bd8a05bf07e9b746b240331b9b5a8588cedf2b21d6919fc8096c00721e9e16" => :sierra
-    sha256 "e6be9e88eaf93270e7cb2aad05fb3841d39560220ca2b4541c7bc24762d36b59" => :el_capitan
+    sha256 "d594a58a8f28666a09dafa0fd3a9f204d069e14a8b89235d7eacc16019f7b2d3" => :mojave
+    sha256 "f3c5a41017aefec816c7c00f74eca77712d5e3e9e6491dc8cf5c94ef22568e4a" => :high_sierra
+    sha256 "c98845a91f1be9a54e2c9ee1f464c68ad2989340fd6fd934b851dda696658262" => :sierra
   end
 
-  depends_on :macos => :yosemite
-  depends_on "curl" => "with-openssl"
+  depends_on "apr" => :build
+  depends_on "apr-util" => :build
+  depends_on "pkg-config" => :build
+  depends_on "boost"
   depends_on "httpd" if MacOS.version >= :high_sierra
+  depends_on "log4shib"
+  depends_on :macos => :yosemite
   depends_on "opensaml"
-  depends_on "xml-tooling-c"
+  depends_on "openssl"
+  depends_on "unixodbc"
   depends_on "xerces-c"
   depends_on "xml-security-c"
-  depends_on "log4shib"
-  depends_on "boost"
-  depends_on "unixodbc"
-
-  depends_on "apr-util" => :build
-  depends_on "apr" => :build
-
-  needs :cxx11
+  depends_on "xml-tooling-c"
 
   def install
     ENV.O2 # Os breaks the build
@@ -50,16 +49,9 @@ class ShibbolethSp < Formula
     system "make", "install"
   end
 
-  def caveats
-    mod = build.with?("apache-22") ? "mod_shib_22.so" : "mod_shib_24.so"
-    <<~EOS
-      You must manually edit httpd.conf to include
-      LoadModule mod_shib #{opt_lib}/shibboleth/#{mod}
-      You must also manually configure
-        #{etc}/shibboleth/shibboleth2.xml
-      as per your own requirements. For more information please see
-        https://wiki.shibboleth.net/confluence/display/EDS10/3.1+Configuring+the+Service+Provider
-    EOS
+  def post_install
+    (var/"run/shibboleth/").mkpath
+    (var/"cache/shibboleth").mkpath
   end
 
   plist_options :startup => true, :manual => "shibd"
@@ -85,12 +77,7 @@ class ShibbolethSp < Formula
       <true/>
     </dict>
     </plist>
-    EOS
-  end
-
-  def post_install
-    (var/"run/shibboleth/").mkpath
-    (var/"cache/shibboleth").mkpath
+  EOS
   end
 
   test do

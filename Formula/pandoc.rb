@@ -5,14 +5,14 @@ class Pandoc < Formula
 
   desc "Swiss-army knife of markup format conversion"
   homepage "https://pandoc.org/"
-  url "https://hackage.haskell.org/package/pandoc-2.1.1/pandoc-2.1.1.tar.gz"
-  sha256 "eafc00c8768a5d342fef3179046d2198d5489e48d106385708b8e2454e3be9b5"
+  url "https://hackage.haskell.org/package/pandoc-2.6/pandoc-2.6.tar.gz"
+  sha256 "aa761fe96161d042e01d0881fa569ec396da02ebce42562e04fbd91d8ff2db10"
   head "https://github.com/jgm/pandoc.git"
 
   bottle do
-    sha256 "3a64d164f6d903c46734fb86996b45ce2b1baf3f1a4b84c194152f52396f31f6" => :high_sierra
-    sha256 "7c1e20d9c6de8fc9be6424f2a670b8560ce92a722f2f97613feb0ea86be7ec36" => :sierra
-    sha256 "5fb007bddd8b7b6cf6aaa47b1336cdcec5419311b3712bb72afc2184a47033a9" => :el_capitan
+    sha256 "c66385503b793d3ee1167bcce5deb8b29f6477f932554df4a9d0663c398b4d1f" => :mojave
+    sha256 "4c3d37b8c0fb470843a48e63c95995635515a5917a3535f8704f4eb8734d0297" => :high_sierra
+    sha256 "bf01b44e4123a864f0f1b17b78b65942ca729be61783a91921f720799552dcba" => :sierra
   end
 
   depends_on "cabal-install" => :build
@@ -20,9 +20,7 @@ class Pandoc < Formula
 
   def install
     cabal_sandbox do
-      args = []
-      args << "--constraint=cryptonite -support_aesni" if MacOS.version <= :lion
-      install_cabal_package *args
+      install_cabal_package
     end
     (bash_completion/"pandoc").write `#{bin}/pandoc --bash-completion`
   end

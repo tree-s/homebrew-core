@@ -1,19 +1,19 @@
 class Py2cairo < Formula
   desc "Python 2 bindings for the Cairo graphics library"
   homepage "https://cairographics.org/pycairo/"
-  url "https://github.com/pygobject/pycairo/releases/download/v1.15.5/pycairo-1.15.5.tar.gz"
-  sha256 "dbd11b2f41c71774f719887e3700bde69b9325a0664a3b616a559942dfbd3329"
+  url "https://github.com/pygobject/pycairo/releases/download/v1.18.0/pycairo-1.18.0.tar.gz"
+  sha256 "abd42a4c9c2069febb4c38fe74bfc4b4a9d3a89fea3bc2e4ba7baff7a20f783f"
 
   bottle do
     cellar :any
-    sha256 "2a6dde2e434b97be988ba98b33e71d093dcdcd8e3a3899c43f53b4256838f8df" => :high_sierra
-    sha256 "ca4cab7ea2d8483a45cff7bd9783a7fcb8d3f57f181834e5c8fda73d049d4182" => :sierra
-    sha256 "04064f7c651b8aa3ef5fc6a2d700f90be24f181c13d0068339755cc03bdefe20" => :el_capitan
+    sha256 "46599e5f1abc91308b81ff7c8dea1df675ffc7349f0953aae40742f450e54932" => :mojave
+    sha256 "a20fd135bf7242a1978cda0d4dfdba2529875bc476ed3322f407832a9ce04445" => :high_sierra
+    sha256 "1ff1752697e067f46f10923d234e7352b6f68254faaa630a173ce3a6b50ca8c0" => :sierra
   end
 
   depends_on "pkg-config" => :build
   depends_on "cairo"
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "python@2"
 
   def install
     system "python", *Language::Python.setup_install_args(prefix)

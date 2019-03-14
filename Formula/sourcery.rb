@@ -1,18 +1,18 @@
 class Sourcery < Formula
   desc "Meta-programming for Swift, stop writing boilerplate code"
   homepage "https://github.com/krzysztofzablocki/Sourcery"
-  url "https://github.com/krzysztofzablocki/Sourcery/archive/0.10.1.tar.gz"
-  sha256 "fa27c1aa820b1df6cfbaac5bfe07985d4202583bbc44f9b4ac6ab474e02f70e6"
+  url "https://github.com/krzysztofzablocki/Sourcery/archive/0.15.0.tar.gz"
+  sha256 "b695713996fff2de8390fae42b81686eac85f1603554cc202edbbd8693f8a32e"
   head "https://github.com/krzysztofzablocki/Sourcery.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "03a8adf163c40a29fa4d00acad302f57f8d901a02645b1323abf1d165e1c7679" => :high_sierra
-    sha256 "34f0240218d5e47bb046d3e5bc6c06dd4a16e8ac572c0dfdadd41a2cb0625512" => :sierra
+    sha256 "ce8ce8fb0ca123c1438af064028e2ded3f471493df7df59a9df17f203e97aaa0" => :mojave
+    sha256 "1fbb13334d2301366fc46c324e2826dad4b14044b79480962bb7ed46ad126a40" => :high_sierra
   end
 
-  depends_on :xcode => ["6.0", :run]
-  depends_on :xcode => ["8.3", :build]
+  depends_on :xcode => ["10.0", :build]
+  depends_on :xcode => "6.0"
 
   def install
     system "swift", "build", "--disable-sandbox", "-c", "release", "-Xswiftc",

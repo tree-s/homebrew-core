@@ -1,31 +1,21 @@
 class Dovecot < Formula
   desc "IMAP/POP3 server"
   homepage "https://dovecot.org/"
-  url "https://dovecot.org/releases/2.2/dovecot-2.2.33.2.tar.gz"
-  sha256 "fe1e3b78609a56ee22fc209077e4b75348fa1bbd54c46f52bde2472a4c4cee84"
+  url "https://dovecot.org/releases/2.3/dovecot-2.3.2.1.tar.gz"
+  sha256 "4a65118508dc7a562e5f90dd7c3f56219fff22367c496f17d77cd0c7e2724e34"
+  revision 1
 
   bottle do
-    sha256 "7cb3706428dcf34d179f55e90741dcfc9efc0b9589d6e2c436d15a1aef0f38b8" => :high_sierra
-    sha256 "ad0cadba19b93fd85281d7ec8e86b1e210d19f43b1f7f5b5df8ce7ad90f3b014" => :sierra
-    sha256 "eb070bd1e5f6bd10c0a7268dff45cb421f1d0895ca1d8d25faa50088b9f2be09" => :el_capitan
+    sha256 "6626329909388aafbb99245c8fcd458333f72318cca0b40f32dd4901243fa633" => :mojave
+    sha256 "9cebefeee05f78fa705d1b1955027c4d60095d70b572658d4fd98d3b68912d01" => :high_sierra
+    sha256 "f7cd5b3ffb07fffc80c3f7af828efbe745ea72978112721558a19910b6c09e4c" => :sierra
   end
-
-  option "with-pam", "Build with PAM support"
-  option "with-pigeonhole", "Add Sieve addon for Dovecot mailserver"
-  option "with-pigeonhole-unfinished-features", "Build unfinished new Sieve addon features/extensions"
-  option "with-stemmer", "Build with libstemmer support"
 
   depends_on "openssl"
-  depends_on "clucene" => :optional
 
   resource "pigeonhole" do
-    url "https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-0.4.21.tar.gz"
-    sha256 "4ae09cb788c5334d167f5a89ee70b0616c3231e5904ad258ce408e4953cfdd6a"
-  end
-
-  resource "stemmer" do
-    url "https://github.com/snowballstem/snowball.git",
-        :revision => "5137019d68befd633ce8b1cd48065f41e77ed43e"
+    url "https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.2.tar.gz"
+    sha256 "950e8e15c58e539761255e140dd3678dd2477fa432a5f2b804e53821bdc02535"
   end
 
   def install
@@ -35,48 +25,33 @@ class Dovecot < Formula
       --libexecdir=#{libexec}
       --sysconfdir=#{etc}
       --localstatedir=#{var}
-      --with-ssl=openssl
-      --with-sqlite
-      --with-zlib
       --with-bzlib
+      --with-pam
+      --with-sqlite
+      --with-ssl=openssl
+      --with-zlib
     ]
-
-    args << "--with-lucene" if build.with? "clucene"
-    args << "--with-pam" if build.with? "pam"
-
-    if build.with? "stemmer"
-      args << "--with-libstemmer"
-
-      resource("stemmer").stage do
-        system "make", "dist_libstemmer_c"
-        system "tar", "xzf", "dist/libstemmer_c.tgz", "-C", buildpath
-      end
-    end
 
     system "./configure", *args
     system "make", "install"
 
-    if build.with? "pigeonhole"
-      resource("pigeonhole").stage do
-        args = %W[
-          --disable-dependency-tracking
-          --with-dovecot=#{lib}/dovecot
-          --prefix=#{prefix}
-        ]
+    resource("pigeonhole").stage do
+      args = %W[
+        --disable-dependency-tracking
+        --with-dovecot=#{lib}/dovecot
+        --prefix=#{prefix}
+      ]
 
-        args << "--with-unfinished-features" if build.with? "pigeonhole-unfinished-features"
-
-        system "./configure", *args
-        system "make"
-        system "make", "install"
-      end
+      system "./configure", *args
+      system "make"
+      system "make", "install"
     end
   end
 
   def caveats; <<~EOS
     For Dovecot to work, you may need to create a dovecot user
     and group depending on your configuration file options.
-    EOS
+  EOS
   end
 
   plist_options :startup => true
@@ -113,7 +88,7 @@ class Dovecot < Formula
         </dict>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

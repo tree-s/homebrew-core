@@ -1,15 +1,15 @@
 class Grafana < Formula
   desc "Gorgeous metric visualizations and dashboards for timeseries databases"
   homepage "https://grafana.com"
-  url "https://github.com/grafana/grafana/archive/v4.6.3.tar.gz"
-  sha256 "75959d1cd8f66d362b3bb885481dce77693417f51c2e81ab091e3d16650f1a69"
+  url "https://github.com/grafana/grafana/archive/v5.4.3.tar.gz"
+  sha256 "c4d2a4723cfd7e5943e42786548ea2ccbc08cd1be80b5f447ef7309d9bd91527"
   head "https://github.com/grafana/grafana.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "b3272aea332d21682b01f5874da634a2d9e551c36b1d9bd1f4874f2b43ed4664" => :high_sierra
-    sha256 "731fe63695b57c858d50328f6325b9552a0655928b0806d384df0f6cb0163280" => :sierra
-    sha256 "e7a820ff92fd3fd49642ac1b2711fd688f614c89f3dc43eae144214e07a163fb" => :el_capitan
+    sha256 "9c021c1dc01bbe5ff2950a5ba26a611a8333710f282775e6f422d210d8dc5907" => :mojave
+    sha256 "2dce4c8198575880eb62b5b3974222cb43b8bbf4dacecda1099ace202994ab52" => :high_sierra
+    sha256 "3b88406a381d145ec3324aadd4b20b1ce76b8a3e1798a4accd85d6b88dc41d1f" => :sierra
   end
 
   depends_on "go" => :build
@@ -26,18 +26,15 @@ class Grafana < Formula
 
       system "yarn", "install", "--ignore-engines"
 
-      args = ["build"]
-      # Avoid PhantomJS error "unrecognized selector sent to instance"
-      args << "--force" unless build.bottle?
-      system "node_modules/grunt-cli/bin/grunt", *args
+      system "node_modules/grunt-cli/bin/grunt", "build"
 
-      bin.install "bin/grafana-cli"
-      bin.install "bin/grafana-server"
+      bin.install "bin/darwin-amd64/grafana-cli"
+      bin.install "bin/darwin-amd64/grafana-server"
       (etc/"grafana").mkpath
       cp("conf/sample.ini", "conf/grafana.ini.example")
       etc.install "conf/sample.ini" => "grafana/grafana.ini"
       etc.install "conf/grafana.ini.example" => "grafana/grafana.ini.example"
-      pkgshare.install "conf", "vendor", "public"
+      pkgshare.install "conf", "public", "tools", "vendor"
       prefix.install_metafiles
     end
   end
@@ -87,7 +84,7 @@ class Grafana < Formula
         </dict>
       </dict>
     </plist>
-   EOS
+  EOS
   end
 
   test do
@@ -120,7 +117,7 @@ class Grafana < Formula
     listening = Timeout.timeout(5) do
       li = false
       r.each do |l|
-        if l =~ /Initializing HTTP Server/
+        if l =~ /Initializing HTTPServer/
           li = true
           break
         end

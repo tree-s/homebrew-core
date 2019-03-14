@@ -2,15 +2,15 @@ class Braid < Formula
   desc "Simple tool to help track vendor branches in a Git repository"
   homepage "https://cristibalan.github.io/braid/"
   url "https://github.com/cristibalan/braid.git",
-      :tag => "v1.0.22",
-      :revision => "3339d2cce298bec80152223ef782f2ad45e881ec"
+      :tag      => "v1.1.2",
+      :revision => "4a7eea721fd9c841e305b19ebd6e8c7006c52f53"
   revision 1
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "e1461328846b46a5b9d838cf4df45ee7a81c28e0179fceb1f07d5bd22c4aed6a" => :high_sierra
-    sha256 "40af75008526d06a3e8c68b1005a2eaac1f87181bf4121dd9c1b5c3b7ff0d3ea" => :sierra
-    sha256 "f0f510eabce23bf2267c01531c50596ac523b61087c739170415335aa0dacbf1" => :el_capitan
+    sha256 "f43df0863e356c8cd8e6bbe4a791f5de6ef8780e6e43e4b497dfc965a828651d" => :mojave
+    sha256 "a874f82399695d859a6e8d48fa5bd04f60e0a3426891832355558f60985bdd05" => :high_sierra
+    sha256 "4fc6aff7f3dc2efe529f00027f9255ac184c0853b3a7646cabe09a4f33fb8e17" => :sierra
   end
 
   depends_on "ruby" if MacOS.version <= :sierra
@@ -23,6 +23,13 @@ class Braid < Formula
   resource "chronic" do
     url "https://rubygems.org/gems/chronic-0.10.2.gem"
     sha256 "766f2fcce6ac3cc152249ed0f2b827770d3e517e2e87c5fba7ed74f4889d2dc3"
+  end
+
+  if MacOS.version <= :sierra
+    resource "json" do
+      url "https://rubygems.org/gems/json-2.1.0.gem"
+      sha256 "b76fd09b881088c6c64a12721a1528f2f747a1c2ee52fab4c1f60db8af946607"
+    end
   end
 
   resource "fattr" do

@@ -1,34 +1,34 @@
 class Libgweather < Formula
   desc "GNOME library for weather, locations and timezones"
   homepage "https://wiki.gnome.org/Projects/LibGWeather"
-  url "https://download.gnome.org/sources/libgweather/3.26/libgweather-3.26.1.tar.xz"
-  sha256 "fca78470b345bce948e0333cab0a7c52c32562fc4a75de37061248a64e8fc4b8"
+  url "https://download.gnome.org/sources/libgweather/3.28/libgweather-3.28.3.tar.xz"
+  sha256 "45d30e0111bfc504f3e9609f878c89e26c856907f5732e7c30d3bf9f0a04e6f7"
 
   bottle do
-    sha256 "07ccd0c7376e8b3df7f535d8a2a38bfa4912442957c787099d87cb7fbbc3140e" => :high_sierra
-    sha256 "f70cfbb5fe2c7c26d74af33487f6a259069449e3d65f1e52c37fbcb4f3af1763" => :sierra
-    sha256 "136de1236c9cec9d180e90bfcdc07778e07609737c48417eb50e0d8a6a36a130" => :el_capitan
+    sha256 "137f07c2a0bdf653569594a0146ed8abd6753dfb03aa30b5ee90bc021e0d8385" => :mojave
+    sha256 "e3b603ae019c321c67ecc90e49888c0d1587a4846ccb0c7a558b2b42d3f678cc" => :high_sierra
+    sha256 "2dd576463b258ad2c9a40abd6dae3ab8100e0a4794b2827e65a2fbcc7d78b48a" => :sierra
   end
 
+  depends_on "gobject-introspection" => :build
+  depends_on "meson-internal" => :build
+  depends_on "ninja" => :build
   depends_on "pkg-config" => :build
-  depends_on "intltool" => :build
-  depends_on "gtk+3"
+  depends_on "python" => :build
   depends_on "geocode-glib"
+  depends_on "gtk+3"
   depends_on "libsoup"
-  depends_on "gobject-introspection"
-  depends_on "vala" => :optional
 
   def install
-    # ensures that the vala files remain within the keg
-    inreplace "libgweather/Makefile.in",
-              "VAPIGEN_VAPIDIR = @VAPIGEN_VAPIDIR@",
-              "VAPIGEN_VAPIDIR = @datadir@/vala/vapi"
+    ENV.refurbish_args
+    ENV["DESTDIR"] = ""
+    inreplace "meson/meson_post_install.py", "if not os.environ.get('DESTDIR'):", "if 'DESTDIR' not in os.environ:"
 
-    system "./configure", "--disable-dependency-tracking",
-                          "--disable-silent-rules",
-                          "--prefix=#{prefix}",
-                          "--disable-schemas-compile"
-    system "make", "install"
+    mkdir "build" do
+      system "meson", "--prefix=#{prefix}", ".."
+      system "ninja"
+      system "ninja", "install"
+    end
   end
 
   def post_install

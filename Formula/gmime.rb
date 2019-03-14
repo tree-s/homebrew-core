@@ -1,17 +1,17 @@
 class Gmime < Formula
   desc "MIME mail utilities"
   homepage "https://spruce.sourceforge.io/gmime/"
-  url "https://download.gnome.org/sources/gmime/3.2/gmime-3.2.0.tar.xz"
-  sha256 "75ec6033f9192488ff37745792c107b3d0ab0a36c2d3e4f732901a771755d7e0"
+  url "https://download.gnome.org/sources/gmime/3.2/gmime-3.2.3.tar.xz"
+  sha256 "6a0875eeb552ab447dd54853a68ced62217d863631048737dd97eaa2713e7311"
 
   bottle do
-    sha256 "f259025c542b5d0486c23d001dbf858cfd50beca495dad58dbcb2d6027376660" => :high_sierra
-    sha256 "9d696db40dba32aac602a9ba84516520c63e74c31e60002d59dc8baa83d20748" => :sierra
-    sha256 "cb7d81356c0fc27f95110a21929dc4772dc571269fbe1ed2cb7c5d7079c7490b" => :el_capitan
+    sha256 "26dc02bb2c06eff3a4295cec5877568c6094e11f40cf38aff16c25a1b2ddfcd3" => :mojave
+    sha256 "056637f08f6bad4727245daf1edb7d8a87bc2c2ca46950b3d3881b39e850056b" => :high_sierra
+    sha256 "1dfa791ca0aeeb1b32f1315d84ea2e68f5a65a2c686acc1d1d6a3b97663f57d4" => :sierra
   end
 
+  depends_on "gobject-introspection" => :build
   depends_on "pkg-config" => :build
-  depends_on "gobject-introspection" => :recommended
   depends_on "glib"
   depends_on "gpgme"
 
@@ -23,13 +23,8 @@ class Gmime < Formula
       --disable-vala
       --disable-glibtest
       --enable-crypto
+      --enable-introspection
     ]
-
-    if build.with? "gobject-introspection"
-      args << "--enable-introspection"
-    else
-      args << "--disable-introspection"
-    end
 
     system "./configure", *args
     system "make", "install"
@@ -48,7 +43,7 @@ class Gmime < Formula
           return 1;
         }
       }
-      EOS
+    EOS
     gettext = Formula["gettext"]
     glib = Formula["glib"]
     pcre = Formula["pcre"]

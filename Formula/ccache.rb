@@ -1,29 +1,30 @@
 class Ccache < Formula
   desc "Object-file caching compiler wrapper"
   homepage "https://ccache.samba.org/"
-  url "https://www.samba.org/ftp/ccache/ccache-3.3.6.tar.xz"
-  sha256 "410a27fdaff64ead6df3fa57fa74bca0eca6b5f6ac77d7288af1256f6b12141d"
+  url "https://www.samba.org/ftp/ccache/ccache-3.6.tar.xz"
+  sha256 "a6b129576328fcefad00cb72035bc87bc98b6a76aec0f4b59bed76d67a399b1f"
 
   bottle do
-    sha256 "e2c5c9e29b9d93fbe5935c1325806847fa351c95a8f5fbb1967bc0e513b03a90" => :high_sierra
-    sha256 "05e057a3de605ca50e85f0381d0da9dc44829c88c5ec084d621392a894016832" => :sierra
-    sha256 "662e84f1a046f3c579faddb63f121ca13832f43e4b90e994b14eaf7f50b831ac" => :el_capitan
+    cellar :any_skip_relocation
+    sha256 "9ffb4e5b9e87a8bfb39bc03190153d9473f8b8836c599677dca9b262b06b97c5" => :mojave
+    sha256 "930950117067d55ea74f0b06bcb445f0447950387deff38d0ea3d4302d9c5f2b" => :high_sierra
+    sha256 "3521a15db974af0b2d676549589cbf3a09045ac8eabd2d1a3e5930c04376db90" => :sierra
   end
 
   head do
     url "https://github.com/ccache/ccache.git"
 
+    depends_on "asciidoc" => :build
     depends_on "autoconf" => :build
     depends_on "automake" => :build
     depends_on "libtool" => :build
-    depends_on "asciidoc" => :build
   end
 
   def install
     ENV["XML_CATALOG_FILES"] = etc/"xml/catalog" if build.head?
 
     system "./autogen.sh" if build.head?
-    system "./configure", "--prefix=#{prefix}", "--mandir=#{man}", "--with-bundled-zlib"
+    system "./configure", "--prefix=#{prefix}", "--mandir=#{man}"
     system "make"
     system "make", "install"
 
@@ -52,7 +53,7 @@ class Ccache < Formula
 
     NOTE: ccache can prevent some software from compiling.
     ALSO NOTE: The brew command, by design, will never use ccache.
-    EOS
+  EOS
   end
 
   test do

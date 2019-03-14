@@ -1,24 +1,22 @@
 class Glib < Formula
   desc "Core application library for C"
   homepage "https://developer.gnome.org/glib/"
-  url "https://download.gnome.org/sources/glib/2.54/glib-2.54.3.tar.xz"
-  sha256 "963fdc6685dc3da8e5381dfb9f15ca4b5709b28be84d9d05a9bb8e446abac0a8"
+  url "https://download.gnome.org/sources/glib/2.58/glib-2.58.3.tar.xz"
+  sha256 "8f43c31767e88a25da72b52a40f3301fefc49a665b56dc10ee7cc9565cbe7481"
 
   bottle do
-    sha256 "d0cb36e80d824c93c250df321be899bed94da31e32f39aec5f7710cce372d3f3" => :high_sierra
-    sha256 "a0a54e741506cca840b8eab0c30d72b01bf548f3c7706e815fd60fee6d31178f" => :sierra
-    sha256 "630391d3aa92601c75afe44772ca891ad74ab315628451c069c7d459c8d19097" => :el_capitan
+    sha256 "0d156d04fb77e31e3679e82c19ae55aafdceb075be81e01cda08dec89fdce6a9" => :mojave
+    sha256 "b321b6dd3b7a6285f65ef38493c96a7e23e9e400f996a3a0ac9aadbf2434eff1" => :high_sierra
+    sha256 "c57f11747bbc0248f069e727e948cbc306f53e8312803ce6bcb087e89f7f701b" => :sierra
   end
 
-  option "with-test", "Build a debug build and run tests. NOTE: Not all tests succeed yet"
-
-  deprecated_option "test" => "with-test"
-
-  depends_on "pkg-config" => :build
-  # next three lines can be removed when bug 780271 is fixed and gio.patch is modified accordingly
+  # autoconf, automake and libtool can be removed when
+  # bug 780271 is fixed and gio.patch is modified accordingly
   depends_on "autoconf" => :build
   depends_on "automake" => :build
+  depends_on "gtk-doc" => :build
   depends_on "libtool" => :build
+  depends_on "pkg-config" => :build
   depends_on "gettext"
   depends_on "libffi"
   depends_on "pcre"
@@ -31,29 +29,16 @@ class Glib < Formula
     sha256 "a4cb96b5861672ec0750cb30ecebe1d417d38052cac12fbb8a77dbf04a886fcb"
   end
 
-  # Fixes compilation with FSF GCC. Doesn't fix it on every platform, due
-  # to unrelated issues in GCC, but improves the situation.
-  # Patch submitted upstream: https://bugzilla.gnome.org/show_bug.cgi?id=672777
-  patch do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/13efbb2/glib/gio.patch"
-    sha256 "628f8ea171a29c67fb06461ce4cfe549846b8fe64d83466e18e225726615b997"
-  end
-
   # Revert some bad macOS specific commits
   # https://bugzilla.gnome.org/show_bug.cgi?id=780271
   patch do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/73738ca/glib/revert-appinfo-contenttype.patch"
-    sha256 "675369c6d956b5533865178a2a78a6b2dcb921fbcfd81d35e92fc1592323e5e4"
+    url "https://raw.githubusercontent.com/Homebrew/formula-patches/5857984/glib/revert-appinfo-contenttype.patch"
+    sha256 "88bfc2a69aaeda07c5f057d11e106a97837ff319f8be1f553b8537f3c136f48c"
   end
 
   def install
     inreplace %w[gio/gdbusprivate.c gio/xdgmime/xdgmime.c glib/gutils.c],
       "@@HOMEBREW_PREFIX@@", HOMEBREW_PREFIX
-
-    # renaming is necessary for patches to work
-    mv "gio/gcocoanotificationbackend.c", "gio/gcocoanotificationbackend.m"
-    mv "gio/gnextstepsettingsbackend.c", "gio/gnextstepsettingsbackend.m"
-    rm "gio/gosxappinfo.h"
 
     # Disable dtrace; see https://trac.macports.org/ticket/30413
     args = %W[
@@ -68,17 +53,27 @@ class Glib < Formula
       --with-gio-module-dir=#{HOMEBREW_PREFIX}/lib/gio/modules
     ]
 
-    # next line can be removed when bug 780271 is fixed and gio.patch is modified accordingly
-    system "autoreconf", "-i", "-f"
+    # next two lines can be removed when bug 780271 is fixed and gio.patch
+    # is modified accordingly
+    ENV["NOCONFIGURE"] = "1"
+    system "./autogen.sh"
 
     system "./configure", *args
 
-    # disable creating directory for GIO_MODULE_DIR, we will do this manually in post_install
-    inreplace "gio/Makefile", "$(mkinstalldirs) $(DESTDIR)$(GIO_MODULE_DIR)", ""
+    # disable creating directory for GIO_MODULE_DIR, we will do
+    # this manually in post_install
+    inreplace "gio/Makefile",
+              "$(mkinstalldirs) $(DESTDIR)$(GIO_MODULE_DIR)",
+              ""
+
+    # ensure giomoduledir contains prefix, as this pkgconfig variable will be
+    # used by glib-networking and glib-openssl to determine where to install
+    # their modules
+    inreplace "gio-2.0.pc",
+              "giomoduledir=#{HOMEBREW_PREFIX}/lib/gio/modules",
+              "giomoduledir=${prefix}/lib/gio/modules"
 
     system "make"
-    # the spawn-multithreaded tests require more open files
-    system "ulimit -n 1024; make check" if build.with? "test"
     system "make", "install"
 
     # `pkg-config --libs glib-2.0` includes -lintl, and gettext itself does not
@@ -90,8 +85,6 @@ class Glib < Formula
       s.gsub! "Cflags: -I${includedir}/glib-2.0 -I${libdir}/glib-2.0/include",
               "Cflags: -I${includedir}/glib-2.0 -I${libdir}/glib-2.0/include -I#{gettext}/include"
     end
-
-    (share+"gtk-doc").rmtree
   end
 
   def post_install
@@ -113,7 +106,7 @@ class Glib < Formula
 
           return (strcmp(str, result_2) == 0) ? 0 : 1;
       }
-      EOS
+    EOS
     system ENV.cc, "-o", "test", "test.c", "-I#{include}/glib-2.0",
                    "-I#{lib}/glib-2.0/include", "-L#{lib}", "-lglib-2.0"
     system "./test"

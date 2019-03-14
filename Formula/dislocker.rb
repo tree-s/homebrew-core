@@ -3,11 +3,13 @@ class Dislocker < Formula
   homepage "https://github.com/Aorimn/dislocker"
   url "https://github.com/Aorimn/dislocker/archive/v0.7.1.tar.gz"
   sha256 "742fb5c1b3ff540368ced54c29eae8b488ae5a5fcaca092947e17c2d358a6762"
+  revision 3
 
   bottle do
-    sha256 "1b1fede1c17fb9829555c1ec85ea883a4b1fe7ae13f6ba595ec5504a06949f87" => :high_sierra
-    sha256 "68728e2f7ba2aae2b25fa4ef51596e62294bb1ca2b73f4def09b955dc5648f29" => :sierra
-    sha256 "fc7988168917b9635fb81cf1411aaaeec893e25a1be7e2bdefe40a6e80747c0a" => :el_capitan
+    sha256 "b3ea749c44b20b4b20a5a5e74079dd4c71b192db4e070f7d445b6a5eebdeadeb" => :mojave
+    sha256 "9f591c911314d86b773311386f3ce327af3b9f01bb1d4539f07841380aa2249f" => :high_sierra
+    sha256 "731f8224ccd50671c0b12795e3d95f5b96868d0d76373cc270c5d6fc1a86c6c4" => :sierra
+    sha256 "c99aecc4388117f11cee11d6333137aea5a1359a229149b55200e06a2e836914" => :el_capitan
   end
 
   depends_on "cmake" => :build

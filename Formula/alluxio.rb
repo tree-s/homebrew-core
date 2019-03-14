@@ -1,8 +1,8 @@
 class Alluxio < Formula
   desc "Open Source Memory Speed Virtual Distributed Storage"
   homepage "https://www.alluxio.org/"
-  url "http://downloads.alluxio.org/downloads/files/1.7.0/alluxio-1.7.0-bin.tar.gz"
-  sha256 "2d66f789bc89d0e01ce0e695848fa3aaff9e236bdc48a6cf9ac501393f4ff23d"
+  url "http://downloads.alluxio.org/downloads/files/1.8.1/alluxio-1.8.1-bin.tar.gz"
+  sha256 "5565b4a55331458da087c35d9612165a399a8fcc2221c7bc4665eac8b5f7ab5c"
 
   bottle :unneeded
 
@@ -18,7 +18,7 @@ class Alluxio < Formula
   def caveats; <<~EOS
     To configure alluxio, edit
       #{etc}/alluxio/alluxio-env.sh
-    EOS
+  EOS
   end
 
   test do

@@ -1,21 +1,21 @@
 class Rclone < Formula
   desc "Rsync for cloud storage"
   homepage "https://rclone.org/"
-  url "https://github.com/ncw/rclone/archive/v1.39.tar.gz"
-  sha256 "1b87291aef395209dec01084f44790d216fcd0440c5d8a9ac19668704f05ece9"
+  url "https://github.com/ncw/rclone/archive/v1.46.tar.gz"
+  sha256 "4a5deb7b7aa8222be9179c12d497b6e48af55d76abbd671b6fc2d6d1af8c88ea"
   head "https://github.com/ncw/rclone.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "00ce6a86c1735b9cdc22934cd8a06c24ccd1f07a979dfc0287962eb7acba84d3" => :high_sierra
-    sha256 "f65be58ac9e4434eff6d3f9dc4d5f3d0332168e9228207ce973837b650daeb62" => :sierra
-    sha256 "849f2a9a623e1ada277e448975cdac3d988dd077c0d5636f3eda999b875e3762" => :el_capitan
+    sha256 "e22b0807a4757cc4b191e5f446174a928fe5c6dc7d8ee2fee8c87cea1377a325" => :mojave
+    sha256 "452ad7d118ea50ef82f152ac3803461237af1b83259f3e8152242813e518ad6f" => :high_sierra
+    sha256 "e60c59417ff271fffe0a2fdbb32349b0b760a10af62daa457a31922d94a48514" => :sierra
   end
 
   depends_on "go" => :build
 
   def install
-    ENV["GOPATH"] = buildpath
+    ENV["GOPATH"] = HOMEBREW_CACHE/"go_cache"
     mkdir_p buildpath/"src/github.com/ncw/"
     ln_s buildpath, buildpath/"src/github.com/ncw/rclone"
     system "go", "build", "-o", bin/"rclone"

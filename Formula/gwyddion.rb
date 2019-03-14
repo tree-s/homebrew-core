@@ -1,14 +1,13 @@
 class Gwyddion < Formula
   desc "Scanning Probe Microscopy visualization and analysis tool"
   homepage "http://gwyddion.net/"
-  url "http://gwyddion.net/download/2.49/gwyddion-2.49.tar.gz"
-  sha256 "48446bc2c6680d61c16b3f637e57e09f4de631c6b80bc2b20f424f66cc896c1c"
+  url "http://gwyddion.net/download/2.52/gwyddion-2.52.tar.gz"
+  sha256 "40fc91eeb36c339ce52cae9deeafb47dfdd64a1e27d258ad6f216008aa31e137"
 
   bottle do
-    sha256 "54219b3018cb2ae1491e894097de93fd4793a2ced553f1ed5c374d563bdd163d" => :high_sierra
-    sha256 "54947cfef227f47304cfcd026eab9e8f870c6e4fc9caad0cc4b2d026b77d4713" => :sierra
-    sha256 "44f3afedf022ae6928247c87f433f360775cbc8e025f164a0d9d909fe847040b" => :el_capitan
-    sha256 "2f01f30e749a596a3d7c13daa7961bd209e58a818b997960554fd72df4383335" => :yosemite
+    sha256 "d850ba358c59cd90953c814a4327d59d7c70a332d8e5c56bd8cb5130352a6142" => :mojave
+    sha256 "9a549620f66aea747e31c15e00a49a1ad326f3db3cfd595debe1904760c84066" => :high_sierra
+    sha256 "a9612f9807e8fd235bb7564992e1947cc2e07f75e899d0b5f9fe164a31657e38" => :sierra
   end
 
   depends_on "pkg-config" => :build
@@ -16,17 +15,19 @@ class Gwyddion < Formula
   depends_on "gtk+"
   depends_on "gtk-mac-integration"
   depends_on "gtkglext"
+  depends_on "gtksourceview"
   depends_on "libxml2"
   depends_on "minizip"
+  depends_on "pygtk"
+  depends_on "python@2"
 
-  depends_on "python" => :optional
-  depends_on "pygtk" if build.with? "python"
-  depends_on "gtksourceview" if build.with? "python"
+  # Fix include in mac_integration.c, required for version 2.52.
+  # <https://sourceforge.net/p/gwyddion/mailman/message/36467388/>
+  patch :DATA
 
   def install
     system "./configure", "--disable-dependency-tracking",
                           "--disable-desktop-file-update",
-                          "--enable-module-bundling=no",
                           "--prefix=#{prefix}",
                           "--with-html-dir=#{doc}"
     system "make", "install"
@@ -120,3 +121,18 @@ class Gwyddion < Formula
     system "./test"
   end
 end
+
+__END__
+diff --git a/gwyddion/mac_integration.c b/gwyddion/mac_integration.c
+index 740184b..2476004 100644
+--- a/gwyddion/mac_integration.c
++++ b/gwyddion/mac_integration.c
+@@ -22,7 +22,7 @@
+ #ifdef __APPLE__
+ #include <AppKit/AppKit.h>
+ #include <CoreFoundation/CoreFoundation.h>
+-#include <file.h>
++#include <app/file.h>
+ #include "config.h"
+
+ #ifdef HAVE_GTK_MAC_INTEGRATION

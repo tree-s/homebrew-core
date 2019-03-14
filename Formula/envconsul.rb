@@ -3,16 +3,17 @@ class Envconsul < Formula
   homepage "https://github.com/hashicorp/envconsul"
   url "https://github.com/hashicorp/envconsul/archive/v0.7.3.tar.gz"
   sha256 "7152d73818c3faceac831c6ffae6e01c2f3a6372976409d9d084130ffcea35f4"
+  revision 1
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "bcc86e79f07b429a1f11e23b0dec1d359fd5bbed13f7aba1ce300c2da8f6e637" => :high_sierra
-    sha256 "6f66466edce5064c839d4328b819ea5e915474512153e72beea08b5846cb2b77" => :sierra
-    sha256 "be7343c9cfa1c58fb65ad6eef20c99f27cd0a5dcfc5aba5851593c534e41882c" => :el_capitan
+    sha256 "4d1562d58c5d242d2dce65cf8ea611531cb2f26d10cc1a86ae226554152e7727" => :mojave
+    sha256 "41dc101f3ba5ecf98360e770b96f147811f9fc5d4a748ebe3a19f46dad102b9d" => :high_sierra
+    sha256 "beda6aec1024ba24a35c671881c4640295bbf7c82796bf7a470b006a4562a460" => :sierra
   end
 
   depends_on "go" => :build
-  depends_on "consul" => :recommended # only used in test
+  depends_on "consul" => :test
 
   def install
     ENV["GOPATH"] = buildpath
@@ -30,16 +31,12 @@ class Envconsul < Formula
     CONSUL_DEFAULT_PORT = 8500
     LOCALHOST_IP = "127.0.0.1".freeze
 
-    def port_open?(ip, port, seconds = 1)
+    def port_open?(ip_address, port, seconds = 1)
       Timeout.timeout(seconds) do
-        begin
-          TCPSocket.new(ip, port).close
-          true
-        rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-          false
-        end
+        TCPSocket.new(ip_address, port).close
       end
-    rescue Timeout::Error
+      true
+    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Timeout::Error
       false
     end
 

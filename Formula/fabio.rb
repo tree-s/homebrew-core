@@ -1,26 +1,26 @@
 class Fabio < Formula
   desc "Zero-conf load balancing HTTP(S) router"
   homepage "https://github.com/fabiolb/fabio"
-  url "https://github.com/fabiolb/fabio/archive/v1.5.6.tar.gz"
-  sha256 "178764c8cba2298370166984a13f630a938c51ed8e627e24426538d7af2f3f3e"
+  url "https://github.com/fabiolb/fabio/archive/v1.5.10.tar.gz"
+  sha256 "6d11f5115d41bba0462a1d289b6a09db9cacb8728d0d2cef6a096ce8416475b8"
   head "https://github.com/fabiolb/fabio.git"
-  revision 1
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "066b27c7f2cb285cd864632817cf614ea4c07a9f69c6bcb61034013189056a64" => :high_sierra
-    sha256 "cd911cd0490c4f5bf4a4241bfd61d783c6317ffe1972131e3b4cd0b769f78aff" => :sierra
-    sha256 "6c4581af8078e11eec3a1832729d45b77bab9fd8a14f18c323b7b131022eeea6" => :el_capitan
+    sha256 "e9e27a699f09e25dcd5c1dc403eda6c8e533f8fe96b328277898ecfa31b5c4e1" => :mojave
+    sha256 "3c954b8625010295436faf57ceca390fa7a8947f838fe0c7ed5ddb5e04a4122b" => :high_sierra
+    sha256 "97157de3fe8eca2a6162f08364ad0ae692093d3fc78c6e1551d415416089bda0" => :sierra
   end
 
   depends_on "go" => :build
-  depends_on "consul" => :recommended
+  depends_on "consul"
 
   def install
     mkdir_p buildpath/"src/github.com/fabiolb"
     ln_s buildpath, buildpath/"src/github.com/fabiolb/fabio"
 
     ENV["GOPATH"] = buildpath.to_s
+    ENV["GO111MODULE"] = "off"
 
     system "go", "install", "github.com/fabiolb/fabio"
     bin.install "#{buildpath}/bin/fabio"
@@ -34,16 +34,12 @@ class Fabio < Formula
     FABIO_DEFAULT_PORT = 9999
     LOCALHOST_IP = "127.0.0.1".freeze
 
-    def port_open?(ip, port, seconds = 1)
+    def port_open?(ip_address, port, seconds = 1)
       Timeout.timeout(seconds) do
-        begin
-          TCPSocket.new(ip, port).close
-          true
-        rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-          false
-        end
+        TCPSocket.new(ip_address, port).close
       end
-    rescue Timeout::Error
+      true
+    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Timeout::Error
       false
     end
 

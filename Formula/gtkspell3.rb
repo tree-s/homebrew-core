@@ -1,23 +1,31 @@
 class Gtkspell3 < Formula
   desc "Gtk widget for highlighting and replacing misspelled words"
   homepage "https://gtkspell.sourceforge.io/"
-  url "https://downloads.sourceforge.net/project/gtkspell/3.0.9/gtkspell3-3.0.9.tar.xz"
-  sha256 "a4f4a4a2789f7499563e26d96b22d8085222ebe278da47d026b2de782b8b4d26"
-  revision 2
+  url "https://downloads.sourceforge.net/project/gtkspell/3.0.10/gtkspell3-3.0.10.tar.xz"
+  sha256 "b040f63836b347eb344f5542443dc254621805072f7141d49c067ecb5a375732"
 
   bottle do
-    sha256 "99ab6b48f8bb322a1e51b21fc6a7eccfb3f6156b9dae4e9afdf3e17b6528bba0" => :high_sierra
-    sha256 "1c12cb8f34a5756bba53ce51a3fed9e599f3cfdb57fbe0a6e4426730dc0335a5" => :sierra
-    sha256 "54127ae6c02def6d85ee4ecc142c9dd10ef0d94f2774d8fdae6fa9a0736835b5" => :el_capitan
+    sha256 "8649edc45b2ac203946b689fbeb11a5624e17d0f9dbcbad0e7f767a5835a1e78" => :mojave
+    sha256 "9f4f62410af27e84a4cec1f05b4f3017e9712f40f0d937041b89c29cf2a1dcd0" => :high_sierra
+    sha256 "2cf46aa9544572a29d3278fd3420582171e239f2731ade416e00d0521a883f9b" => :sierra
   end
 
-  depends_on "pkg-config" => :build
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
+  depends_on "gobject-introspection" => :build
   depends_on "intltool" => :build
-  depends_on "gtk+3"
+  depends_on "libtool" => :build
+  depends_on "pkg-config" => :build
+  depends_on "vala" => :build
   depends_on "enchant"
+  depends_on "gtk+3"
 
   def install
-    system "./configure", "--disable-debug", "--prefix=#{prefix}"
+    system "autoreconf", "-fi"
+    system "./configure", "--disable-dependency-tracking",
+                          "--disable-debug",
+                          "--enable-vala",
+                          "--prefix=#{prefix}"
     system "make", "install"
   end
 

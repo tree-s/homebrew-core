@@ -1,19 +1,18 @@
 class Druid < Formula
   desc "High-performance, column-oriented, distributed data store"
   homepage "http://druid.io"
-  url "http://static.druid.io/artifacts/releases/druid-0.11.0-bin.tar.gz"
-  sha256 "d50218d11f97612acc1447914e113f1869997640de586daabd85828440c4c546"
+  url "http://static.druid.io/artifacts/releases/druid-0.12.2-bin.tar.gz"
+  sha256 "951fffe2026cb2c7e219add5f4be15c993f34347f8af0873d19c72ccbb606f77"
+  revision 1
 
   bottle :unneeded
 
-  option "with-mysql", "Build with mysql-metadata-storage plugin"
-
-  depends_on "zookeeper"
   depends_on :java => "1.8"
+  depends_on "zookeeper"
 
   resource "mysql-metadata-storage" do
-    url "http://static.druid.io/artifacts/releases/mysql-metadata-storage-0.11.0.tar.gz"
-    sha256 "13fd978cdcfa7f9bac715642f37ddc8bdaf572ce05a2326c455ab8284d457141"
+    url "http://static.druid.io/artifacts/releases/mysql-metadata-storage-0.12.2.tar.gz"
+    sha256 "b1122c037929633f89903948f8e11d19b8e1c1cb2949e93acc8dee2bcb2046b0"
   end
 
   def install
@@ -30,20 +29,15 @@ class Druid < Formula
     end
 
     inreplace libexec/"bin/node.sh" do |s|
-      s.gsub! "nohup java", "nohup java -Ddruid.extensions.directory=\"#{libexec}/extensions\""
+      s.gsub! "nohup $JAVA", "nohup $JAVA -Ddruid.extensions.directory=\"#{libexec}/extensions\""
       s.gsub! ":=lib", ":=#{libexec}/lib"
       s.gsub! ":=conf/druid", ":=#{libexec}/conf/druid"
       s.gsub! ":=log", ":=#{var}/druid/log"
       s.gsub! ":=var/druid/pids", ":=#{var}/druid/pids"
     end
 
-    if build.with? "mysql"
-      resource("mysql-metadata-storage").stage do
-        (libexec/"extensions/mysql-metadata-storage").install Dir["*"]
-      end
-    else
-      inreplace libexec/"conf/druid/_common/common.runtime.properties",
-                ", \"mysql-metadata-storage\"", ""
+    resource("mysql-metadata-storage").stage do
+      (libexec/"extensions/mysql-metadata-storage").install Dir["*"]
     end
 
     bin.install Dir["#{libexec}/bin/*.sh"]

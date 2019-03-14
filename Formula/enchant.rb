@@ -1,25 +1,19 @@
 class Enchant < Formula
   desc "Spellchecker wrapping library"
   homepage "https://abiword.github.io/enchant/"
-  url "https://github.com/AbiWord/enchant/releases/download/v2.2.1/enchant-2.2.1.tar.gz"
-  sha256 "97f2e617b34c66a645b9cfebe33700456c31ca2f4677eb827b364c0d9a7f4e5e"
+  url "https://github.com/AbiWord/enchant/releases/download/v2.2.3/enchant-2.2.3.tar.gz"
+  sha256 "abd8e915675cff54c0d4da5029d95c528362266557c61c7149d53fa069b8076d"
 
   bottle do
-    sha256 "25067da77a9493c1ab90b886f7663f5afbc7c204d0851f688bb02aa994a45d32" => :high_sierra
-    sha256 "98874c4c51f9dbdf6503229d4dbe4222a28a1cc8c198f73f8056649f2ffbbb6c" => :sierra
-    sha256 "ee787b33a70350864b55494d94321c5319c280f994fd3c7ae2cf8e4e2003edf1" => :el_capitan
+    rebuild 1
+    sha256 "558ae345cf128bf0eac582e1de427f40c0a8ab55a8b3ad3fa8d184c3c2f2eae6" => :mojave
+    sha256 "1e0a55ea0aa6b7c3e600e0fdff5dea8e58f48f5a758f5923f35a75bbd11606bb" => :high_sierra
+    sha256 "f58d3db9c100f56bb99bdc717975dcb8563d5c5fbfb07135834e49fa3cf43a8a" => :sierra
   end
 
   depends_on "pkg-config" => :build
-  depends_on "python" => :optional
-  depends_on "glib"
   depends_on "aspell"
-
-  # https://pythonhosted.org/pyenchant/
-  resource "pyenchant" do
-    url "https://files.pythonhosted.org/packages/9e/54/04d88a59efa33fefb88133ceb638cdf754319030c28aadc5a379d82140ed/pyenchant-2.0.0.tar.gz"
-    sha256 "fc31cda72ace001da8fe5d42f11c26e514a91fa8c70468739216ddd8de64e2a0"
-  end
+  depends_on "glib"
 
   def install
     system "./configure", "--disable-dependency-tracking",
@@ -27,19 +21,7 @@ class Enchant < Formula
                           "--enable-relocatable"
 
     system "make", "install"
-
     ln_s "enchant-2.pc", lib/"pkgconfig/enchant.pc"
-
-    if build.with? "python"
-      resource("pyenchant").stage do
-        # Don't download and install distribute now
-        inreplace "setup.py", "ez_setup.use_setuptools()", ""
-        ENV["PYENCHANT_LIBRARY_PATH"] = lib/"libenchant-2.dylib"
-        system "python", "setup.py", "install", "--prefix=#{prefix}",
-                              "--single-version-externally-managed",
-                              "--record=installed.txt"
-      end
-    end
   end
 
   test do

@@ -1,38 +1,14 @@
 class Mariadb < Formula
   desc "Drop-in replacement for MySQL"
   homepage "https://mariadb.org/"
-  url "https://downloads.mariadb.org/f/mariadb-10.2.12/source/mariadb-10.2.12.tar.gz"
-  sha256 "2ab22d7fbacfabc30fe18f71a8afb173250074502d889457e3cde2e203d341ec"
+  url "https://downloads.mariadb.org/f/mariadb-10.3.13/source/mariadb-10.3.13.tar.gz"
+  sha256 "b2aa857ef5b84f85a7ea60a1eac7b34c0ca5151c71a0d44ce2d7fb028d71459a"
 
   bottle do
-    sha256 "c03353edcdc591307a78cee85e045e716be7f36d833e89fdec3d974a8cf0abb9" => :high_sierra
-    sha256 "ec4dcb42daa3bcaf4def1768f0385a343621e175908ac913e0e238b6584f4c91" => :sierra
-    sha256 "a072ff975ddcae52760fc2ede46b4f8940cf53201dadc16dc58a2a44d02edee7" => :el_capitan
+    sha256 "fa9e8188f3ccede84c889e60adb0bf113c7ba1998e6e858a6c8d5f3a47d2881a" => :mojave
+    sha256 "4831441cce22c1c0f3eb96036d2dca8cc07c1ae3418fc6520f97da661646b1db" => :high_sierra
+    sha256 "914732f57b3f7c9bcdd5c4bc3fc44fe0d1e64db77a6b96df85caf3803ccb502c" => :sierra
   end
-
-  devel do
-    url "https://downloads.mariadb.org/f/mariadb-10.3.4/source/mariadb-10.3.4.tar.gz"
-    sha256 "5b7146c528e53083c36141cff6a1d24cae77285acceeb84fd446956c52e5ba5b"
-
-    # compilation fix
-    # https://jira.mariadb.org/browse/MDEV-14753
-    # https://github.com/MariaDB/server/pull/524
-    patch do
-      url "https://github.com/MariaDB/server/commit/dd6686462b0fa3f4d71a65c4b26cb02b65a07fec.patch?full_index=1"
-      sha256 "c6dabcb2af28b7c2d35123bf8a7217fd99c6068d2d78f933ca60630ae4e1a5a2"
-    end
-  end
-
-  option "with-test", "Keep test when installing"
-  option "with-bench", "Keep benchmark app when installing"
-  option "with-embedded", "Build the embedded server"
-  option "with-libedit", "Compile with editline wrapper instead of readline"
-  option "with-archive-storage-engine", "Compile with the ARCHIVE storage engine enabled"
-  option "with-blackhole-storage-engine", "Compile with the BLACKHOLE storage engine enabled"
-  option "with-local-infile", "Build with local infile loading support"
-
-  deprecated_option "enable-local-infile" => "with-local-infile"
-  deprecated_option "with-tests" => "with-test"
 
   depends_on "cmake" => :build
   depends_on "openssl"
@@ -63,32 +39,17 @@ class Mariadb < Formula
       -DINSTALL_INFODIR=share/info
       -DINSTALL_MYSQLSHAREDIR=share/mysql
       -DWITH_PCRE=bundled
+      -DWITH_READLINE=yes
       -DWITH_SSL=yes
-      -DDEFAULT_CHARSET=utf8
-      -DDEFAULT_COLLATION=utf8_general_ci
+      -DWITH_UNIT_TESTS=OFF
+      -DDEFAULT_CHARSET=utf8mb4
+      -DDEFAULT_COLLATION=utf8mb4_general_ci
       -DINSTALL_SYSCONFDIR=#{etc}
       -DCOMPILATION_COMMENT=Homebrew
     ]
 
     # disable TokuDB, which is currently not supported on macOS
     args << "-DPLUGIN_TOKUDB=NO"
-
-    args << "-DWITH_UNIT_TESTS=OFF" if build.without? "test"
-
-    # Build the embedded server
-    args << "-DWITH_EMBEDDED_SERVER=ON" if build.with? "embedded"
-
-    # Compile with readline unless libedit is explicitly chosen
-    args << "-DWITH_READLINE=yes" if build.without? "libedit"
-
-    # Compile with ARCHIVE engine enabled if chosen
-    args << "-DPLUGIN_ARCHIVE=YES" if build.with? "archive-storage-engine"
-
-    # Compile with BLACKHOLE engine enabled if chosen
-    args << "-DPLUGIN_BLACKHOLE=YES" if build.with? "blackhole-storage-engine"
-
-    # Build with local infile loading support
-    args << "-DENABLED_LOCAL_INFILE=1" if build.with? "local-infile"
 
     system "cmake", ".", *std_cmake_args, *args
     system "make"
@@ -104,8 +65,9 @@ class Mariadb < Formula
     # See: https://github.com/Homebrew/homebrew/issues/4975
     rm_rf prefix/"data"
 
-    (prefix/"mysql-test").rmtree if build.without? "test" # save 121MB!
-    (prefix/"sql-bench").rmtree if build.without? "bench"
+    # Save space
+    (prefix/"mysql-test").rmtree
+    (prefix/"sql-bench").rmtree
 
     # Link the setup script into bin
     bin.install_symlink prefix/"scripts/mysql_install_db"
@@ -121,8 +83,7 @@ class Mariadb < Formula
     %w[
       wsrep_sst_mysqldump
       wsrep_sst_rsync
-      wsrep_sst_xtrabackup
-      wsrep_sst_xtrabackup-v2
+      wsrep_sst_mariabackup
     ].each do |f|
       inreplace "#{bin}/#{f}", "$(dirname $0)/wsrep_sst_common",
                                "#{libexec}/wsrep_sst_common"
@@ -156,7 +117,7 @@ class Mariadb < Formula
 
     To connect:
         mysql -uroot
-    EOS
+  EOS
   end
 
   plist_options :manual => "mysql.server start"
@@ -181,16 +142,12 @@ class Mariadb < Formula
       <string>#{var}</string>
     </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do
-    if build.with? "test"
-      (prefix/"mysql-test").cd do
-        system "./mysql-test-run.pl", "status"
-      end
-    else
-      system bin/"mysqld", "--version"
-    end
+    system bin/"mysqld", "--version"
+    prune_file = etc/"my.cnf.d/.homebrew_dont_prune_me"
+    assert_predicate prune_file, :exist?, "Failed to find #{prune_file}!"
   end
 end

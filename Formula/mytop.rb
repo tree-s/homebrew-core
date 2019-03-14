@@ -5,36 +5,42 @@ class Mytop < Formula
   mirror "https://mirrorservice.org/sites/ftp.debian.org/debian/pool/main/m/mytop/mytop_1.9.1.orig.tar.gz"
   mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/m/mytop/mytop_1.9.1.orig.tar.gz"
   sha256 "179d79459d0013ab9cea2040a41c49a79822162d6e64a7a85f84cdc44828145e"
-  revision 4
+  revision 6
 
   bottle do
     cellar :any
-    sha256 "bb8d3779656f6133a1f798dfa604550de04d87f2bd270303e0b5d3967667dac7" => :high_sierra
-    sha256 "ef364e628b541df8a91dc6b9c13a637034b5bca24ada20a46654b6ef621bd7e1" => :sierra
-    sha256 "facf8e1d0c4cffd735bfcbe424c67647c5b1b5485bfad2eef9626ec12331e86b" => :el_capitan
+    rebuild 1
+    sha256 "873b88c76650758b49e1749e35c765b5179ffd371ab489f146b35da1e3620029" => :mojave
+    sha256 "8d64c44dcfccde35179d48a1698f0108df3c621e68ee7f8716a6d6db35cc1448" => :high_sierra
+    sha256 "26a4812e17d0285a28176d8bd735e06a1196a794c7cefb4837f7ab9a9ed4272d" => :sierra
   end
 
-  depends_on "mysql"
+  depends_on "mysql-client"
   depends_on "openssl"
 
   conflicts_with "mariadb", :because => "both install `mytop` binaries"
 
   resource "List::Util" do
     url "https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.46.tar.gz"
-    mirror "http://search.cpan.org/CPAN/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.46.tar.gz"
     sha256 "30662b1261364adb317e9a5bd686273d3dd731e3fda1b8e894802aa52e0052e7"
   end
 
   resource "Config::IniFiles" do
     url "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-2.94.tar.gz"
-    mirror "http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/Config-IniFiles-2.94.tar.gz"
     sha256 "d6d38a416da79de874c5f1825221f22e972ad500b6527d190cc6e9ebc45194b4"
   end
 
+  # In Mojave, this is not part of the system Perl anymore
+  if MacOS.version >= :mojave
+    resource "DBI" do
+      url "https://cpan.metacpan.org/authors/id/T/TI/TIMB/DBI-1.641.tar.gz"
+      sha256 "5509e532cdd0e3d91eda550578deaac29e2f008a12b64576e8c261bb92e8c2c1"
+    end
+  end
+
   resource "DBD::mysql" do
-    url "https://cpan.metacpan.org/authors/id/M/MI/MICHIELB/DBD-mysql-4.041.tar.gz"
-    mirror "http://search.cpan.org/CPAN/authors/id/M/MI/MICHIELB/DBD-mysql-4.041.tar.gz"
-    sha256 "4777de11c464b515db9da95c08c225900d0594b65ba3256982dc21f9f9379040"
+    url "https://cpan.metacpan.org/authors/id/C/CA/CAPTTOFU/DBD-mysql-4.046.tar.gz"
+    sha256 "6165652ec959d05b97f5413fa3dff014b78a44cf6de21ae87283b28378daf1f7"
   end
 
   # Pick up some patches from Debian to improve functionality & fix

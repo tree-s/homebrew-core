@@ -1,34 +1,37 @@
 class Ballerina < Formula
   desc "The flexible, powerful and beautiful programming language"
-  homepage "https://ballerinalang.org/"
-  url "https://ballerinalang.org/downloads/ballerina-runtime/ballerina-0.96.0.zip"
-  sha256 "7bbaecbbce0f2132854104a7975dec7e9019ed699536dedca3499d42f908cc87"
+  homepage "https://ballerina.io/"
+  url "https://product-dist.ballerina.io/downloads/0.990.3/ballerina-0.990.3.zip"
+  sha256 "858ae6938076cab775ece966bf7eff3a9e15683b376deb54cae37b776890b9cc"
 
   bottle :unneeded
 
-  depends_on :java
+  depends_on :java => "1.8"
 
   def install
     # Remove Windows files
-    rm "bin/ballerina.bat"
+    rm Dir["bin/*.bat"]
 
     chmod 0755, "bin/ballerina"
 
     inreplace ["bin/ballerina"] do |s|
-      # Translate ballerina script
       s.gsub! /^BALLERINA_HOME=.*$/, "BALLERINA_HOME=#{libexec}"
-      # dos to unix (bug fix for version 2.3.11)
       s.gsub! /\r?/, ""
     end
 
+    bin.install "bin/ballerina"
     libexec.install Dir["*"]
-    bin.install_symlink libexec/"bin/ballerina"
+    # Add symlinks for the Language Server
+    prefix.install_symlink libexec/"bre"
+    prefix.install_symlink libexec/"lib"
+    bin.env_script_all_files(libexec/"bin", Language::Java.java_home_env("1.8"))
   end
 
   test do
     (testpath/"helloWorld.bal").write <<~EOS
-      function main (string[] args) {
-        println("Hello, World!");
+      import ballerina/io;
+      public function main(string... args) {
+        io:println("Hello, World!");
       }
     EOS
     output = shell_output("#{bin}/ballerina run helloWorld.bal")

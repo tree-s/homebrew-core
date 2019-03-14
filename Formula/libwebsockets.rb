@@ -1,29 +1,25 @@
 class Libwebsockets < Formula
   desc "C websockets server library"
   homepage "https://libwebsockets.org"
-  url "https://github.com/warmcat/libwebsockets/archive/v2.4.1.tar.gz"
-  sha256 "29414be4f79f6abc0e6aadccd09a4da0f0c431e3b5691f496acd081ae6a8240c"
-  revision 1
+  url "https://github.com/warmcat/libwebsockets/archive/v3.1.0.tar.gz"
+  sha256 "db948be74c78fc13f1f1a55e76707d7baae3a1c8f62b625f639e8f2736298324"
   head "https://github.com/warmcat/libwebsockets.git"
 
   bottle do
-    cellar :any
-    sha256 "05fa26269c3b2527e1290c750a77ef7e4a6cded2c242401590e6bfe12fbd0296" => :high_sierra
-    sha256 "8b2c54f8b5adf33dedd8d437d49093dcca5875b72c4bad14d0c16a1013d506bc" => :sierra
-    sha256 "9db109fd30d4719c198bde1569ced0f95ab2eea752127f5b88725765c84558bf" => :el_capitan
+    sha256 "c3dee13c27c98c87853ec9d1cbd3db27473c3fee1b0870260dc6c47294dd95e4" => :mojave
+    sha256 "fce83552c866222ad1386145cdd9745b82efc0c0a97b89b9069b98928241e893" => :high_sierra
+    sha256 "a57218f16bde1f484648fd7893d99d3dafc5c0ade4902c7ce442019b9782dc66" => :sierra
   end
 
   depends_on "cmake" => :build
-  depends_on "libev"
-  depends_on "libuv"
   depends_on "libevent"
+  depends_on "libuv"
   depends_on "openssl"
 
   def install
     system "cmake", ".", *std_cmake_args,
                     "-DLWS_IPV6=ON",
                     "-DLWS_WITH_HTTP2=ON",
-                    "-DLWS_WITH_LIBEV=ON",
                     "-DLWS_WITH_LIBEVENT=ON",
                     "-DLWS_WITH_LIBUV=ON",
                     "-DLWS_WITH_PLUGINS=ON",

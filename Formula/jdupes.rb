@@ -1,14 +1,14 @@
 class Jdupes < Formula
   desc "Duplicate file finder and an enhanced fork of 'fdupes'"
   homepage "https://github.com/jbruchon/jdupes"
-  url "https://github.com/jbruchon/jdupes/archive/v1.9.tar.gz"
-  sha256 "7f2505571c9fc8f76609b918106785f61e4a85af184309f738d7d847f1c2a1cf"
+  url "https://github.com/jbruchon/jdupes/archive/v1.12.tar.gz"
+  sha256 "282d7ac60756507eec752e37747aedeaa74bc335d7c3c17c2987044520c23723"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "fccd81d12aba6799be3b14951dcb1c8a12fecae5a8a03edcb2df17814d482e91" => :high_sierra
-    sha256 "ec253cb11c9e0085bfda9c3685e88c7a6f09f613d458788fce52a3e392e5a506" => :sierra
-    sha256 "ada6220e0d26d404df7fb4877834c19ee55905e1202f950ab55234f5651aafd5" => :el_capitan
+    sha256 "7e687e38fefc0938888c2a2ab4295090b2a924c7677d9201f59c6c3b71778aa1" => :mojave
+    sha256 "890e0f94b9a83b36719830f64dd4df261a8837c0c8f204b5efe43a0c6b39b72b" => :high_sierra
+    sha256 "9e007833b0ff6936bdf13631435004db18654d1c8ecff573134a29d23781cd1c" => :sierra
   end
 
   def install

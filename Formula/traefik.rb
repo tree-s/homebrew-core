@@ -1,38 +1,29 @@
-require "language/go"
-
 class Traefik < Formula
   desc "Modern reverse proxy"
   homepage "https://traefik.io/"
-  url "https://github.com/containous/traefik/releases/download/v1.5.0/traefik-v1.5.0.src.tar.gz"
-  version "1.5.0"
-  sha256 "805825918eb5320df479e3d101ff842be65991fc166ca389b1183f89d282637a"
+  url "https://github.com/containous/traefik/releases/download/v1.7.9/traefik-v1.7.9.src.tar.gz"
+  version "1.7.9"
+  sha256 "d9256a718da66b249fe26b4b603012afe9da18709185348eaeaa627579245503"
   head "https://github.com/containous/traefik.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "222ad0b16bfbfd902f10e6411213157cc08cdf1031861cbc07bd93c36a6e4040" => :high_sierra
-    sha256 "94bb937ae78b1b1798a1090b0aee37b08d31be5c95b8cb05691555d11b83aa73" => :sierra
-    sha256 "6239a0bce066e27e8c6ecfac1a5d345c45c6983f0d1fc213367b4d3da84ec159" => :el_capitan
+    sha256 "9c785d32508263eddea75b92bde5060d4d5c0d39ddd651661084de9471179d26" => :mojave
+    sha256 "bc6a39ce9304c4a7381f67c8b167e56682266d6faf1a719387d4ae41e7f0f088" => :high_sierra
+    sha256 "06c96240a79200d70ca6241564414d9addc07291635ee878c196ca129f66b057" => :sierra
   end
 
   depends_on "go" => :build
+  depends_on "go-bindata" => :build
   depends_on "node" => :build
   depends_on "yarn" => :build
-
-  go_resource "github.com/jteeuwen/go-bindata" do
-    url "https://github.com/jteeuwen/go-bindata.git",
-        :revision => "a0ff2567cfb70903282db057e799fd826784d41d"
-  end
 
   def install
     ENV["GOPATH"] = buildpath
     (buildpath/"src/github.com/containous/traefik").install buildpath.children
-    ENV.prepend_create_path "PATH", buildpath/"bin"
-    Language::Go.stage_deps resources, buildpath/"src"
 
-    cd "src/github.com/jteeuwen/go-bindata/go-bindata" do
-      system "go", "install"
-    end
+    # Fix yarn + upath@1.0.4 incompatibility; remove once upath is upgraded to 1.0.5+
+    Pathname.new("#{ENV["HOME"]}/.yarnrc").write("ignore-engines true\n")
 
     cd "src/github.com/containous/traefik" do
       cd "webui" do
@@ -43,6 +34,39 @@ class Traefik < Formula
       system "go", "build", "-o", bin/"traefik", "./cmd/traefik"
       prefix.install_metafiles
     end
+  end
+
+  plist_options :manual => "traefik"
+
+  def plist
+    <<~EOS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+        <dict>
+          <key>KeepAlive</key>
+          <false/>
+          <key>Label</key>
+          <string>#{plist_name}</string>
+          <key>ProgramArguments</key>
+          <array>
+            <string>#{opt_bin}/traefik</string>
+            <string>--configfile=#{etc/"traefik/traefik.toml"}</string>
+          </array>
+          <key>EnvironmentVariables</key>
+          <dict>
+          </dict>
+          <key>RunAtLoad</key>
+          <true/>
+          <key>WorkingDirectory</key>
+          <string>#{var}</string>
+          <key>StandardErrorPath</key>
+          <string>#{var}/log/traefik.log</string>
+          <key>StandardOutPath</key>
+          <string>#{var}/log/traefik.log</string>
+        </dict>
+      </plist>
+    EOS
   end
 
   test do

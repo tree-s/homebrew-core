@@ -1,20 +1,20 @@
 class Metaproxy < Formula
   desc "Z39.50 proxy and router utilizing Yaz toolkit"
   homepage "https://www.indexdata.com/metaproxy"
-  url "http://ftp.indexdata.dk/pub/metaproxy/metaproxy-1.13.0.tar.gz"
-  sha256 "ed3d40058e0e36141bea7d7f0e39733a7b7409281cdf6a60be90186d412c2be1"
+  url "http://ftp.indexdata.dk/pub/metaproxy/metaproxy-1.15.0.tar.gz"
+  sha256 "b43a9e4dd2c231442ea07af7a05e929cd6cae2921826f66d201397b838aa8aac"
   revision 1
 
   bottle do
     cellar :any
-    sha256 "dbc4d588ad5c5138761e4963fa0a99627a210964eb3f1e0f86c7b149b2779c59" => :high_sierra
-    sha256 "943cef4709ff9edb647779d78c8b367d7a63cbe8f39584df93e615eaf535bda1" => :sierra
-    sha256 "10c43f419c6fb77a011fd1e06f12a7c27458bd6f4cd2a49628f6870bc9ab38f7" => :el_capitan
+    sha256 "381c1a291c26cb0c6f762a406073fd8cf928546b807a1b07008eff445596213c" => :mojave
+    sha256 "9d8bde99c0381cb3a72e26dd41a5d6595be4a951fe72719a88a2444839a2880e" => :high_sierra
+    sha256 "f3ae9ef9ab5c6d055638f1b92b93d05b732dac62f1ecd249296644895a469314" => :sierra
   end
 
   depends_on "pkg-config" => :build
-  depends_on "yazpp"
   depends_on "boost"
+  depends_on "yazpp"
 
   def install
     system "./configure", "--disable-dependency-tracking",

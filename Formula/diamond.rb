@@ -1,14 +1,14 @@
 class Diamond < Formula
   desc "Accelerated BLAST compatible local sequence aligner"
   homepage "https://ab.inf.uni-tuebingen.de/software/diamond/"
-  url "https://github.com/bbuchfink/diamond/archive/v0.9.16.tar.gz"
-  sha256 "3ec2340031f95c897bd6290e37e390a36f24936c023d72fcf597d046e5a8cdeb"
+  url "https://github.com/bbuchfink/diamond/archive/v0.9.24.tar.gz"
+  sha256 "22e8fc3980c2f5d6b584d4fefa3406172141697f7cb32b9742cb43a593b4ff24"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "64338c24d7fa0b5902dbd4c8f1bfb6e3d58e86013b04b6d75c26be22f3ae24f7" => :high_sierra
-    sha256 "92c5a391925c16117986c71105d59166ad0649d1135f2ec1feaa2f7a278745c1" => :sierra
-    sha256 "06fff16eb4c7725421617276cb3096f8eca33aa9d754aac68c02b0f9a6234b39" => :el_capitan
+    sha256 "d142fdeb7bcaf6fe11a63bea7027d7e71a16165243ec1a4e1bc319941ffea21f" => :mojave
+    sha256 "2ea545335e21704468d960aae7b9d5702e7a0bcb7540cc7ca6bb872ecce4bb50" => :high_sierra
+    sha256 "a7eb2dad7dece443eeb54b53084bc7c715f221067dce51d7e238214dc402b2d2" => :sierra
   end
 
   depends_on "cmake" => :build
@@ -39,7 +39,7 @@ class Diamond < Formula
       ffetesrsvaqagvqwrdlgslqapppgftpfsclslpsswdyrrppprpanfcifsrdg
       vspcXpgwsrspdlvirpprppkvlglqaXatapg
     EOS
-    output = shell_output("#{bin}/diamond makedb --in nr.faa -d nr")
+    output = shell_output("#{bin}/diamond makedb --in nr.faa -d nr 2>&1")
     assert_match "Processed 6 sequences, 572 letters.", output
   end
 end

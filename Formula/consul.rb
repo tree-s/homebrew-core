@@ -1,81 +1,33 @@
-require "language/go"
-
 class Consul < Formula
   desc "Tool for service discovery, monitoring and configuration"
   homepage "https://www.consul.io"
   url "https://github.com/hashicorp/consul.git",
-      :tag => "v1.0.3",
-      :revision => "48f3dd5642374d079f5a64359023fb8318eb81cc"
-
+      :tag      => "v1.4.2",
+      :revision => "c97c712e96e0e53308054d5e1180289fe02dce38"
   head "https://github.com/hashicorp/consul.git",
        :shallow => false
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "03dbaf930ce4253b3b4e4a83a92635f170b54ef1a69c981ff195a12c2a2118b0" => :high_sierra
-    sha256 "ec82a15dd396db7b7e88aee7c4ed7aeaf68d66a4d5c12c897abb11b4d876090b" => :sierra
-    sha256 "f6503849d3241f10d467064236269f715ebf054fc16e7042831fdadde1d12b37" => :el_capitan
+    sha256 "be4070b81e97cb72ef9f330faf50038f88a9db7b7933ef031ff69d75db83f33d" => :mojave
+    sha256 "b3f6e8198d660cbca3e0df226fcefaf7e3997c2d76db346618f0628edb323897" => :high_sierra
+    sha256 "c09034d202dfb62957e2ee976cc8ffaeb832956c852dc7ae6c6eca293c4a63b3" => :sierra
   end
 
   depends_on "go" => :build
   depends_on "gox" => :build
 
-  go_resource "github.com/axw/gocov" do
-    url "https://github.com/axw/gocov.git",
-        :revision => "3a69a0d2a4ef1f263e2d92b041a69593d6964fe8"
-  end
-
-  go_resource "github.com/elazarl/go-bindata-assetfs" do
-    url "https://github.com/elazarl/go-bindata-assetfs.git",
-        :revision => "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43"
-  end
-
-  go_resource "github.com/jteeuwen/go-bindata" do
-    url "https://github.com/jteeuwen/go-bindata.git",
-        :revision => "a0ff2567cfb70903282db057e799fd826784d41d"
-  end
-
-  go_resource "github.com/magiconair/vendorfmt" do
-    url "https://github.com/magiconair/vendorfmt.git",
-        :revision => "0fde667441ebc14dbd64a1de758ab656b78c607b"
-  end
-
-  go_resource "github.com/matm/gocov-html" do
-    url "https://github.com/matm/gocov-html.git",
-        :revision => "f6dd0fd0ebc7c8cff8b24c0a585caeef250627a3"
-  end
-
-  go_resource "golang.org/x/tools" do
-    url "https://go.googlesource.com/tools.git",
-        :branch => "release-branch.go1.9"
-  end
-
   def install
     # Avoid running `go get`
     inreplace "GNUmakefile", "go get -u -v $(GOTOOLS)", ""
 
+    ENV["XC_OS"] = "darwin"
+    ENV["XC_ARCH"] = "amd64"
     ENV["GOPATH"] = buildpath
     contents = Dir["{*,.git,.gitignore}"]
     (buildpath/"src/github.com/hashicorp/consul").install contents
 
-    ENV.prepend_create_path "PATH", buildpath/"bin"
-    Language::Go.stage_deps resources, buildpath/"src"
-
-    build_tools = [
-      "github.com/axw/gocov/gocov",
-      "github.com/elazarl/go-bindata-assetfs/go-bindata-assetfs",
-      "github.com/jteeuwen/go-bindata/go-bindata",
-      "github.com/magiconair/vendorfmt/cmd/vendorfmt",
-      "github.com/matm/gocov-html",
-      "golang.org/x/tools/cmd/cover",
-      "golang.org/x/tools/cmd/stringer",
-    ]
-
-    build_tools.each do |tool|
-      cd "src/#{tool}" do
-        system "go", "install"
-      end
-    end
+    (buildpath/"bin").mkpath
 
     cd "src/github.com/hashicorp/consul" do
       system "make"
@@ -116,7 +68,7 @@ class Consul < Formula
         <string>#{var}/log/consul.log</string>
       </dict>
     </plist>
-    EOS
+  EOS
   end
 
   test do

@@ -1,46 +1,45 @@
 class Mame < Formula
   desc "Multiple Arcade Machine Emulator"
-  homepage "http://mamedev.org/"
-  url "https://github.com/mamedev/mame/archive/mame0193.tar.gz"
-  version "0.193"
-  sha256 "6b5e90b602befbcad2b6989b1e930d0ff6e537dc901f7b1615a3e6deec2207a2"
+  homepage "https://mamedev.org/"
+  url "https://github.com/mamedev/mame/archive/mame0205.tar.gz"
+  version "0.205"
+  sha256 "80b7f9feb3a4da34c5c452de13d4f7db12381b8a17a90f41884ea2ca797d92ff"
   head "https://github.com/mamedev/mame.git"
 
   bottle do
     cellar :any
-    sha256 "b2c1a670afd51a2f2d4e592c389977ef90538b00b2915e466856486a0a28f06b" => :high_sierra
-    sha256 "9de562b2a1618250aff714b294af08ca4eef326c09e3452a32625789d79243a8" => :sierra
-    sha256 "1ca0cef597aac0f41c8d1f485467d6b6f0638956eda57f70d5bbdb0979cbe792" => :el_capitan
+    sha256 "e4d4679ec61ef5e1accb9bc81658f3d5d0b0059b52da592a7ad20a51a39c1c16" => :mojave
+    sha256 "dbe1926067c42c933452ec6bd5bd47c81a510eb65ca340379364029c11fb78d3" => :high_sierra
+    sha256 "7c7c759a4be74b6dc3f6ab28cee7c242e497244d7161b026f7b659a7caf1fac0" => :sierra
   end
 
-  depends_on :macos => :yosemite
   depends_on "pkg-config" => :build
   depends_on "sphinx-doc" => :build
-  depends_on "sdl2"
-  depends_on "jpeg"
   depends_on "flac"
-  depends_on "sqlite"
-  depends_on "portmidi"
+  depends_on "jpeg"
+  depends_on "lua"
+  depends_on :macos => :yosemite
   depends_on "portaudio"
+  depends_on "portmidi"
+  depends_on "sdl2"
+  depends_on "sqlite"
   depends_on "utf8proc"
 
   # Need C++ compiler and standard library support C++14.
-  needs :cxx14
-
-  # jpeg 9 compatibility
-  patch do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/2b7053a/mame/jpeg9.patch"
-    sha256 "be8095e1b519f17ac4b9e6208f2d434e47346d8b4a8faf001b68749aac3efd20"
-  end
 
   def install
     inreplace "scripts/src/osd/sdl.lua", "--static", ""
+
+    # 3rdparty/sol2/sol/compatibility/version.hpp:30:10
+    # fatal error: 'lua.hpp' file not found
+    ENV.append "CPPFLAGS", "-I#{Formula["lua"].opt_include}/lua"
+
     system "make", "USE_LIBSDL=1",
                    "USE_SYSTEM_LIB_EXPAT=1",
                    "USE_SYSTEM_LIB_ZLIB=1",
                    "USE_SYSTEM_LIB_JPEG=1",
                    "USE_SYSTEM_LIB_FLAC=1",
-                   "USE_SYSTEM_LIB_LUA=", # Homebrew's lua@5.3 can't build with MAME yet.
+                   "USE_SYSTEM_LIB_LUA=1",
                    "USE_SYSTEM_LIB_SQLITE3=1",
                    "USE_SYSTEM_LIB_PORTMIDI=1",
                    "USE_SYSTEM_LIB_PORTAUDIO=1",

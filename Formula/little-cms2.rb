@@ -9,18 +9,17 @@ class LittleCms2 < Formula
   bottle do
     cellar :any
     rebuild 1
+    sha256 "1c69f212b9754cbc1700e822ceb659103cb692afe2e26366c9ae9eb9e3fc612d" => :mojave
     sha256 "c232c3e514ef478c4fab797dab8db675045eae3611043063d338c256f4ecb941" => :high_sierra
     sha256 "a0ce195a712977870d9ddc414c0c5cd1b373d4e04b7130b80d00f911d04fe5b4" => :sierra
     sha256 "fa72bb1ce13889405ee93519be86ff1cede056d8c74e1d1671cca52013762ec0" => :el_capitan
   end
 
-  depends_on "jpeg" => :recommended
-  depends_on "libtiff" => :recommended
+  depends_on "jpeg"
+  depends_on "libtiff"
 
   def install
     args = %W[--disable-dependency-tracking --prefix=#{prefix}]
-    args << "--without-tiff" if build.without? "libtiff"
-    args << "--without-jpeg" if build.without? "jpeg"
 
     system "./configure", *args
     system "make", "install"

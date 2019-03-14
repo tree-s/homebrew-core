@@ -2,30 +2,32 @@ class Duck < Formula
   desc "Command-line interface for Cyberduck (a multi-protocol file transfer tool)"
   homepage "https://duck.sh/"
   # check the changelog for the latest stable version: https://cyberduck.io/changelog/
-  url "https://dist.duck.sh/duck-src-6.3.4.27404.tar.gz"
-  sha256 "7ccbbc64f7d84cd4ef31386092169f3417acf21f4ab7c1cccd1db2abe6cde206"
+  url "https://dist.duck.sh/duck-src-6.8.0.28825.tar.gz"
+  sha256 "75a8ae9897872464459556d65b9db5140071c046395721b9a8ef87df0deb54df"
   head "https://svn.cyberduck.io/trunk/"
 
   bottle do
-    sha256 "8af273462cc03088ef05df5c949bec5ff128d6be206ed82a95c011d804ccef5f" => :high_sierra
-    sha256 "b7f700d1d7d6fd74cc3e99013d56192688c16940e837711e5ff998b4040bde9f" => :sierra
-    sha256 "7bc70dc8f5caf3d36be178995ab9e747995335c38a90d431b9c7dbb1f39bb233" => :el_capitan
+    sha256 "4e245cad2cf0f0bae191008561a200f050ab960474dd5fb5ed5cb1050ff8a3ed" => :mojave
+    sha256 "fffc4d1804f0419a73c3541dc0137ed433e5e48b49a1416c00989ea41441d39a" => :high_sierra
+    sha256 "d8f35c50ad4a8167efda52d5ad836cbc113c4496a2f96e87004800ec0f5a0b3d" => :sierra
+    sha256 "c890c105652dde634c83c41674ce944149ea3c96ac4d32bc7455fde552bfd424" => :el_capitan
   end
 
-  depends_on :java => ["1.8+", :build]
-  depends_on :xcode => :build
   depends_on "ant" => :build
+  depends_on :java => ["1.8+", :build]
   depends_on "maven" => :build
+  depends_on :xcode => :build
 
   def install
     revision = version.to_s.rpartition(".").last
-    system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}", "--projects", "cli/osx", "--also-make", "verify"
+    system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}",
+                  "--projects", "cli/osx", "--also-make", "verify"
     libexec.install Dir["cli/osx/target/duck.bundle/*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
 
   test do
-    system "#{bin}/duck", "--download", Formula["when"].stable.url, testpath/"test"
-    (testpath/"test").verify_checksum Formula["when"].stable.checksum
+    system "#{bin}/duck", "--download", "https://ftp.gnu.org/gnu/wget/wget-1.19.4.tar.gz", testpath/"test"
+    assert_equal (testpath/"test").sha256, "93fb96b0f48a20ff5be0d9d9d3c4a986b469cb853131f9d5fe4cc9cecbc8b5b5"
   end
 end

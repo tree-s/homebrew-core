@@ -1,15 +1,15 @@
 class Caddy < Formula
   desc "Alternative general-purpose HTTP/2 web server"
   homepage "https://caddyserver.com/"
-  url "https://github.com/mholt/caddy/archive/v0.10.10.tar.gz"
-  sha256 "aafaeb092e7b1bcff8ec31f19a1ded1253ff95cfdd4441378e5a530508614e8d"
+  url "https://github.com/mholt/caddy/archive/v0.11.4.tar.gz"
+  sha256 "5f95c5dc8e0d6a63ae067bdfa42f78a4ca467cfff5407934582f1133ffcda532"
   head "https://github.com/mholt/caddy.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "764556624afede510c1b9d0617fe49fc0df27b5cd03115e1d7c636ec94d41dc6" => :high_sierra
-    sha256 "af2fcc1f10c1acab8b45cc0a6673298c44507532d4a82fb30d87fb41241ee438" => :sierra
-    sha256 "ca6b157091c8b09eec98f04c73a03cf21f68d1af46dfe93916c8429b10902179" => :el_capitan
+    sha256 "97a8a27c5a61d5f183256902e9f9a64e1af3242a95cc45871395da0525500e3c" => :mojave
+    sha256 "6642526ce6bd1937b961a2493ceb617391d053a17ec3ca051c7c17065db80de3" => :high_sierra
+    sha256 "73cad2bde3a3c48e9204d44d4737e61048ea23da2e0cd767578068325b25851c" => :sierra
   end
 
   depends_on "go" => :build
@@ -17,7 +17,7 @@ class Caddy < Formula
   def install
     ENV["GOPATH"] = buildpath
     ENV["GOOS"] = "darwin"
-    ENV["GOARCH"] = MacOS.prefer_64_bit? ? "amd64" : "386"
+    ENV["GOARCH"] = "amd64"
 
     (buildpath/"src/github.com/mholt").mkpath
     ln_s buildpath, "src/github.com/mholt/caddy"
@@ -25,6 +25,30 @@ class Caddy < Formula
     system "go", "build", "-ldflags",
            "-X github.com/mholt/caddy/caddy/caddymain.gitTag=#{version}",
            "-o", bin/"caddy", "github.com/mholt/caddy/caddy"
+  end
+
+  plist_options :manual => "caddy -conf #{HOMEBREW_PREFIX}/etc/Caddyfile"
+
+  def plist; <<~EOS
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+      <dict>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>#{plist_name}</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>#{opt_bin}/caddy</string>
+          <string>-conf</string>
+          <string>#{etc}/Caddyfile</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+      </dict>
+    </plist>
+  EOS
   end
 
   test do

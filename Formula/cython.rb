@@ -1,14 +1,14 @@
 class Cython < Formula
   desc "Compiler for writing C extensions for the Python language"
-  homepage "http://cython.org"
-  url "https://files.pythonhosted.org/packages/ee/2a/c4d2cdd19c84c32d978d18e9355d1ba9982a383de87d0fcb5928553d37f4/Cython-0.27.3.tar.gz"
-  sha256 "6a00512de1f2e3ce66ba35c5420babaef1fe2d9c43a8faab4080b0dbcc26bc64"
+  homepage "https://cython.org/"
+  url "https://files.pythonhosted.org/packages/e0/31/4a166556f92c469d8291d4b03a187f325c773c330fffc1e798bf83d947f2/Cython-0.29.5.tar.gz"
+  sha256 "9d5290d749099a8e446422adfb0aa2142c711284800fb1eb70f595101e32cbf1"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "50a5f8928e750f0f51572265550b680b75def6b2bff16847c3fee4fe968ee1f0" => :high_sierra
-    sha256 "e0e1da2e224c839e0fa93fee56e92261b4fc33c286a7c6b9decbc09d5995e5c3" => :sierra
-    sha256 "68500af222ef5dc5f50686731cc31360ab11e4a3c2467e51d88b1075ffe35b38" => :el_capitan
+    sha256 "36f1b06b106c26fe8b7abc6ee29666a9aa83914d3aa95f240dc631fe4dd5aca2" => :mojave
+    sha256 "8a1f515a8d57a6ee95b08ec79a866b25d6a9b35cae2dfd7d29fc0eb56631cb87" => :high_sierra
+    sha256 "37bdb759075fa4bbe073762019f7d1b18ab2137c69f1c98fc9fcf2a7a444dbc6" => :sierra
   end
 
   keg_only <<~EOS
@@ -16,18 +16,20 @@ class Cython < Formula
     Users are advised to use `pip` to install cython
   EOS
 
-  depends_on "python" if MacOS.version <= :snow_leopard
+  depends_on "python"
 
   def install
-    ENV.prepend_create_path "PYTHONPATH", libexec/"lib/python2.7/site-packages"
-    system "python", *Language::Python.setup_install_args(libexec)
+    xy = Language::Python.major_minor_version "python3"
+    ENV.prepend_create_path "PYTHONPATH", libexec/"lib/python#{xy}/site-packages"
+    system "python3", *Language::Python.setup_install_args(libexec)
 
     bin.install Dir[libexec/"bin/*"]
     bin.env_script_all_files(libexec/"bin", :PYTHONPATH => ENV["PYTHONPATH"])
   end
 
   test do
-    ENV.prepend_path "PYTHONPATH", libexec/"lib/python2.7/site-packages"
+    xy = Language::Python.major_minor_version "python3"
+    ENV.prepend_path "PYTHONPATH", libexec/"lib/python#{xy}/site-packages"
 
     phrase = "You are using Homebrew"
     (testpath/"package_manager.pyx").write "print '#{phrase}'"
@@ -39,7 +41,7 @@ class Cython < Formula
         ext_modules = cythonize("package_manager.pyx")
       )
     EOS
-    system "python", "setup.py", "build_ext", "--inplace"
-    assert_match phrase, shell_output("python -c 'import package_manager'")
+    system "python3", "setup.py", "build_ext", "--inplace"
+    assert_match phrase, shell_output("python3 -c 'import package_manager'")
   end
 end

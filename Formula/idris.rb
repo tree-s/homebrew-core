@@ -5,14 +5,14 @@ class Idris < Formula
 
   desc "Pure functional programming language with dependent types"
   homepage "https://www.idris-lang.org/"
-  url "https://github.com/idris-lang/Idris-dev/archive/v1.2.0.tar.gz"
-  sha256 "a5160da66cdfb376df0ed87f0abb9dbc7feaa4efe77bcc7f9cc3b97425bc57f7"
+  url "https://github.com/idris-lang/Idris-dev/archive/v1.3.1.tar.gz"
+  sha256 "c0de229736e920a87f5d6453a9673a3dd4562e1d529ed04ddd305c6a8b5c8941"
   head "https://github.com/idris-lang/Idris-dev.git"
 
   bottle do
-    sha256 "7d878126d8a6317d8325f3f434884eb52fadb6dd712433e18437979531e1e2df" => :high_sierra
-    sha256 "2944aae8e9baf286e1c46814d88e0487f08a0bdd8279859475de0a9128f772df" => :sierra
-    sha256 "6e9af20653598297ee21e83c9b7cb44240b7a8797d22bf918548a8cde6f45fdf" => :el_capitan
+    sha256 "c7962cb3e053d2c7a076c1f2634ad3fc6fd2f81d48d2cca89271dddb962079f0" => :mojave
+    sha256 "9824714173014b0f72a7e6446277805db9b89ea6c404a895ab4ce6ff3477fad0" => :high_sierra
+    sha256 "dd3bfe19b49e43c06faad25eb55c233fadc5f16c73df137858c6f7dbd4dccbfc" => :sierra
   end
 
   depends_on "cabal-install" => :build
@@ -36,17 +36,15 @@ class Idris < Formula
     system bin/"idris", "hello.idr", "-o", "hello"
     assert_equal "Hello, Homebrew!", shell_output("./hello").chomp
 
-    if build.with? "libffi"
-      (testpath/"ffi.idr").write <<~EOS
-        module Main
-        puts: String -> IO ()
-        puts x = foreign FFI_C "puts" (String -> IO ()) x
-        main : IO ()
-        main = puts "Hello, interpreter!"
-      EOS
+    (testpath/"ffi.idr").write <<~EOS
+      module Main
+      puts: String -> IO ()
+      puts x = foreign FFI_C "puts" (String -> IO ()) x
+      main : IO ()
+      main = puts "Hello, interpreter!"
+    EOS
 
-      system bin/"idris", "ffi.idr", "-o", "ffi"
-      assert_equal "Hello, interpreter!", shell_output("./ffi").chomp
-    end
+    system bin/"idris", "ffi.idr", "-o", "ffi"
+    assert_equal "Hello, interpreter!", shell_output("./ffi").chomp
   end
 end
