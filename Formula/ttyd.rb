@@ -20,7 +20,14 @@ class Ttyd < Formula
   depends_on "openssl"
 
   def install
-    cmake_args = std_cmake_args + ["-DOPENSSL_ROOT_DIR=#{Formula["openssl"].opt_prefix}"]
+    cmake_args = ["-DCMAKE_C_FLAGS_RELEASE=-DNDEBUG -std=c99"] \
+               + ["-DCMAKE_CXX_FLAGS_RELEASE=-DNDEBUG"] \
+               + ["-DCMAKE_INSTALL_PREFIX=#{prefix}"] \
+               + ["-DCMAKE_BUILD_TYPE=Release"] \
+               + ["-DCMAKE_FIND_FRAMEWORK=LAST"] \
+               + ["-DCMAKE_VERBOSE_MAKEFILE=ON"] \
+               + ["-Wno-dev"] \
+               + ["-DOPENSSL_ROOT_DIR=#{Formula["openssl"].opt_prefix}"]
     system "cmake", ".", *cmake_args
     system "make", "install"
   end
