@@ -6,10 +6,11 @@ class Dosbox < Formula
 
   bottle do
     cellar :any
-    rebuild 2
-    sha256 "f8936546b368cd8c05c00ce2f46fe43cc4bd100f76b9845c783b9a06a6a004b5" => :mojave
-    sha256 "5116d754e9412089d741f29913adf1125cf8e7f46e3a06ab28caf36db88aa6b2" => :high_sierra
-    sha256 "81e9f9bc8bad788c85d62875a5d4549732addae94c8eecb03c0f573a406f775b" => :sierra
+    sha256 "7d75c53e7f6a2c63968261127b64664a4fb372f51e6016c851d154c36ef5fcba" => :mojave
+    sha256 "2bcbcf0f95569cd6c4d6dbbbf6578c3573fdabf7069708ed191cfbf1430b6bbb" => :high_sierra
+    sha256 "977fbb45ec74f10f20055d0d7b5732f8af281c8289914b8895b16db25798c1f5" => :sierra
+    sha256 "2eedf84b070caaf0af61ff1ef51c82a16ae56e7ca498c832e817376cd382b453" => :el_capitan
+    sha256 "476cfcd94ec00d9a04ff125ac0b6513fe681ebe976e729605e5519ca230664a7" => :yosemite
   end
 
   head do
@@ -18,10 +19,15 @@ class Dosbox < Formula
     depends_on "automake" => :build
   end
 
-  depends_on "libpng"
+  option "with-debugger", "Enable internal debugger"
+
   depends_on "sdl"
   depends_on "sdl_net"
   depends_on "sdl_sound"
+  depends_on "libpng"
+  depends_on "ncurses" if build.with?("debugger")
+
+  conflicts_with "dosbox-x", :because => "both install `dosbox` binaries"
 
   def install
     args = %W[
@@ -30,6 +36,7 @@ class Dosbox < Formula
       --disable-sdltest
       --enable-core-inline
     ]
+    args << "--enable-debug" if build.with? "debugger"
 
     system "./autogen.sh" if build.head?
     system "./configure", *args
